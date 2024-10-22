@@ -63,7 +63,7 @@ An attendance management system built for UP System. Uses facial recognition and
 	 ```bash
 	 py manage.py runserver
 	 ```
-- Open the Django Ninja Automated API documentation: http://127.0.0.1:8000/api/docs
+- Open the Django Ninja Automated API documentation http://127.0.0.1:8000/api/docs and the Django admin http://127.0.0.1:8000/admin
 
 ### Nuxt frontend
 - In progress...
