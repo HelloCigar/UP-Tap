@@ -40,7 +40,7 @@ An attendance management system built for UP System. Uses facial recognition and
 - Create and start virtual environment in the project directory, then install needed packages:
   ```bash
   # For Python 3 
-  python3 -m venv venv
+  py -m venv venv
   
   # in cmd, activate virtual environment
   .\venv\Scripts\activate
@@ -51,17 +51,17 @@ An attendance management system built for UP System. Uses facial recognition and
 - Run database migrations
   ```bash
   # For Python 3 
-  python3 manage.py makemigrations
-  python3 manage.py migrate
+  py manage.py makemigrations
+  py manage.py migrate
   ```
  - Create a superuser (basically a supercharged Teacher account) account for managing Django
    ```bash
    # For Python 3 
-   python3 manage.py createsuperuser 
+   py manage.py createsuperuser 
    ```
  - Run Django server
 	 ```bash
-	 python3 manage.py runserver
+	 py manage.py runserver
 	 ```
 - Open the Django Ninja Automated API documentation: http://127.0.0.1:8000/api/docs
 
