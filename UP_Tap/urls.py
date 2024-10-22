@@ -19,9 +19,9 @@ from UP_Tap.api import api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("api/", api.urls),
     path("auth/", include('djoser.urls')),
     path("auth/", include('djoser.urls.authtoken')),
-    path("api/", api.urls),
 ]
 
 
