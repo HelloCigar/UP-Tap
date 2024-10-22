@@ -1,0 +1,250 @@
+<script lang="ts" setup>
+
+definePageMeta({
+    layout: 'dashboard'
+})
+// Columns
+const columns = [{
+  key: 'student_id',
+  label: 'RFID #',
+  sortable: true
+}, {
+  key: 'first_name',
+  label: 'First Name',
+  sortable: true
+}, {
+  key: 'last_name',
+  label: 'Last Name',
+  sortable: true
+}, {
+  key: 'email',
+  label: 'Email',
+  sortable: true
+}]
+
+const selectedColumns = ref(columns)
+const columnsTable = computed(() => columns.filter((column) => selectedColumns.value.includes(column)))
+
+// Actions
+const actions = [
+  [{
+    key: 'completed',
+    label: 'Completed',
+    icon: 'i-heroicons-check'
+  }], [{
+    key: 'uncompleted',
+    label: 'In Progress',
+    icon: 'i-heroicons-arrow-path'
+  }]
+]
+
+const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
+
+// Filters
+const todoStatus = [{
+  key: 'uncompleted',
+  label: 'In Progress',
+  value: false
+}, {
+  key: 'completed',
+  label: 'Completed',
+  value: true
+}]
+
+const search = ref('')
+const selectedSubjects = ref<number[]>([
+])
+
+const resetFilters = () => {
+  search.value = ''
+  selectedSubjects.value = []
+}
+
+const refreshAfterRegister = ref(false)
+function registerDone (value: boolean){
+  refreshAfterRegister.value = !refreshAfterRegister.value
+}
+
+// Pagination
+const sort = ref({ column: 'student_id', direction: 'asc' as const })
+const page = ref(1)
+const pageCount = ref(10)
+const { data: pageTotal, status: pageStatus } = await useFetch<StudentQueryResponse>('/api/students/') // This value should be dynamic coming from the API
+const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
+const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value.count))
+// Data
+const { data: students, status } = await useLazyAsyncData<StudentQueryResponse>('students', () => ($fetch as any)('/api/students/', {
+  query: {
+    q: search.value,
+    offset: (page.value - 1) * pageCount.value,
+    limit: pageCount.value,
+    sort: sort.value.column,
+    order: sort.value.direction,
+    subjects: JSON.stringify(selectedSubjects.value)
+  }
+}), {
+  default: () => { return { items: [], count: 0 } },
+  watch: [page, search, pageCount, sort, selectedSubjects, refreshAfterRegister],
+  
+})
+
+// Selected Rows
+const selectedRows = ref<Student[]>([])
+
+function select (row: Student) {
+  const index = selectedRows.value.findIndex((item) => item.student_id === row.student_id)
+  if (index === -1) {
+    selectedRows.value.push(row)
+  } else {
+    selectedRows.value.splice(index, 1)
+  }
+}
+
+</script>
+
+<template>
+  <UCard
+    class="w-full h-full"
+    :ui="{
+      base: '',
+      ring: '',
+      divide: 'divide-y divide-gray-200 dark:divide-gray-700',
+      header: { padding: 'px-4 py-5' },
+      body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+      footer: { padding: 'p-4' }
+    }"
+  >
+    <template #header>
+      <div class="flex justify-between items-center w-full">
+        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+          Students
+        </h2>
+        <StudentRegister @register-done="registerDone" />
+      </div>
+    </template>
+
+    <!-- Filters -->
+    <div class="flex items-center justify-between gap-3 px-4 py-3">
+      <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" autofocus placeholder="Search..." />
+
+      <USelectMenu v-model="selectedSubjects" :options="subjects" multiple placeholder="Subject" class="w-40" value-attribute="subject_id" option-attribute="subject_name"/>
+    </div>
+
+    <!-- Header and Action buttons -->
+    <div class="flex justify-between items-center w-full px-4 py-3">
+      <div class="flex items-center gap-1.5">
+        <span class="text-sm leading-5">Rows per page:</span>
+
+        <USelect
+          v-model="pageCount"
+          :options="[3, 5, 10, 20, 30, 40]"
+          class="me-2 w-20"
+          size="xs"
+        />
+      </div>
+
+      <div class="flex gap-1.5 items-center">
+        <UDropdown v-if="selectedRows.length > 1" :items="actions" :ui="{ width: 'w-36' }">
+          <UButton
+            icon="i-heroicons-chevron-down"
+            trailing
+            color="gray"
+            size="xs"
+          >
+            Actions
+          </UButton>
+        </UDropdown>
+
+        <USelectMenu v-model="selectedColumns" :options="columns" multiple>
+          <UButton
+            icon="i-heroicons-view-columns"
+            color="gray"
+            size="xs"
+          >
+            Columns
+          </UButton>
+        </USelectMenu>
+
+        <UButton
+          icon="i-heroicons-funnel"
+          color="gray"
+          size="xs"
+          :disabled="search === '' && selectedSubjects.length === 0"
+          @click="resetFilters"
+        >
+          Reset
+        </UButton>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <UTable
+        v-model="selectedRows"
+        v-model:sort="sort"
+        :rows="students?.items"
+        :columns="columnsTable"
+        :loading="status === 'pending'"
+        sort-asc-icon="i-heroicons-arrow-up"
+        sort-desc-icon="i-heroicons-arrow-down"
+        sort-mode="manual"
+        class="min-w-full"
+        :ui="{ td: { base: 'max-w-[0] truncate' }, default: { checkbox: { color: 'gray' as any } }, wrapper: 'h-[650px] overflow-y-auto' }"
+        @select="select"
+    >
+        <template #actions-data="{ row }">
+        <UButton
+            v-if="!row.completed"
+            icon="i-heroicons-check"
+            size="2xs"
+            color="emerald"
+            variant="outline"
+            :ui="{ rounded: 'rounded-full' }"
+            square
+        />
+
+        <UButton
+            v-else
+            icon="i-heroicons-arrow-path"
+            size="2xs"
+            color="orange"
+            variant="outline"
+            :ui="{ rounded: 'rounded-full' }"
+            square
+        />
+        </template>
+    </UTable>
+
+
+    <!-- Number of rows & Pagination -->
+    <template #footer>
+      <div class="flex flex-wrap justify-between items-center">
+        <div>
+          <span class="text-sm leading-5">
+            Showing
+            <span class="font-medium">{{ pageFrom }}</span>
+            to
+            <span class="font-medium">{{ pageTo }}</span>
+            of
+            <span class="font-medium">{{ pageTotal?.count }}</span>
+            results
+          </span>
+        </div>
+
+        <UPagination
+          v-model="page"
+          :page-count="pageCount"
+          :total="pageTotal?.count"
+          :ui="{
+            wrapper: 'flex items-center gap-1',
+            rounded: '!rounded-full min-w-[32px] justify-center',
+            default: {
+              activeButton: {
+                variant: 'outline'
+              }
+            }
+          }"
+        />
+      </div>
+    </template>
+  </UCard>
+</template>

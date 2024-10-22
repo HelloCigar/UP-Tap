@@ -1,0 +1,56 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+*.sqlite3
+db.sqlite3
+
+# Local environment settings
+.env
+.vscode/
+.idea/
+*.swp
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Media files
+media/
+
+# Static files (can be generated during deployment)
+staticfiles/
+static/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Linux
+*.~lock.*
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
