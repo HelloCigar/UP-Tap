@@ -1,0 +1,2 @@
+class StudentTimeInError(Exception):
+    pass

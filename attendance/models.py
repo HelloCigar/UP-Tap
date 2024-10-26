@@ -14,12 +14,12 @@ class AttendanceSheet(models.Model):
 
 class StudentAttendaceInfo(models.Model):
     attendance_info_id = models.AutoField(primary_key=True)
-    is_present = models.BooleanField()
+    is_present = models.BooleanField(default=False)
     time_in = models.TimeField(null=True)
     time_out = models.TimeField(null=True)
     sheet_id = models.ForeignKey(AttendanceSheet, on_delete=models.CASCADE)
-    student_id = models.OneToOneField(Student, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.student_id.student_name} - {self.is_present}'
+        return f'{self.student_id.last_name} - {self.sheet_id.subject_id.subject_name} - Time in @ {self.time_in}'
     
