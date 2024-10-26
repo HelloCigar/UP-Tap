@@ -1,4 +1,3 @@
-from ninja import Schema, ModelSchema
 from ninja import Router
 from typing import List
 from .models import Student, SubjectEnrollment
@@ -6,19 +5,9 @@ from teachers.models import Subjects
 from ninja.pagination import paginate
 from django.db.models import Q
 from django.db.utils import IntegrityError
-
+from .schemas import *
 
 router = Router()
-
-class StudentSchema(ModelSchema):
-    class Meta:
-        model = Student
-        fields = "__all__"
-
-class StudentListSchema(ModelSchema):
-    class Meta:
-        model = Student
-        exclude = ["face_data"]
 
 @router.post("/register")
 def register_student(request, data: StudentSchema, subjects: str):

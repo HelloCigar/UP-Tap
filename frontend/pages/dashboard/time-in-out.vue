@@ -5,8 +5,9 @@ definePageMeta({
 import Camera from 'simple-vue-camera';
 // Get a reference of the component
 const camera = ref<InstanceType<typeof Camera>>();
-    
-const countries = ['United States', 'Canada', 'Mexico']
+
+  
+const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects')
 
 const items = [{
   key: 'time-in',
@@ -81,14 +82,11 @@ function closeModal () {
 
 </script> 
 <template>
-    <div class="bg-gray-100 flex h-16 items-center px-4 dark:bg-gray-900">
-        <h3>Student</h3>
-    </div>
     <UDivider></UDivider>    
     <UContainer class="min-h-full"> 
             <div class="flex flex-row gap-4 items-start p-4"> 
                 <div class="h-full">
-                    <USelect size="lg" placeholder="Section" :options="countries" color="white" variant="outline"/>
+                    <USelect v-if="subjects" size="lg" placeholder="Section" :options="subjects" color="white" variant="outline" value-attribute="subject_id" option-attribute="subject_name"/>
                 </div>             
                 <div class="w-full">
                     <UTabs :items="items" class="w-full" @change="onChange"></UTabs>

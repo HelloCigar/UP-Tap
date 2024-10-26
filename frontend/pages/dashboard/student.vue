@@ -127,7 +127,7 @@ function select (row: Student) {
     <div class="flex items-center justify-between gap-3 px-4 py-3">
       <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" autofocus placeholder="Search..." />
 
-      <USelectMenu v-model="selectedSubjects" :options="subjects" multiple placeholder="Subject" class="w-40" value-attribute="subject_id" option-attribute="subject_name"/>
+      <USelectMenu v-if="subjects" v-model="selectedSubjects" :options="subjects" multiple placeholder="Subject" class="w-40" value-attribute="subject_id" option-attribute="subject_name"/>
     </div>
 
     <!-- Header and Action buttons -->
