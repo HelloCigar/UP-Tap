@@ -6,8 +6,25 @@ import Camera from 'simple-vue-camera';
 // Get a reference of the component
 const camera = ref<InstanceType<typeof Camera>>();
 
+const snapshot = async () => {
+  const blob = await camera.value?.snapshot();
+
+  if (blob) {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        resolve(base64String);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+};
+
   
 const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects')
+const chosenSub = ref<number>(1)
 
 const items = [{
   key: 'time-in',
@@ -19,9 +36,10 @@ const items = [{
   icon: 'i-heroicons-arrow-left-start-on-rectangle',
 }]
 
-function onChange (index: number) {
+const time_in_out = ref('time-in')
+function onChangeTab (index: number) {
   const item = items[index]
-
+  time_in_out.value = item.key
 }
 
 const rfidNumber = ref(""); // Holds the string input
@@ -29,9 +47,19 @@ const rfidNumber = ref(""); // Holds the string input
 // Watcher for the inputString's length
 watch(rfidNumber, async (newVal: string) => {
   if (newVal.length == 10) { // Trigger fetch after a certain length (e.g., 10)
-    const result = sendTimeIn(newVal);
-    if(result){
-        openModal()
+    const face_data = await snapshot()
+    console.log(face_data)
+    const time_in = await $fetch<TimeInOutResponse>(`/api/attendance/${time_in_out.value}`, {
+        method: 'POST',
+        body: {
+          student_id: +rfidNumber.value,
+          subject_id: chosenSub.value,
+          face_data: face_data,
+        }
+      }
+    )
+    if(time_in){
+        openModal(time_in)
         // 2 second countdown
         setTimeout(() => {
             closeModal()
@@ -43,36 +71,22 @@ watch(rfidNumber, async (newVal: string) => {
   }
 });
 
-const sendTimeIn = (query: string) => {
-//   try {
-//     const response = await $fetch(`https://example.com/api?search=${query}`);
-//     console.log("Fetched data:", response);
-//   } catch (error) {
-//     console.error("Fetch error:", error);
-//   }
-    return {"result": "success"}
-};
-
 
 import { Welcome } from '#components'
 
-const toast = useToast()
 const modal = useModal()
-const count = ref(0)
 const rfidRef = ref()
 
 
-function openModal () {
-  count.value += 1
+function openModal(props: TimeInOutResponse) {
+
   modal.open(Welcome, {
-    count: count.value,
-    onSuccess () {
-      toast.add({
-        title: 'Success !',
-        id: 'modal-success'
-      })
-    }
-  })
+    time_in: props.time_in,
+    success: props.success,
+    message: props.message,
+    time_out: props.time_out,
+    is_present: props.is_present
+  });
 }
 
 function closeModal () {
@@ -86,10 +100,10 @@ function closeModal () {
     <UContainer class="min-h-full"> 
             <div class="flex flex-row gap-4 items-start p-4"> 
                 <div class="h-full">
-                    <USelect v-if="subjects" size="lg" placeholder="Section" :options="subjects" color="white" variant="outline" value-attribute="subject_id" option-attribute="subject_name"/>
+                    <USelect v-if="subjects" v-model="chosenSub" size="lg" placeholder="Subject" :options="subjects" color="white" variant="outline" value-attribute="subject_id" option-attribute="subject_name"/>
                 </div>             
                 <div class="w-full">
-                    <UTabs :items="items" class="w-full" @change="onChange"></UTabs>
+                    <UTabs :items="items" class="w-full" @change="onChangeTab"></UTabs>
                 </div>             
             </div>         
             <div class="flex flex-row">

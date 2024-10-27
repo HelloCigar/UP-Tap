@@ -9,7 +9,7 @@ from .services import verify_face
 
 router = Router()
 
-@router.post("/time-in", response={200: TimeInResponse, 500: TimeInError})
+@router.post("/time-in", response={200: TimeInResponse, 206: TimeInError})
 def save_time_in(request, data: TimeInData):
     subject = get_object_or_404(Subjects, subject_id=data.subject_id)
     attendance_sheet, is_new_attendance = AttendanceSheet.objects.get_or_create(session_date=date.today(), subject_id=subject)
@@ -17,7 +17,7 @@ def save_time_in(request, data: TimeInData):
 
     verified, error_response = verify_face(student.face_data, data.face_data)
     if not verified:
-        return 500, error_response    
+        return 206, error_response    
 
     attendance_info, is_new_info = StudentAttendaceInfo.objects.get_or_create(
         sheet_id=attendance_sheet,
@@ -29,10 +29,10 @@ def save_time_in(request, data: TimeInData):
         attendance_info.save()
         return attendance_info
     else:
-        return 500, {"success": False, "message": "Student has already time-in!"}
+        return 206, {"success": False, "message": "Student has already time-in!"}
     
 
-@router.post("/time-out", response={200: TimeOutResponse, 500: TimeOutError})
+@router.post("/time-out", response={200: TimeOutResponse, 206: TimeOutError})
 def save_time_out(request, data: TimeOutData):
     subject = get_object_or_404(Subjects, subject_id=data.subject_id)
     attendance_sheet, is_new_attendance = AttendanceSheet.objects.get_or_create(session_date=date.today(), subject_id=subject)
@@ -40,7 +40,7 @@ def save_time_out(request, data: TimeOutData):
 
     verified, error_response = verify_face(student.face_data, data.face_data)
     if not verified:
-        return 500, error_response
+        return 206, error_response
 
     attendance_info, is_new_info = StudentAttendaceInfo.objects.get_or_create(
         sheet_id=attendance_sheet,
@@ -48,10 +48,10 @@ def save_time_out(request, data: TimeOutData):
     )
 
     if is_new_info:
-        return 500, {"success": False, "message": "No attendance records found!"}
+        return 206, {"success": False, "message": "No attendance records found!"}
         
     elif attendance_info.time_out != None:
-        return 500, {"success": False, "message": "Student has already time-out!"}
+        return 206, {"success": False, "message": "Student has already time-out!"}
     
     else:
         attendance_info.time_out = datetime.now().time()

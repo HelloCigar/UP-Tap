@@ -28,5 +28,12 @@ declare global {
     }
       
     type StudentRegister = StudentRegisterError | StudentRegisterSuccess;
-      
+
+    interface TimeInOutResponse {
+        time_in: string;
+        success: boolean;
+        message?: string;
+        time_out?: string;
+        is_present?: string;
+    }
 }

@@ -7,4 +7,4 @@ def verify_face(student_face_data, input_face_data):
             return False, {"success": False, "message": "Face data mismatch!"}
         return True, None
     except ValueError:
-        return False, {"success": False, "message": "Spoof image detected! You have been warned!"}
+        return False, {"success": False, "message": "Spoof image or no face detected!"}
