@@ -1,7 +1,7 @@
 from ninja import NinjaAPI, Swagger, Redoc
 from UP_Tap.authentication import AuthBearer, InvalidToken
 
-api = NinjaAPI(docs=Redoc(settings={"persistAuthorization": True}), auth=AuthBearer())
+api = NinjaAPI(docs=Swagger(settings={"persistAuthorization": True}), auth=AuthBearer())
 
 api.add_router("/teachers/", "teachers.api.router", tags=["Teachers API"])
 api.add_router("/attendance/", "attendance.api.router", tags=["Attendance API"])

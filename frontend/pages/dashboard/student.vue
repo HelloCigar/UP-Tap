@@ -231,6 +231,7 @@ function select (row: Student) {
         </div>
 
         <UPagination
+          v-if="students"
           v-model="page"
           :page-count="pageCount"
           :total="pageTotal?.count"

@@ -92,7 +92,7 @@ const convertBlobToBase64 = (fileBlobUrl: string) => {
     .then((blob) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        base64String.value = reader.result.replace(/^data:.+;base64,/, '');
+        base64String.value = reader.result;
       };
       reader.readAsDataURL(blob);
     })

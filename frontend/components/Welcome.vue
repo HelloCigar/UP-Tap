@@ -15,15 +15,17 @@ function onSuccess () {
 
 <template>
   <UModal>
-    <UCard>
-      <div class="space-y-2">
-        <p>This modal was opened programmatically !</p>
-        <p>Count: {{ count }}</p>
-        <UButton @click="onSuccess">
-          Click to emit a success event
-        </UButton>
-      </div>
-    </UCard>
+    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <Placeholder class="h-8" />
+        </template>
+
+        <Placeholder class="h-32" />
+
+        <template #footer>
+          <Placeholder class="h-8" />
+        </template>
+      </UCard>
   </UModal>
 </template>
 
