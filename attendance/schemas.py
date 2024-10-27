@@ -7,9 +7,18 @@ class TimeInData(Schema):
 
 class TimeInResponse(Schema):
     time_in: time
-    is_present: bool
     success: bool = True
 
 class TimeInError(Schema):
     success: bool
     message: str
+
+class TimeOutData(TimeInData):
+    pass
+
+class TimeOutResponse(TimeInResponse):
+    time_out: time
+    is_present: bool
+
+class TimeOutError(TimeInError):
+    pass

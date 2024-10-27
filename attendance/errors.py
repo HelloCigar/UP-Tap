@@ -1,2 +1,0 @@
-class StudentTimeInError(Exception):
-    pass
