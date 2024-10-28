@@ -1,4 +1,3 @@
-
 export default defineEventHandler(async (event) => {
     const session = await getUserSession(event)
     const query = await getQuery(event)
@@ -11,10 +10,9 @@ export default defineEventHandler(async (event) => {
         query: query
       }
     )
-
       return result
     }
 
-    return null
+    return sendRedirect(event, '/login')
   })
   

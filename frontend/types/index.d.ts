@@ -36,4 +36,13 @@ declare global {
         time_out?: string;
         is_present?: string;
     }
+
+    interface SignUpResponse {
+        first_name: string
+        last_name: string
+        email: string
+        id: number
+        error?: boolean
+        message?: string
+    }
 }

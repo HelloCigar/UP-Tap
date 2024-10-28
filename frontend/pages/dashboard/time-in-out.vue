@@ -39,6 +39,7 @@ const items = [{
 const time_in_out = ref('time-in')
 function onChangeTab (index: number) {
   const item = items[index]
+  rfidRef.value.$refs.input.focus()
   time_in_out.value = item.key
 }
 
@@ -99,11 +100,18 @@ function closeModal () {
     <UDivider></UDivider>    
     <UContainer class="min-h-full"> 
             <div class="flex flex-row gap-4 items-start p-4"> 
-                <div class="h-full">
+                <div class="h-full w-48">
                     <USelect v-if="subjects" v-model="chosenSub" size="lg" placeholder="Subject" :options="subjects" color="white" variant="outline" value-attribute="subject_id" option-attribute="subject_name"/>
                 </div>             
                 <div class="w-full">
-                    <UTabs :items="items" class="w-full" @change="onChangeTab"></UTabs>
+                    <UTabs :items="items" class="w-full" @change="onChangeTab">
+                      <template #default="{ item, index, selected }">
+                        <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{ index + 1 }}. {{ item.label }}</span>
+                      </template>
+                      <template #icon="{ item, selected }">
+                        <UIcon :name="item.icon" class="w-4 h-4 flex-shrink-0 me-2" :class="[selected && 'text-primary-500 dark:text-primary-400']" />
+                      </template>
+                    </UTabs>
                 </div>             
             </div>         
             <div class="flex flex-row">
@@ -125,7 +133,6 @@ function closeModal () {
                             <UInput color="white" v-model="rfidNumber" variant="outline" autofocus ref="rfidRef" placeholder="Your RFID number..." /> 
                         </div>
                     </div>
-                    <h1 class="text-primary-500 dark:text-primary-400 text-2xl text-center font-mono">...and tap your RFID to the scanner</h1>
                 </div>
             </div>
     </UContainer>

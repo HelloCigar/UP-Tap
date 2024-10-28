@@ -1,9 +1,8 @@
-
 export default defineEventHandler(async (event) => {
     const session = await getUserSession(event)
     const body = await readBody(event)
     if (session.secure){
-      const result = await $fetch<TimeInResponse>("http://127.0.0.1:8000/api/attendance/time-out", {
+      const result = await $fetch<TimeInOutResponse>("http://127.0.0.1:8000/api/attendance/time-out", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${session.secure.auth_token}`
@@ -13,6 +12,6 @@ export default defineEventHandler(async (event) => {
     )
       return result
     }
-    return null
+    return sendRedirect(event, '/login')
 })
   

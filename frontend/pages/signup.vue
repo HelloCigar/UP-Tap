@@ -4,6 +4,8 @@ import type { FormSubmitEvent } from '#ui/types'
 const isOpen = ref(true)
 const schema = object({
   email: string().email('Invalid email').required('Required'),
+  first_name: string().required('Please enter your first name'),
+  last_name: string().required('Please enter your last name'),
   password: string()
     .min(8, 'Must be at least 8 characters')
     .required('Required')
@@ -13,18 +15,20 @@ type Schema = InferType<typeof schema>
 
 const state = reactive({
   email: undefined,
+  first_name: undefined,
+  last_name: undefined,
   password: undefined
 })
 
 async function onSubmit (event: FormSubmitEvent<Schema>) {
   error.value = false
   // Do something with event.data
-  const data = await $fetch("/api/login", {
+  const data = await $fetch("/api/signup", {
     method: "POST",
     body: event.data
   })
 
-  if (data && "auth_token" in data) {
+  if (data && "id" in data) {
     // go home
     navigateTo("/")
   }
@@ -47,7 +51,7 @@ const errorMsg = ref<string>()
                 UP Tap
               </p>
               <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Login to your account
+                Signup to our system
               </p>
             </template>
 
@@ -57,13 +61,21 @@ const errorMsg = ref<string>()
                     <UInput v-model="state.email" />
                     </UFormGroup>
 
+                    <UFormGroup label="First Name" name="first_name" required>
+                    <UInput v-model="state.first_name" />
+                    </UFormGroup>
+
+                    <UFormGroup label="Last Name" name="last_name" required>
+                    <UInput v-model="state.last_name" />
+                    </UFormGroup>
+
                     <UFormGroup label="Password" name="password" required>
                     <UInput v-model="state.password" type="password" />
                     </UFormGroup>
 
                     <div class="flex justify-center">
                         <UButton type="submit">
-                            Login
+                            Signup
                         </UButton>
                     </div>
                     <p v-if="error" class="text-center mt-1 text-sm text-red-500 dark:text-gray-400">
@@ -75,9 +87,9 @@ const errorMsg = ref<string>()
             <template #footer>
             <div class="h-8">
               <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
-                First time here?
-                <NuxtLink to="/signup">
-                    Signup
+                Already have an account?
+                <NuxtLink to="/login">
+                    Login
                 </NuxtLink>
               </p>
             </div>

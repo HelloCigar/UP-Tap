@@ -13,7 +13,10 @@ router = Router()
 def save_time_in(request, data: TimeInData):
     subject = get_object_or_404(Subjects, subject_id=data.subject_id)
     attendance_sheet, is_new_attendance = AttendanceSheet.objects.get_or_create(session_date=date.today(), subject_id=subject)
-    student = get_object_or_404(Student, student_id=data.student_id)
+    try:
+        student = Student.objects.get(student_id=data.student_id)
+    except:
+        return 206, {"success": False, "message": "Student not registered!"}
 
     verified, error_response = verify_face(student.face_data, data.face_data)
     if not verified:
@@ -36,7 +39,11 @@ def save_time_in(request, data: TimeInData):
 def save_time_out(request, data: TimeOutData):
     subject = get_object_or_404(Subjects, subject_id=data.subject_id)
     attendance_sheet, is_new_attendance = AttendanceSheet.objects.get_or_create(session_date=date.today(), subject_id=subject)
-    student = get_object_or_404(Student, student_id=data.student_id)
+
+    try:
+        student = Student.objects.get(student_id=data.student_id)
+    except:
+        return 206, {"success": False, "message": "Student not registered!"}
 
     verified, error_response = verify_face(student.face_data, data.face_data)
     if not verified:
@@ -48,7 +55,9 @@ def save_time_out(request, data: TimeOutData):
     )
 
     if is_new_info:
-        return 206, {"success": False, "message": "No attendance records found!"}
+        attendance_info.delete()  # Cancel the creation by deleting the new instance
+        attendance_info = None
+        return 206, {"success": False, "message": "No attendance records found! Please time in!"}
         
     elif attendance_info.time_out != None:
         return 206, {"success": False, "message": "Student has already time-out!"}
