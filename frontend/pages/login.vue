@@ -16,22 +16,24 @@ const state = reactive({
   password: undefined
 })
 
-const data = ref(false)
-
+const loading = ref(false)
 async function onSubmit (event: FormSubmitEvent<Schema>) {
   error.value = false
+  loading.value = true
   // Do something with event.data
   const data = await $fetch("/api/login", {
     method: "POST",
     body: event.data
   })
   if (data && "auth_token" in data) {
-    // go home
-    const user = useCookie('user')
-    user.value = data.auth_token
-    navigateTo('/dashboard')
+    loading.value = false
+    const { fetch } = useUserSession();
+    await fetch();
+    // go to dashboard
+    await navigateTo('/dashboard')
   }
   else {
+    loading.value = false
     error.value = data?.error
     errorMsg.value = data?.message
   }
@@ -65,7 +67,7 @@ const errorMsg = ref<string>()
                     </UFormGroup>
 
                     <div class="flex justify-center">
-                        <UButton type="submit">
+                        <UButton type="submit" :loading="loading">
                             Login
                         </UButton>
                     </div>
@@ -76,13 +78,15 @@ const errorMsg = ref<string>()
             </div>
 
             <template #footer>
-            <div class="h-8">
+            <div class="h-8 flex flex-row justify-center gap-x-1">
               <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
                 First time here?
-                <NuxtLink to="/signup">
-                    Signup
-                </NuxtLink>
               </p>
+              <ULink to="/signup">
+                <p class="text-center mt-1 text-sm text-primary dark:text-gray-400">
+                  Signup
+                </p>
+              </ULink>
             </div>
           </template>
         </UCard>

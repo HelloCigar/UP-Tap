@@ -4,13 +4,10 @@ definePageMeta({
     middleware: 'auth'
 })
 
-const { clear } = useUserSession()
 
 async function logout() {
-  await clear()
-  const user = useCookie('user')
-  user.value = ''
-  return navigateTo('/login')
+  await $fetch('/api/logout', { method: 'POST' })
+  await navigateTo('/login')
 }
 
 </script> 
@@ -43,10 +40,10 @@ async function logout() {
       </div>
     </template>
 
-    <Placeholder class="h-32" />
+    <div class="h-32"></div>
 
     <template #footer>
-      <Placeholder class="h-8" />
+      <div class="h-8"></div>
     </template>
   </UCard>
 </template>

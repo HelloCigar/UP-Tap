@@ -98,7 +98,6 @@ function closeModal () {
 
 </script> 
 <template>
-    <UDivider></UDivider>    
     <UContainer class="min-h-full"> 
             <div class="flex flex-row gap-4 items-start p-4"> 
                 <div class="h-full w-48">

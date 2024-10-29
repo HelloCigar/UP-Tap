@@ -85,13 +85,15 @@ const errorMsg = ref<string>()
             </div>
 
             <template #footer>
-            <div class="h-8">
-              <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Already have an account?
-                <NuxtLink to="/login">
-                    Login
-                </NuxtLink>
-              </p>
+              <div class="h-8 flex flex-row justify-center gap-x-1">
+                <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Already have an account?
+                </p>
+              <ULink to="/login">
+                <p class="text-center mt-1 text-sm text-primary dark:text-gray-400">
+                  Login
+                </p>
+              </ULink>
             </div>
           </template>
         </UCard>
