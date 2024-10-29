@@ -2,7 +2,7 @@ from ninja import Router
 from .models import AttendanceSheet, StudentAttendaceInfo
 from .schemas import *
 from teachers.models import Subjects
-from students.models import Student
+from students.models import Student, SubjectEnrollment
 from datetime import date, datetime
 from django.shortcuts import get_object_or_404
 from .services import verify_face
@@ -17,6 +17,12 @@ def save_time_in(request, data: TimeInData):
         student = Student.objects.get(student_id=data.student_id)
     except:
         return 206, {"success": False, "message": "Student not registered!"}
+    
+    try:
+        subject_enrollment = SubjectEnrollment.objects.get(student_id=student, subject_id=subject)
+    except:
+        return 206, {"success": False, "message": "Student is not enrolled in this subject!"}
+
 
     verified, error_response = verify_face(student.face_data, data.face_data)
     if not verified:
@@ -44,6 +50,11 @@ def save_time_out(request, data: TimeOutData):
         student = Student.objects.get(student_id=data.student_id)
     except:
         return 206, {"success": False, "message": "Student not registered!"}
+    
+    try:
+        subject_enrollment = SubjectEnrollment.objects.get(student_id=student, subject_id=subject)
+    except:
+        return 206, {"success": False, "message": "Student is not enrolled in this subject!"}
 
     verified, error_response = verify_face(student.face_data, data.face_data)
     if not verified:
