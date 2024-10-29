@@ -30,7 +30,7 @@ async function onSubmit (event: FormSubmitEvent<Schema>) {
 
   if (data && "id" in data) {
     // go home
-    navigateTo("/")
+    await navigateTo("/")
   }
   else {
     error.value = data?.error

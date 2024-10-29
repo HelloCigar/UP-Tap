@@ -16,6 +16,8 @@ const state = reactive({
   password: undefined
 })
 
+const data = ref(false)
+
 async function onSubmit (event: FormSubmitEvent<Schema>) {
   error.value = false
   // Do something with event.data
@@ -23,10 +25,11 @@ async function onSubmit (event: FormSubmitEvent<Schema>) {
     method: "POST",
     body: event.data
   })
-
   if (data && "auth_token" in data) {
     // go home
-    navigateTo("/")
+    const user = useCookie('user')
+    user.value = data.auth_token
+    navigateTo('/dashboard')
   }
   else {
     error.value = data?.error

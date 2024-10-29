@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
-    layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: 'auth'
 })
 import Camera from 'simple-vue-camera';
 // Get a reference of the component

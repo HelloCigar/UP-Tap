@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
         }
       )
       if (result) {
-        await setUserSession(event, {
+        const session = await setUserSession(event, {
           user: {
             auth_token: "SuperSecret :>"
           },
@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
         })
         return result
       }
-
     }
     catch {
       return {"error": true, "message": "Invalid credentials"}

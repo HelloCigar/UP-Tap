@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 
 definePageMeta({
-    layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: 'auth'
 })
 // Columns
 const columns = [{
@@ -109,7 +110,7 @@ function select (row: Student) {
       base: '',
       ring: '',
       divide: 'divide-y divide-gray-200 dark:divide-gray-700',
-      header: { padding: 'px-4 py-5' },
+      header: { padding: 'px-4 py-4' },
       body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
       footer: { padding: 'p-4' }
     }"
