@@ -27,6 +27,7 @@ An attendance management system built for UP System. Uses facial recognition and
 - **Django**: `5.1.X` - the backend framework for perfectionists with deadlines
 - **Django Ninja**: `1.3.X` - production-grade and fast to setup REST framework on top of Django
 - **Nuxt 3**:  - The Intuitive Vue Framework
+- **Deepface** - For wrapping popular face detection and recognition models into an easy to use library
 
 ## Setup
 
