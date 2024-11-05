@@ -51,3 +51,6 @@ ENV/
 # Windows
 Thumbs.db
 ehthumbs.db
+
+# Latex files used in compilation like aux
+*.aux
