@@ -6,6 +6,7 @@ from ninja.pagination import paginate
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from .schemas import *
+from django.shortcuts import get_object_or_404
 
 router = Router()
 
@@ -77,5 +78,24 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
 
     return students
 
+
+
+@router.delete("/{student_id}")
+def delete_student(request, student_id: int):
+    """
+    Delete a student.
+
+    Parameters:
+        student_id (int): The ID of the student to delete
+
+    Returns:
+        dict: A dictionary with a success message
+    """
+    try:
+        student = Student.objects.get(student_id=student_id)
+        student.delete()
+    except Student.DoesNotExist:
+        return {"success": False}
+    return {"success": True}
 
 

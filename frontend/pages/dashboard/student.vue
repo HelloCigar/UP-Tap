@@ -21,11 +21,14 @@ const columns = [{
   key: 'email',
   label: 'Email',
   sortable: true
-}]
+}, {
+  key: 'actions'
+}
+]
 
 const selectedColumns = ref(columns)
 const columnsTable = computed(() => columns.filter((column) => selectedColumns.value.includes(column)))
-
+const onDelete = ref(false)
 // Actions
 const actions = [
   [{
@@ -85,8 +88,7 @@ const { data: students, status } = await useLazyAsyncData<StudentQueryResponse>(
   }
 }), {
   default: () => { return { items: [], count: 0 } },
-  watch: [page, search, pageCount, sort, selectedSubjects, refreshAfterRegister],
-  
+  watch: [page, search, pageCount, sort, selectedSubjects, refreshAfterRegister, onDelete ],
 })
 
 // Selected Rows
@@ -100,6 +102,33 @@ function select (row: Student) {
     selectedRows.value.splice(index, 1)
   }
 }
+
+
+import { StudentDeleteModal } from '#components'
+const modal = useModal()
+const items = (row: Student) => [
+  [{
+    label: 'Edit',
+    icon: 'i-heroicons-pencil-square-20-solid',
+    click: () => {
+      console.log(row)
+    }
+  }], [{
+    label: 'Delete',
+    icon: 'i-heroicons-trash-20-solid',
+    click: () => {
+      modal.open(StudentDeleteModal, {
+        student_id: row.student_id,
+        first_name: row.first_name,
+        last_name: row.last_name,
+        onSuccess: () => {
+          selectedRows.value = selectedRows.value.filter((item) => item.student_id !== row.student_id)
+          onDelete.value = !onDelete.value
+        }
+      })
+    }
+  }]
+]
 
 </script>
 
@@ -190,28 +219,11 @@ function select (row: Student) {
         sort-mode="manual"
         class="min-w-full"
         :ui="{ td: { base: 'max-w-[0] truncate' }, default: { checkbox: { color: 'gray' as any } }, wrapper: 'h-[650px] overflow-y-auto' }"
-        @select="select"
     >
         <template #actions-data="{ row }">
-        <UButton
-            v-if="!row.completed"
-            icon="i-heroicons-check"
-            size="2xs"
-            color="emerald"
-            variant="outline"
-            :ui="{ rounded: 'rounded-full' }"
-            square
-        />
-
-        <UButton
-            v-else
-            icon="i-heroicons-arrow-path"
-            size="2xs"
-            color="orange"
-            variant="outline"
-            :ui="{ rounded: 'rounded-full' }"
-            square
-        />
+          <UDropdown :items="items(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
         </template>
     </UTable>
 
