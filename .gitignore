@@ -54,3 +54,10 @@ ehthumbs.db
 
 # Latex files used in compilation like aux
 *.aux
+*.lof
+*.lot
+*.gz
+*.fdb_latexmk
+*.fls
+*.toc
+
