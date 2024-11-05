@@ -20,4 +20,4 @@ class SubjectEnrollment(models.Model):
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE, related_name='enrollments')
 
     def __str__(self):
-        return str(self.enrollment_id)
+        return f'{self.student_id.full_name()} - {self.subject_id.subject_name}'

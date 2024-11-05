@@ -1,20 +1,23 @@
 <script setup lang="ts">
-const isOpen = ref(false)
 import { object, string, type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
+import { RegisterModal } from '#components'
 
+const isOpen = ref(false)
 const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
 const selectedSubjects = ref<number[]>([])
 const emit = defineEmits(['register-done'])
+const modal = useModal()
+const rfidNumber = ref("");
+const selectedTab = ref(0)
+
 
 const schema = object({
   email: string().email('Invalid email').required('Required'),
   first_name: string().required('Required'),
   last_name: string().required('Required'),
 })
-
 type Schema = InferType<typeof schema>
-
 const state = reactive({
   email: undefined,
   first_name: undefined,
@@ -25,21 +28,6 @@ async function onSubmit (event: FormSubmitEvent<Schema>) {
   // Do something with event.data
   console.log(event.data)
 }
-
-const items = [{
-  label: '1. Personal Information',
-  icon: 'i-heroicons-information-circle',
-}, {
-  label: '2. UP RFID',
-  icon: 'i-heroicons-identification',
-}, {
-  label: '3. Face Data',
-  icon: 'i-heroicons-face-smile',
-}]
-
-const rfidNumber = ref("");
-const selectedTab = ref(0)
-
 function nextTab() {
     if(selectedTab.value > 3){
         return
@@ -47,24 +35,58 @@ function nextTab() {
     selectedTab.value++
 }
 
-const allowNext = computed(() => {
-  return !(state.email && state.first_name && state.last_name); // Disable if any value is missing
-});
+const allowNext = computed(() => !(state.email && state.first_name && state.last_name));
 
-watch(rfidNumber, (newVal: string) => {
-    if(newVal.length == 10){
-        nextTab()
-    }
-})
+watch(rfidNumber, (newVal) => { if (newVal.length === 10) nextTab(); });
 
-watch(selectedTab, (newVal: number) => {
-    if(newVal == 1){
-        rfidNumber.value = ''
-    }
-})
+watch(selectedTab, (newVal) => { if (newVal === 1) rfidNumber.value = ''; });
 
+watch(isOpen, (newVal) => { if (!newVal) resetForm(); });
+
+function resetForm() {
+  rfidNumber.value = ''
+  state.first_name = undefined
+  state.last_name = undefined
+  state.email = undefined
+  photo.value = ''
+  base64String.value = ''
+  selectedSubjects.value = []
+  selectedTab.value = 0
+  emit('register-done', true)
+}
+
+
+
+const registerResult = ref<StudentRegister>()
 const faceDetected = ref(false); // Reactive variable to track face detection status
 const photo = ref('')
+
+async function registerStudent() {
+  if(base64String.value != '') {
+    registerResult.value = await $fetch<StudentRegister>('/api/students/register', {
+      method: 'POST',
+      body: {
+        student_id: Number(rfidNumber.value),
+        first_name: state.first_name,
+        last_name: state.last_name,
+        email: state.email,
+        face_data: base64String.value,
+      },
+      credentials: 'include',
+      query: {
+        subjects: JSON.stringify(selectedSubjects.value)
+      }
+    })
+    handleRegisterResult()
+  }
+}
+
+function handleRegisterResult() {
+  const { error, success } = registerResult.value || {};
+  if (error || success) {
+    modal.open(RegisterModal, { title: error ? "Error" : "Success", message: error || success });
+  }
+}
 
 // Handle the emitted value from the child component
 const handleFaceDetection = (detected: boolean) => {
@@ -102,57 +124,16 @@ const convertBlobToBase64 = (fileBlobUrl: string) => {
 };
 
 
-const modal = useModal()
-import { RegisterModal } from '#components'
-
-const registerResult = ref<StudentRegister>()
-async function registerStudent() {
-  if(base64String.value != '') {
-    registerResult.value = await $fetch<StudentRegister>('/api/students/register', {
-      method: 'POST',
-      body: {
-        student_id: Number(rfidNumber.value),
-        first_name: state.first_name,
-        last_name: state.last_name,
-        email: state.email,
-        face_data: base64String.value,
-      },
-      credentials: 'include',
-      query: {
-        subjects: JSON.stringify(selectedSubjects.value)
-      }
-    })
-    if("error" in registerResult.value){
-      modal.open(RegisterModal, {
-        title: "Error",
-        message: registerResult.value.error
-      })
-    }
-    if("success" in registerResult.value){
-      modal.open(RegisterModal, {
-        title: "Success",
-        message: registerResult.value.success
-      })
-    }
-  }
-}
-
-watch(isOpen, (newValue) => {
-  if(newValue == false){
-    rfidNumber.value = ''
-    state.first_name = undefined
-    state.last_name = undefined
-    state.email = undefined
-    photo.value = ''
-    base64String.value = ''
-    selectedSubjects.value = []
-    selectedTab.value = 0
-    emit('register-done', true)
-  }
-})
-
-
-
+const items = [{
+  label: '1. Personal Information',
+  icon: 'i-heroicons-information-circle',
+}, {
+  label: '2. UP RFID',
+  icon: 'i-heroicons-identification',
+}, {
+  label: '3. Face Data',
+  icon: 'i-heroicons-face-smile',
+}]
 
 </script>
 
