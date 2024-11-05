@@ -87,7 +87,8 @@ function openModal(props: TimeInOutResponse) {
     success: props.success,
     message: props.message,
     time_out: props.time_out,
-    is_present: props.is_present
+    is_present: props.is_present,
+    student_name: props.student_name,
   });
 }
 

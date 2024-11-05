@@ -35,6 +35,7 @@ declare global {
         message?: string;
         time_out?: string;
         is_present?: string;
+        student_name?: string;
     }
 
     interface SignUpResponse {

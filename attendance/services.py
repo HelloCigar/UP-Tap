@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
+
 from deepface import DeepFace
 
 def verify_face(student_face_data, input_face_data):

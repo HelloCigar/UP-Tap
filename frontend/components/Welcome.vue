@@ -5,6 +5,7 @@ interface TimeInResponse {
   message?: string;
   time_out?: string;
   is_present?: string;
+  student_name?: string;
 }
 const props = defineProps<TimeInResponse>()
 
@@ -38,7 +39,7 @@ function to12HourFormat(time: string): string {
             {{ props.success 
               ? (props.time_out 
                 ? `Time-out recorded @: ${to12HourFormat(props.time_out)}` 
-                : `Time-in recorded @: ${to12HourFormat(props.time_in)}`) 
+                : `${student_name}'s time-in recorded @: ${to12HourFormat(props.time_in)}`) 
               : props.message 
             }}
           </h3>
