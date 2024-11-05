@@ -25,9 +25,6 @@ db.sqlite3
 # Media files
 media/
 
-# Static files (can be generated during deployment)
-staticfiles/
-static/
 
 # Virtual environments
 venv/
