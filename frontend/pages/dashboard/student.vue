@@ -68,16 +68,22 @@ const refreshAfterRegister = ref(false)
 function registerDone (value: boolean){
   refreshAfterRegister.value = !refreshAfterRegister.value
 }
-
 // Pagination
 const sort = ref({ column: 'student_id', direction: 'asc' as const })
 const page = ref(1)
 const pageCount = ref(10)
-const { data: pageTotal, status: pageStatus } = await useFetch<StudentQueryResponse>('/api/students/') // This value should be dynamic coming from the API
+const { data: pageTotal, status: pageStatus } = await useAsyncData<StudentQueryResponse>('count',
+  () => $fetch('/api/students/', {
+    method: 'GET',
+  }),
+  {
+    watch: [page, search, pageCount, sort, selectedSubjects, refreshAfterRegister, onDelete]
+  }
+)
 const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
 const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value.count))
 // Data
-const { data: students, status } = await useLazyAsyncData<StudentQueryResponse>('students', () => ($fetch as any)('/api/students/', {
+const { data: students, status } = await useAsyncData<StudentQueryResponse>('students', () => ($fetch as any)('/api/students/', {
   query: {
     q: search.value,
     offset: (page.value - 1) * pageCount.value,
