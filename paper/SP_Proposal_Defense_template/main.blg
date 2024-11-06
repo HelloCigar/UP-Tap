@@ -1,0 +1,79 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+Reallocating 'name_of_file' (item size: 1) to 8 items.
+The style file: apacite.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+A level-1 auxiliary file: title_page.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: abstract.aux
+Reallocating 'name_of_file' (item size: 1) to 14 items.
+A level-1 auxiliary file: chapter_1.aux
+Reallocating 'name_of_file' (item size: 1) to 14 items.
+A level-1 auxiliary file: chapter_2.aux
+Reallocating 'name_of_file' (item size: 1) to 14 items.
+A level-1 auxiliary file: chapter_3.aux
+Reallocating 'name_of_file' (item size: 1) to 14 items.
+A level-1 auxiliary file: chapter_4.aux
+Illegal, another \bibstyle command---line 10 of file main.aux
+ : \bibstyle
+ :          {apacite}
+I'm skipping whatever remains of this command
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+A level-1 auxiliary file: appendix_A.aux
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+A level-1 auxiliary file: appendix_B.aux
+Reallocating 'glb_str_end' (item size: 4) to 20 items.
+Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
+Reallocating 'global_strs' (item size: 1) to 4000000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 9000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Database file #1: myreferences.bib
+apacite.bst [2013/07/21 v6.03 APA bibliography style]
+You've used 9 entries,
+            6951 wiz_defined-function locations,
+            1344 strings with 12642 characters,
+and the built_in function-call counts, 19305 in all, are:
+= -- 2472
+> -- 186
+< -- 817
++ -- 881
+- -- 18
+* -- 1171
+:= -- 3246
+add.period$ -- 43
+call.type$ -- 9
+change.case$ -- 160
+chr.to.int$ -- 0
+cite$ -- 18
+duplicate$ -- 539
+empty$ -- 757
+format.name$ -- 308
+if$ -- 3762
+int.to.chr$ -- 0
+int.to.str$ -- 27
+missing$ -- 0
+newline$ -- 242
+num.names$ -- 76
+pop$ -- 383
+preamble$ -- 1
+purify$ -- 40
+quote$ -- 0
+skip$ -- 1331
+stack$ -- 0
+substring$ -- 986
+swap$ -- 330
+text.length$ -- 41
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 1040
+warning$ -- 0
+while$ -- 112
+width$ -- 0
+write$ -- 308
+(There was 1 error message)

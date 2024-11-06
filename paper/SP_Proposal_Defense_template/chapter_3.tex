@@ -4,18 +4,20 @@ This chapter lists and discusses the specific steps and activities that will be 
 The discussion covers the activities from pre-proposal to Final SP Writing.
 
 \section{Research Activities}
-Research activities include inquiry, survey, research, brainstorming, canvassing, consultation, review, interview, observe, experiment, design, test, document, etc.  
-Be sure that for each method, process, or algorithm used, there is a justification why that method was chosen.
-The methodology also includes the following information:
+This project aimed to create an automated attendance system with the help of RFID together with facial recognition technology. This attendance system will replace and reduce the usage of manual attendance such as the written and oral and enhance its lacking optimized features such as security, reliability, authenticity, and integrity using the student’s RFID and facial biometric.
 
-\begin{itemize}
-   \item who is responsible for the task
-   \item the resource person to be contacted
-   \item what will be done
-   \item when and how long will the activity be done
-   \item where will it be done
-   \item why should be activity be done
-\end{itemize}
+The proposed system is expected to function by tapping the RFID of the students with real time facial capture through face recognition technology. The identity of the students will be verified through the unique serial number of their RFID that will match from the system database while the face recognition will serve as the two-factor authentication. The face recognition is expected to work by capturing the students face then will be matched also through the system database. The attendance will only be valid once both student’s unique serial number in their RFID and their face has been verified.
+
+To make the system functional, several data from the students need to be collected. Those are the student’s name, student number, student’s unique serial number of  their RFID, and their facial biometrics. Those data will be gathered either online or face to face. Students are encouraged to download any of the RFID card readers to know their RFID’s serial number but in case they are incapable of doing that. Face to face to face will be an option where we can provide a physical RFID card reader. The facial recognition data will be gathered through capturing their image or video to be more accurate. 
+
+The hardware components will be using in this system are:
+RFID scanner: Which will be used to read the RFID given to the students. This will also be responsible for taking the students unique serial number on their RFID ensuring the integrity of the students.
+USB connector: This will be used to connect the RFID scanner and the Camera Module to the Laptop or Raspberry Pi.
+Laptop / Raspberry Pi: This will serve as the main processing unit. The laptop or raspberry pi will be used for running the required algorithm to make the face recognition and read the RFID correctly. Overall, the laptop / raspberry pi will be in charge of handling the data.
+Camera Module: In charge of capturing the student’s facial image while scanning the RFID to the RFID scanner. 
+Software
+Python facial recognition
+
 
 \textcolor{red}{DO NOT FORGET to cite your references.}
 
