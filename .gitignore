@@ -60,4 +60,5 @@ ehthumbs.db
 *.fdb_latexmk
 *.fls
 *.toc
+*.pdf
 
