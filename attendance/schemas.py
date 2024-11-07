@@ -30,3 +30,28 @@ class TimeOutResponse(TimeInResponse):
 
 class TimeOutError(TimeInError):
     pass
+
+class RecentTimeInResponse(Schema):
+    time_in: time
+    subject_name: Optional[str] = None
+    student_name: Optional[str] = None
+    date: date
+
+    @staticmethod
+    def resolve_student_name(obj):
+        return f'{obj.student_id.first_name} {obj.student_id.last_name}'
+
+    @staticmethod
+    def resolve_subject_name(obj):
+        return f'{obj.sheet_id.subject_id.subject_name}'
+    
+    @staticmethod
+    def resolve_date(obj):
+        return obj.sheet_id.session_date
+
+class RecentTimeOutResponse(RecentTimeInResponse):
+    time_out: time
+
+
+class RecentError(TimeInError):
+    pass

@@ -6,6 +6,7 @@ from students.models import Student, SubjectEnrollment
 from datetime import date, datetime
 from django.shortcuts import get_object_or_404
 from .services import verify_face
+from typing import List
 
 router = Router()
 
@@ -78,6 +79,24 @@ def save_time_out(request, data: TimeOutData):
         attendance_info.is_present = True
         attendance_info.save()
         return attendance_info
+
+
+@router.get("/recent", response={200: List[RecentTimeInResponse], 201: List[RecentTimeOutResponse], 206: RecentError})
+def get_recent_attendance(request, type: str):
+    if type == 'time_out':
+        recent_attendance_info = StudentAttendaceInfo.objects.filter(time_out__isnull=False).order_by('-sheet_id__session_date', f'-{type}')[:5]
+    else:
+        recent_attendance_info = StudentAttendaceInfo.objects.all().order_by('-sheet_id__session_date', f'-{type}')[:5]
+
+    if len(recent_attendance_info) == 0:
+        return 206, {"success": False, "message": "No recent attendance records found!"}
+
+    elif type == 'time_in':
+        #return response code and list of dictionaries
+        return 200, recent_attendance_info
+
+    elif type == 'time_out':
+        return 201, recent_attendance_info
 
     
 
