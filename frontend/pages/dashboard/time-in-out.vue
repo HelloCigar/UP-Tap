@@ -99,42 +99,70 @@ function closeModal () {
 
 </script> 
 <template>
-    <UContainer class="min-h-full"> 
-            <div class="flex flex-row gap-4 items-start p-4"> 
-                <div class="h-full w-48">
-                    <USelect v-if="subjects" v-model="chosenSub" size="lg" placeholder="Subject" :options="subjects" color="white" variant="outline" value-attribute="subject_id" option-attribute="subject_name"/>
-                </div>             
-                <div class="w-full">
-                    <UTabs :items="items" class="w-full" @change="onChangeTab">
-                      <template #default="{ item, index, selected }">
-                        <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{ index + 1 }}. {{ item.label }}</span>
-                      </template>
-                      <template #icon="{ item, selected }">
-                        <UIcon :name="item.icon" class="w-4 h-4 flex-shrink-0 me-2" :class="[selected && 'text-primary-500 dark:text-primary-400']" />
-                      </template>
-                    </UTabs>
-                </div>             
-            </div>         
-            <div class="flex flex-row">
-                <div class="basis-1/2 p-4">
-                    <h1 class="text-primary-500 dark:text-primary-400 text-2xl text-start font-mono">Step 1. Face Recognition</h1> 
-                    <div class="h-[500px] my-4">
-                        <Camera :resolution="{ width: 500, height: 500 }" ref="camera" autoplay></Camera>
-                    </div>
-                    <h1 class="text-primary-500 dark:text-primary-400 text-2xl text-center font-mono mt-16">Align your face with the camera please</h1>             
-                </div>
-                <UDivider label="Then" orientation="vertical" />
-                <div class="basis-1/2 p-4 gap-2">
-                    <h1 class="text-primary-500 dark:text-primary-400 text-2xl text-start font-mono">Step 2. RFID Scan</h1>
-                    <div class="flex flex-row h-[500px] w-full justify-center my-4">
-                        <NuxtImg src="/images/RFID.png" height="500"/>
-                    </div> 
-                    <div class="flex flex-row w-full justify-center my-4">
-                        <div class="w-36">
-                            <UInput color="white" v-model="rfidNumber" variant="outline" autofocus ref="rfidRef" placeholder="Your RFID number..." /> 
-                        </div>
-                    </div>
-                </div>
+  <UContainer class="min-h-screen py-8">
+    <div class="max-w-6xl mx-auto space-y-8">
+      <UCard>
+        <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <h1 class="text-2xl font-bold text-gray-800 dark:text-white">UP Tap Attendance System</h1>
+          <div class="w-full sm:w-64">
+            <USelect
+              v-if="subjects"
+              v-model="chosenSub"
+              size="lg"
+              placeholder="Select Subject"
+              :options="subjects"
+              color="primary"
+              variant="outline"
+              value-attribute="subject_id"
+              option-attribute="subject_name"
+            />
+          </div>
+        </div>
+        <UTabs :items="items" class="mt-6" @change="onChangeTab">
+          <template #default="{ item, index, selected }">
+            <span class="truncate font-medium" :class="[selected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400']">
+              {{ index + 1 }}. {{ item.label }}
+            </span>
+          </template>
+          <template #icon="{ item, selected }">
+            <UIcon
+              :name="item.icon"
+              class="w-5 h-5 mr-2"
+              :class="[selected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400']"
+            />
+          </template>
+        </UTabs>
+      </UCard>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <UCard>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Step 1: Face Recognition</h2>
+          <div class="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+            <Camera :resolution="{ width: 500, height: 500 }" ref="camera" autoplay class="w-full h-auto" />
+          </div>
+          <p class="text-center text-gray-600 dark:text-gray-400 mt-4">
+            Align your face with the camera, please.
+          </p>
+        </UCard>
+
+        <UCard>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Step 2: RFID Scan</h2>
+          <div class="flex flex-col items-center justify-center space-y-6">
+            <NuxtImg src="/images/RFID.png" class="w-[500px] h-[500px] object-contain" />
+            <div class="w-full max-w-xs">
+              <UInput
+                v-model="rfidNumber"
+                color="primary"
+                variant="outline"
+                autofocus
+                ref="rfidRef"
+                placeholder="Scan your RFID card..."
+                class="w-full"
+              />
             </div>
-    </UContainer>
+          </div>
+        </UCard>
+      </div>
+    </div>
+  </UContainer>
 </template>
