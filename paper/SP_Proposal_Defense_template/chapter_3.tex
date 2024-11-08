@@ -73,3 +73,25 @@ one week worth of activity.
 	\end{tabular}
 	\label{tab:timetableactivities}
 \end{table}
+
+
+\section{Software Development Tools}
+\label{sec:devtools}
+ Our current protoype include these frameworks and tools that are heavily used in the industry for rapid development and deployment of web applications. All of the tools used are open source. These include but are not limited to:
+ 
+\begin{itemize}
+	\item	Django - The web framework for perfectionists with deadlines. Django, which serves as the backend server, allows us to interface with the database server to do queries in the Python using Django's Object Relational Mapping tool(ORM). We can easily integrate popular pretrained facial recognition models as they are typically written in Python.
+\end{itemize}
+
+\begin{itemize}
+	\item	deepface Python library - Provides the face verification tool and anti-spoofing capabilities. It wraps the popular face recognition models into an easy to use library. These include but is not limited to: Facenet, VGG-Face and OpenFace.
+\end{itemize}
+
+\begin{itemize}
+	\item	Django Ninja - Creates the REST API on top of our Django backend to allow the frontend to consume the backend content.
+\end{itemize}
+
+\begin{itemize}
+	\item	NuxtJS - The frontend JavaScript framework used to build our web interface. Includes all the tools for routing, quering, and security. By default, it renders our web interface in Server Side Rendering(SSR) mode. Most of the work happens in the server and no authentication tokens are stored in the client browser. This increases security since authentication tokens are only added in the server side per request.
+\end{itemize}
+	
