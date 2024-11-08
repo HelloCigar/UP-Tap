@@ -33,6 +33,34 @@ Ancheta, R\BPBI F.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Fruhlinger%
+}{%
+Fruhlinger%
+}{%
+{\protect \APACyear {2024}}%
+}]{%
+fruhlinger2024cia}
+\APACinsertmetastar {%
+fruhlinger2024cia}%
+\begin{APACrefauthors}%
+Fruhlinger, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{07}{}.
+\newblock
+{\BBOQ}\APACrefatitle {What is the CIA triad? A principled framework for
+  defining infosec policies} {What is the cia triad? a principled framework for
+  defining infosec policies}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{CSO}{}{}{}.
+\newblock
+\begin{APACrefURL}
+  \url{https://www.csoonline.com/article/568917/the-cia-triad-definition-components-and-examples.html}
+  \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Shoewu%
 , Makanjuola%
 \BCBL {}\ \BBA {} Olatinwo%
