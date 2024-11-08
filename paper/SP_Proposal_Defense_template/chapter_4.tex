@@ -17,7 +17,7 @@ Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visua
 	\begin{figure}[h] % 'h' places the figure approximately here in the text
 		\centering
 		\includegraphics[width=0.8\textwidth]{figures/chapter4/models.png} % Adjust width as needed
-		\caption{System Architecture}
+		\caption{Student model}
 		\label{fig:models}
 	\end{figure}
 	
@@ -33,3 +33,51 @@ Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visua
 		);
 	\end{verbatim}
 	
+\subsection{REST API by Django Ninja}
+Figure~\ref{fig:api} is the automatic OpenAPI compliant documentation provided by Django Ninja. It contains all endpoints we can use to query data from the database. All endpoints are protected using HTTP Bearer token authentication.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/api.png} % Adjust width as needed
+	\caption{API Documentation}
+	\label{fig:api}
+\end{figure}
+
+\subsection{Admin panel by Django}
+Figure~\ref{fig:admin} is the Django administration page only accessible to a superuser account. This is where most of the backend maintanance work happens. It contains all the data inside the database allow full control over them. It also contains every authentication tokens used by each teacher account.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/admin.png} % Adjust width as needed
+	\caption{Django Administration}
+	\label{fig:admin}
+\end{figure}
+
+\section{Nuxt Frontend}
+With the backend handling most of the heavy work, the frontend only needs to capture images from the camera and sending them to the backend to verify student identity. The localhost:3000/dashboard/time-in-out page handles the time in and time out process.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/frontend.png} % Adjust width as needed
+	\caption{Time in and Time out Page}
+	\label{fig:frontend}
+\end{figure}
+The RFID input is automatically highlighted upon opening the page so it will be immediately ready to take in input from the RFID scanner. When the proper number length is inputted, it will immediately start to verify the identity. It will then notify the student for the time in/time out time and status. It will also notify for any errors like spoof image or no face detected. From our testing, the response time is currently at most 2.3 seconds, most of the delay comes from the fake delay we used to allow the student to read the notification after verification.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/success.png} % Adjust width as needed
+	\caption{Successful Time In}
+	\label{fig:success}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/backendrecord.png} % Adjust width as needed
+	\caption{Django saving the attendance time instance in 24-hr format}
+	\label{fig:record}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/delay.png} % Adjust width as needed
+	\caption{Fake Delay}
+	\label{fig:delay}
+\end{figure}
+
+
+
