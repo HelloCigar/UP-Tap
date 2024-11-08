@@ -62,4 +62,117 @@ Shoewu, E\BPBI D\BPBI O.%
 \begin{APACrefDOI} \doi{10.12691/ajcrr-2-1-2} \end{APACrefDOI}
 \PrintBackRefs{\CurrentBib}
 
+\bibitem [\protect \citeauthoryear {%
+Truein%
+}{%
+Truein%
+}{%
+{\protect \APACyear {2024}}%
+}]{%
+Truein:2024}
+\APACinsertmetastar {%
+Truein:2024}%
+\begin{APACrefauthors}%
+Truein.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{March 31}{}.
+\newblock
+\APACrefbtitle {8 Disadvantages of fingerprint attendance system | Truein. Time
+  \& Attendance for Contractual and Distributed Staff.} {8 disadvantages of
+  fingerprint attendance system | truein. time \& attendance for contractual
+  and distributed staff.}
+\newblock
+\begin{APACrefURL}
+  \url{https://truein.com/disadvantages-of-fingerprint-attendance-system/}
+  \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Walia%
+\ \BBA {} Jain%
+}{%
+Walia%
+\ \BBA {} Jain%
+}{%
+{\protect \APACyear {2016}}%
+}]{%
+Walia:2016}
+\APACinsertmetastar {%
+Walia:2016}%
+\begin{APACrefauthors}%
+Walia%
+\BCBT {}\ \BBA {} Jain.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Fingerprint based attendance systems-a review}
+  {Fingerprint based attendance systems-a review}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{International Research Journal of Engineering and
+  Technology}{3}{5}{1166-1171}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Yang%
+\ \BBA {} Han%
+}{%
+Yang%
+\ \BBA {} Han%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+Yang:2020}
+\APACinsertmetastar {%
+Yang:2020}%
+\begin{APACrefauthors}%
+Yang%
+\BCBT {}\ \BBA {} Han.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Face recognition attendance system based on real-time
+  video processing} {Face recognition attendance system based on real-time
+  video processing}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Access}{8}{}{159143-159150}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Zhi%
+, Ibrahim%
+\BCBL {}\ \BBA {} Aris%
+}{%
+Zhi%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+Zhi:2014}
+\APACinsertmetastar {%
+Zhi:2014}%
+\begin{APACrefauthors}%
+Zhi, T\BPBI J.%
+, Ibrahim, Z.%
+\BCBL {}\ \BBA {} Aris, H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Effective and efficient attendance tracking system using
+  secret code} {Effective and efficient attendance tracking system using secret
+  code}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 6th International Conference on
+  Information Technology and Multimedia} {Proceedings of the 6th international
+  conference on information technology and multimedia}\ (\BPG~108-112).
+\newblock
+\begin{APACrefDOI} \doi{10.1109/ICIMU.2014.7066613} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
 \end{thebibliography}
