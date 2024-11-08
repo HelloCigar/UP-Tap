@@ -45,12 +45,21 @@ function onChangeTab (index: number) {
 }
 
 const rfidNumber = ref(""); // Holds the string input
+function to12HourFormat(time: string): string {
+  const [hours, minutes] = time.split(":").map(Number);
+  
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const adjustedHours = hours % 12 || 12; // Convert 0 hour to 12 for 12-hour format
 
+  return `${adjustedHours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
+}
+
+const loading = ref(false)
 // Watcher for the inputString's length
 watch(rfidNumber, async (newVal: string) => {
   if (newVal.length == 10) { // Trigger fetch after a certain length (e.g., 10)
+    loading.value = true
     const face_data = await snapshot()
-    console.log(face_data)
     const time_in = await $fetch<TimeInOutResponse>(`/api/attendance/${time_in_out.value}`, {
         method: 'POST',
         body: {
@@ -61,41 +70,56 @@ watch(rfidNumber, async (newVal: string) => {
       }
     )
     if(time_in){
-        openModal(time_in)
-        // 2 second countdown
-        setTimeout(() => {
-            closeModal()
-        }, 2000);
-        setTimeout(() => {
-            rfidRef.value.$refs.input.focus()
-        }, 2300)
+        loading.value = false
+        toast.add({
+          id: 'time-in',
+          title: time_in.success 
+              ? (time_in.time_out 
+                ? `Time-out recorded @: ${to12HourFormat(time_in.time_out)}` 
+                : `Hi, ${time_in.student_name}. Your time-in recorded @: ${to12HourFormat(time_in.time_in)}`) 
+              : time_in.message ,
+          color: time_in.success ? 'green': 'red',
+          icon: time_in.success ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle',
+          timeout: 1500,
+        })
+        rfidNumber.value = ''
+        rfidRef.value.$refs.input.focus()
+
+        // openModal(time_in)
+        // // 2 second countdown
+        // setTimeout(() => {
+        //     closeModal()
+        // }, 2000);
+        // setTimeout(() => {
+        //     rfidRef.value.$refs.input.focus()
+        // }, 2300)
     }
   }
 });
 
 
-import { Welcome } from '#components'
+// import { Welcome } from '#components'
 
-const modal = useModal()
+// const modal = useModal()
 const rfidRef = ref()
+const toast = useToast()
 
+// function openModal(props: TimeInOutResponse) {
 
-function openModal(props: TimeInOutResponse) {
+//   modal.open(Welcome, {
+//     time_in: props.time_in,
+//     success: props.success,
+//     message: props.message,
+//     time_out: props.time_out,
+//     is_present: props.is_present,
+//     student_name: props.student_name,
+//   });
+// }
 
-  modal.open(Welcome, {
-    time_in: props.time_in,
-    success: props.success,
-    message: props.message,
-    time_out: props.time_out,
-    is_present: props.is_present,
-    student_name: props.student_name,
-  });
-}
-
-function closeModal () {
-  rfidNumber.value = ''
-  modal.close()
-}
+// function closeModal () {
+//   rfidNumber.value = ''
+//   modal.close()
+// }
 
 </script> 
 <template>
@@ -121,7 +145,7 @@ function closeModal () {
         <UTabs :items="items" class="mt-6" @change="onChangeTab">
           <template #default="{ item, index, selected }">
             <span class="truncate font-medium" :class="[selected ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400']">
-              {{ index + 1 }}. {{ item.label }}
+              {{ item.label }}
             </span>
           </template>
           <template #icon="{ item, selected }">
@@ -151,6 +175,7 @@ function closeModal () {
             <NuxtImg src="/images/RFID.png" class="w-[500px] h-[500px] object-contain" />
             <div class="w-full max-w-xs">
               <UInput
+                :loading="loading"
                 v-model="rfidNumber"
                 color="primary"
                 variant="outline"

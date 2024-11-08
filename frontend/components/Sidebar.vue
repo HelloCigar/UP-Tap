@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { Icon } from '#build/components';
+
+
+const teacher = await useFetch<Teacher>('/api/teachers/me', { method: 'GET' })
+
 const links = [
   [{
-    label: 'Profile',
-    avatar: {
-      src: 'https://avatars.githubusercontent.com/u/739984?v=4'
-    },
-    badge: 100,
+    label: `${teacher.data.value?.first_name} ${teacher.data.value?.last_name}`,
+    icon: 'i-heroicons-user',
     to: '/dashboard/'
   }, {
     label: 'Time In/Out',
