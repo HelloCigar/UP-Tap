@@ -1,15 +1,9 @@
 from ninja import Router
-from ninja import Schema, ModelSchema
 from typing import List
 from .models import Subjects
-
+from .schemas import *
 
 router = Router()
-
-class SubjectsSchema(ModelSchema):
-    class Meta:
-        model = Subjects
-        exclude = ["teacher"]
 
 
 @router.get("/subjects", response=List[SubjectsSchema])

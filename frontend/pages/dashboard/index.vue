@@ -4,50 +4,6 @@ definePageMeta({
     middleware: 'auth'
 })
 
-const people = [{
-  id: 1,
-  name: 'Lindsay Walton',
-  title: 'Front-end Developer',
-  email: 'lindsay.walton@example.com',
-  role: 'Member'
-}, {
-  id: 2,
-  name: 'Courtney Henry',
-  title: 'Designer',
-  email: 'courtney.henry@example.com',
-  role: 'Admin'
-}, {
-  id: 3,
-  name: 'Tom Cook',
-  title: 'Director of Product',
-  email: 'tom.cook@example.com',
-  role: 'Member'
-}, {
-  id: 4,
-  name: 'Whitney Francis',
-  title: 'Copywriter',
-  email: 'whitney.francis@example.com',
-  role: 'Admin'
-}, {
-  id: 5,
-  name: 'Leonard Krasner',
-  title: 'Senior Designer',
-  email: 'leonard.krasner@example.com',
-  role: 'Owner'
-}, {
-  id: 6,
-  name: 'Floyd Miles',
-  title: 'Principal Designer',
-  email: 'floyd.miles@example.com',
-  role: 'Member'
-}]
-
-// Mock data for attendance records
-const attendanceRecords = ref([
-  { id: 1, name: 'Alice Cooper', subject: 'Mathematics', timeIn: '08:30 AM', timeOut: '10:30 AM', avatar: '/placeholder.svg?height=40&width=40' },
-  { id: 2, name: 'Bob Wilson', subject: 'Physics', timeIn: '09:15 AM', timeOut: '11:15 AM', avatar: '/placeholder.svg?height=40&width=40' },
-  { id: 3, name: 'Carol Smith', subject: 'Chemistry', timeIn: '10:00 AM', timeOut: '12:00 PM', avatar: '/placeholder.svg?height=40&width=40' },
-])
 
 // Mock data for subjects
 const subjects = ref([
@@ -141,14 +97,6 @@ const time_out_columns = [{
   label: 'Date',
 }]
 
-function convertTo12HourFormat(time: string): string {
-    const [hours, minutes] = time.split(":"); // Ignore seconds and milliseconds
-    let hour = parseInt(hours, 10);
-    const period = hour >= 12 ? "PM" : "AM";
-    hour = hour % 12 || 12; // Convert 0 to 12 for midnight and adjust for PM
-
-    return `${hour}:${minutes} ${period}`;
-}
 
 </script> 
 <template>
