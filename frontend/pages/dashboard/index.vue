@@ -134,7 +134,7 @@ const time_out_columns = [{
     <div class="p-8">
 
       <!-- Attendance Records -->
-      <div class="grid gap-8 md:grid-cols-2">
+      <div class="grid gap-8 md:grid-cols-2 items-start">
         <!-- Recent Attendance -->
         <UCard>
           <div class="flex justify-between items-center mb-6">
