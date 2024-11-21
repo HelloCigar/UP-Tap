@@ -5,3 +5,4 @@ class SubjectsSchema(ModelSchema):
     class Meta:
         model = Subjects
         exclude = ["teacher"]
+
