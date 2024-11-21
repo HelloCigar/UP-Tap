@@ -5,27 +5,29 @@ definePageMeta({
 })
 
 
-// Mock data for subjects
-const subjects = ref([
-  { id: 1, name: 'Mathematics', schedule: 'MWF 8:30-10:30 AM', students: 35 },
-  { id: 2, name: 'Physics', schedule: 'TTH 9:15-11:15 AM', students: 28 },
-  { id: 3, name: 'Chemistry', schedule: 'MWF 10:00-12:00 PM', students: 32 },
-])
-
 // UI State
 const showSubjectModal = ref(false)
-const selectedSubject = ref(null)
+const selectedSubject = ref<Subjects | null>(null)
 const recordType = ref('time_in')
-const newSubject = ref({ name: '', schedule: '', students: 0 })
+const newSubject = ref({ subject_name: '', section: ''})
+const deleted = ref(false)
+
+const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subjects', 
+  { 
+    method: 'GET',
+    watch: [newSubject, deleted]
+  },
+
+)
 
 // Modal handlers
 const openAddModal = () => {
   selectedSubject.value = null
-  newSubject.value = { name: '', schedule: '', students: 0 }
+  newSubject.value = { subject_name: '', section: ''}
   showSubjectModal.value = true
 }
 
-const openEditModal = (subject) => {
+const openEditModal = (subject: Subjects) => {
   selectedSubject.value = subject
   newSubject.value = { ...subject }
   showSubjectModal.value = true
@@ -34,24 +36,35 @@ const openEditModal = (subject) => {
 const closeModal = () => {
   showSubjectModal.value = false
   selectedSubject.value = null
-  newSubject.value = { name: '', schedule: '', students: 0 }
+  newSubject.value = { subject_name: '', section: ''}
 }
 
-const saveSubject = () => {
+async function saveSubject () {
   if (selectedSubject.value) {
-    const index = subjects.value.findIndex(s => s.id === selectedSubject.value.id)
-    subjects.value[index] = { ...selectedSubject.value, ...newSubject.value }
+    await $fetch('/api/subjects', {
+      method: 'PUT',
+      body: newSubject.value,
+      query: {
+        subject_id: selectedSubject.value.subject_id
+      }
+    })
   } else {
-    subjects.value.push({
-      id: subjects.value.length + 1,
-      ...newSubject.value
+    await $fetch('/api/subjects', {
+      method: 'POST',
+      body: newSubject.value,
     })
   }
   closeModal()
 }
 
-const deleteSubject = (id) => {
-  subjects.value = subjects.value.filter(s => s.id !== id)
+async function deleteSubject (subject_id: number) {
+  deleted.value = !deleted.value
+  await $fetch('/api/subjects', {
+    method: 'DELETE',
+    query: {
+      subject_id: subject_id
+    }
+  })
 }
 
 
@@ -180,21 +193,19 @@ const time_out_columns = [{
         <UCard>
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Subjects</h2>
-            <button
+            <UButton
               @click="openAddModal"
-              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
             >
               Add Subject
-            </button>
+            </UButton>
           </div>
 
           <div class="space-y-4">
-            <div v-for="subject in subjects" :key="subject.id" 
+            <div v-for="subject in subjects" :key="subject.subject_id" 
                  class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
               <div>
-                <h3 class="font-medium text-gray-900 dark:text-white">{{ subject.name }}</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ subject.schedule }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ subject.students }} students</p>
+                <h3 class="font-medium text-gray-900 dark:text-white">{{ subject.subject_name }}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Section {{ subject.section }}</p>
               </div>
               <div class="flex gap-2">
                 <button
@@ -206,7 +217,7 @@ const time_out_columns = [{
                   </svg>
                 </button>
                 <button
-                  @click="deleteSubject(subject.id)"
+                  @click="deleteSubject(subject.subject_id)"
                   class="p-2 text-red-500 hover:text-red-700"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,60 +230,51 @@ const time_out_columns = [{
         </UCard>
       </div>
     </div>
+    <UModal v-model="showSubjectModal">
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+            {{ selectedSubject ? 'Edit Subject' : 'Add Subject' }}
+          </h2>
+        </template>
 
-    <!-- Subject Modal -->
-    <div v-if="showSubjectModal" class="fixed inset-0 bg-black/50 flex items-center justify-center">
-      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
-        <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-          {{ selectedSubject ? 'Edit Subject' : 'Add Subject' }}
-        </h2>
-        
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject Name</label>
-            <input
-              v-model="newSubject.name"
+            <UInput
+              v-model="newSubject.subject_name"
               type="text"
-              class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              placeholder="CMSC..." 
             />
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schedule</label>
-            <input
-              v-model="newSubject.schedule"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Section</label>
+            <UInput
+              v-model="newSubject.section"
               type="text"
-              class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of Students</label>
-            <input
-              v-model="newSubject.students"
-              type="number"
-              class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+              placeholder="1..." 
             />
           </div>
         </div>
 
-        <div class="flex justify-end gap-3 mt-6">
-          <button
+        <template #footer>
+          <div class="flex justify-end gap-3 mt-6">
+          <UButton
             @click="closeModal"
-            class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             Cancel
-          </button>
-          <button
+          </UButton>
+          <UButton
             @click="saveSubject"
-            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             {{ selectedSubject ? 'Save Changes' : 'Add Subject' }}
-          </button>
+          </UButton>
         </div>
-      </div>
+        </template>
+      </UCard>
+    </UModal>
     </div>
-  </div>
     </div>
 
     <template #footer>

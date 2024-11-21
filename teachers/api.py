@@ -13,7 +13,7 @@ def get_subjects(request):
     return Subjects.objects.filter(teacher=teacher)
 
 @router.post("/subjects")
-def create_subject(request, payload: SubjectsSchema):
+def create_subject(request, payload: SubjectCRUDSchema):
     subject = Subjects.objects.create(
         subject_name=payload.subject_name,
         section=payload.section,
@@ -22,14 +22,14 @@ def create_subject(request, payload: SubjectsSchema):
     return {"subject_id": subject.subject_id}
 
 
-@router.get("/subjects/{subject_id}", response=SubjectsSchema)
+@router.get("/subjects/{subject_id}", response=SubjectCRUDSchema)
 def get_subject(request, subject_id: int):
     subject = get_object_or_404(Subjects, subject_id=subject_id, teacher=request.user)
     return subject
 
 
 @router.put("/subjects/{subject_id}")
-def update_subject(request, subject_id: int, payload: PatchDict[SubjectsSchema]):
+def update_subject(request, subject_id: int, payload: PatchDict[SubjectCRUDSchema]):
     subject = get_object_or_404(Subjects, subject_id=subject_id, teacher=request.user)
     for attr, value in payload.items():
         setattr(subject, attr, value)
