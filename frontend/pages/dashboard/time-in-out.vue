@@ -25,7 +25,7 @@ const snapshot = async () => {
 
   
 const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects')
-const chosenSub = ref<number>(1)
+const chosenSub = ref<number>(subjects.value[0].subject_id)
 
 const items = [{
   key: 'time-in',

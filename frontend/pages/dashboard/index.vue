@@ -17,7 +17,6 @@ const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subje
     method: 'GET',
     watch: [newSubject, deleted]
   },
-
 )
 
 // Modal handlers
@@ -58,13 +57,13 @@ async function saveSubject () {
 }
 
 async function deleteSubject (subject_id: number) {
-  deleted.value = !deleted.value
   await $fetch('/api/subjects', {
     method: 'DELETE',
     query: {
       subject_id: subject_id
     }
   })
+  deleted.value = !deleted.value
 }
 
 
