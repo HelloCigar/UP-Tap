@@ -19,15 +19,6 @@ class StudentAttendaceInfo(models.Model):
     time_out = models.TimeField(null=True)
     sheet_id = models.ForeignKey(AttendanceSheet, on_delete=models.CASCADE)
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
-
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['sheet_id', 'student_id'],
-                name='unique_attendance_per_day_per_subject'
-            )
-        ]
         
     def __str__(self):
         return f'{self.student_id.last_name} - {self.sheet_id.subject_id.subject_name} - Time in @ {self.time_in}'
