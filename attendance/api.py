@@ -47,7 +47,7 @@ def get_recent_attendance(request, type: str):
         student_id__enrollments__subject_id__teacher=teacher
     ).select_related('student_id', 'sheet_id__subject_id').order_by(
         '-sheet_id__session_date', f'-{type}'
-    )
+    ).distinct()
 
     if type == 'time_out':
         queryset = queryset.filter(time_out__isnull=False)
