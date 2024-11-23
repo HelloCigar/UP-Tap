@@ -2,6 +2,23 @@
 export default {
   content: [],
   theme: {
+    extend: {
+      colors: {
+        red: {
+          '50': '#fff1f1',
+          '100': '#ffdfe0',
+          '200': '#ffc5c6',
+          '300': '#ff9c9e',
+          '400': '#ff6366',
+          '500': '#ff3236',
+          '600': '#ef1317',
+          '700': '#c90c10',
+          '800': '#a60e11',
+          '900': '#7b1113',
+          '950': '#4b0405',
+        }
+      },
+    },
   },
   plugins: [require('@pinegrow/tailwindcss-plugin').default,],
   get content() {
