@@ -110,14 +110,23 @@ function select (row: Student) {
 }
 
 
-import { StudentDeleteModal } from '#components'
+import { StudentDeleteModal, StudentEdit } from '#components'
 const modal = useModal()
 const items = (row: Student) => [
   [{
     label: 'Edit',
     icon: 'i-heroicons-pencil-square-20-solid',
     click: () => {
-      console.log(row)
+      modal.open(StudentEdit, { 
+        student_id: row.student_id,
+        first_name: row.first_name,
+        last_name: row.last_name,
+        email: row.email, 
+        onSuccess: () => {
+           refreshAfterRegister.value = !refreshAfterRegister.value 
+           onDelete.value = !onDelete.value
+          } 
+        })
     }
   }], [{
     label: 'Delete',

@@ -117,7 +117,7 @@ def edit_student(request, student_id: int, data: PatchDict[StudentSchema], subje
     # Delete removed enrollments
     SubjectEnrollment.objects.filter(student_id=student, subject_id_id__in=removed_subject_ids).delete()
 
-    return {"success": "Student information saved to the database!"}
+    return {"success": True, "message": "Student information updated!"}
 
 @router.delete("/{student_id}")
 def delete_student(request, student_id: int):

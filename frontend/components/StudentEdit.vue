@@ -1,4 +1,12 @@
 <script setup lang="ts">
+
+const props = defineProps({
+    student_id: Number,
+    first_name: String,
+    last_name: String,
+    email: String 
+})
+
 import { object, string, type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
 import { RegisterModal } from '#components'
@@ -6,7 +14,7 @@ import { RegisterModal } from '#components'
 const isOpen = ref(false)
 const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
 const selectedSubjects = ref<number[]>([])
-const emit = defineEmits(['register-done'])
+const emit = defineEmits(['success'])
 const modal = useModal()
 const rfidNumber = ref("");
 const selectedTab = ref(0)
@@ -19,9 +27,9 @@ const schema = object({
 })
 type Schema = InferType<typeof schema>
 const state = reactive({
-  email: undefined,
-  first_name: undefined,
-  last_name: undefined,
+  email: props.email,
+  first_name: props.first_name,
+  last_name: props.last_name,
 })
 
 async function onSubmit (event: FormSubmitEvent<Schema>) {
@@ -52,19 +60,19 @@ function resetForm() {
   base64String.value = ''
   selectedSubjects.value = []
   selectedTab.value = 0
-  emit('register-done', true)
+  emit('success')
 }
 
 
 
-const registerResult = ref<StudentRegister>()
+const registerResult = ref<{success: boolean, message: string}>()
 const faceDetected = ref(false); // Reactive variable to track face detection status
 const photo = ref('')
 
 async function registerStudent() {
   if(base64String.value != '') {
-    registerResult.value = await $fetch<StudentRegister>('/api/students/register', {
-      method: 'POST',
+    registerResult.value = await $fetch('/api/students/', {
+      method: 'PUT',
       body: {
         student_id: Number(rfidNumber.value),
         first_name: state.first_name,
@@ -74,18 +82,18 @@ async function registerStudent() {
       },
       credentials: 'include',
       query: {
+        student_id_old: props.student_id,
         subjects: JSON.stringify(selectedSubjects.value)
       }
     })
-    handleRegisterResult()
+    if(registerResult.value) handleRegisterResult()
   }
 }
 
 function handleRegisterResult() {
-  const { error, success } = registerResult.value || {};
-  if (error || success) {
-    modal.open(RegisterModal, { title: error ? "Error" : "Success", message: error || success });
-  }
+  const { success, message } = registerResult.value || {};
+  emit('success')
+  modal.open(RegisterModal, { title: success ? "Success" : "Error", message: message });
 }
 
 // Handle the emitted value from the child component
@@ -138,14 +146,7 @@ const items = [{
 </script>
 
 <template>
-  <div>
-    <UButton label="Edit" variant="link" @click="isOpen = true">
-        <template #trailing>
-        <UIcon name="i-heroicons-plus" class="w-5 h-5" />
-        </template>
-    </UButton>
-
-    <UModal v-model="isOpen" fullscreen>
+    <UModal fullscreen>
       <UCard
         :ui="{
           base: 'h-full flex flex-col',
@@ -161,7 +162,7 @@ const items = [{
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
               Register a new student
             </h3>
-            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isOpen = false" />
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="modal.close()" />
           </div>
         </template>
 
@@ -238,6 +239,5 @@ const items = [{
         </UContainer>
       </UCard>
     </UModal>
-  </div>
 </template>
 
