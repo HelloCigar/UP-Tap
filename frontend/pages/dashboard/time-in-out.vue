@@ -161,11 +161,24 @@ const toast = useToast()
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <UCard>
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Step 1: Face Recognition</h2>
-          <div class="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+          <div class="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden relative">
             <Camera :resolution="{ width: 500, height: 500 }" ref="camera" autoplay class="w-full h-auto" />
+            <svg
+              class="absolute top-0 left-0 w-full h-full pointer-events-none"
+              viewBox="0 0 500 500"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M250 150 C 180 150, 125 200, 125 275 C 125 350, 180 400, 250 400 C 320 400, 375 350, 375 275 C 375 200, 320 150, 250 150 Z"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.5)"
+                stroke-width="4"
+                stroke-dasharray="10,10"
+              />
+            </svg>
           </div>
           <p class="text-center text-gray-600 dark:text-gray-400 mt-4">
-            Align your face with the camera, please.
+            Align your face with the overlay, please.
           </p>
         </UCard>
 
@@ -191,3 +204,17 @@ const toast = useToast()
     </div>
   </UContainer>
 </template>
+
+<style scoped>
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+</style>
