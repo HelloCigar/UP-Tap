@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Router, PatchDict
 from typing import List
 from .models import Student, SubjectEnrollment
 from teachers.models import Subjects
@@ -79,6 +79,45 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
     return students
 
 
+@router.put("/{student_id}")
+def edit_student(request, student_id: int, data: PatchDict[StudentSchema], subjects: str):
+    """
+    Register a new student.
+
+    Parameters:
+        data (StudentSchema): The student data
+
+    Returns:
+        dict: A dictionary with the student_id of the newly created student
+    """
+    try:
+        student = Student.objects.get(student_id=student_id)
+
+        for attr, value in data.items():
+            setattr(student, attr, value)
+        student.save()
+    except Exception as e:
+        return {"error": str(e)}
+    
+    subjects = subjects[1:-1].split(',')  # Convert to list if necessary
+    subject_ids = [int(sub.strip()) for sub in subjects]  # Convert to integers if they are not already
+
+    # Get the current enrollments for the student
+    current_enrollments = SubjectEnrollment.objects.filter(student_id=student)
+    current_subject_ids = set(enrollment.subject_id.subject_id for enrollment in current_enrollments)
+
+    # Determine which enrollments need to be added and which need to be removed
+    new_subject_ids = set(subject_ids) - current_subject_ids
+    removed_subject_ids = current_subject_ids - set(subject_ids)
+
+    # Create new enrollments
+    for subject_id in new_subject_ids:
+        SubjectEnrollment.objects.create(student_id=student, subject_id_id=subject_id)
+
+    # Delete removed enrollments
+    SubjectEnrollment.objects.filter(student_id=student, subject_id_id__in=removed_subject_ids).delete()
+
+    return {"success": "Student information saved to the database!"}
 
 @router.delete("/{student_id}")
 def delete_student(request, student_id: int):
