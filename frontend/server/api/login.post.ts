@@ -18,8 +18,8 @@ export default defineEventHandler(async (event) => {
         return result
       }
     }
-    catch {
-      return {"error": true, "message": "Invalid credentials"}
+    catch(err) {
+      return {"error": true, "message": `${err.data.non_field_errors[0]} Your account may not be activated yet.`};
     }
   })
   
