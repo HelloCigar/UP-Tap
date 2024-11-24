@@ -1,4 +1,9 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: 'auth'
+})
+
+
 import { object, string, type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
 const isOpen = ref(true)

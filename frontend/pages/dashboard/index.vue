@@ -72,7 +72,7 @@ async function logout() {
   await navigateTo('/login')
 }
 
-const { data: timeInOutData, status: timeInOutStatus } = await useAsyncData<{time_in: string, time_out: string, student_name: string}>
+const { data: timeInOutData, status: timeInOutStatus } = await useAsyncData<{time_in: string, time_out: string, student_name: string}[]>
     ('', () => $fetch(`/api/attendance/recent/`, {
        method: 'GET', 
        query: 
@@ -170,7 +170,8 @@ const time_out_columns = [{
           </div>
           
           <div class="space-y-4">
-            <UTable 
+            <UTable
+              v-if="timeInOutData"
               :loading="timeInOutStatus === 'pending'"
               :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
               :progress="{ color: 'primary', animation: 'carousel' }"

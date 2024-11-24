@@ -25,7 +25,10 @@ const snapshot = async () => {
 
   
 const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects')
-const chosenSub = ref<number>(subjects.value[0].subject_id)
+const chosenSub = ref<number>()
+if (subjects.value && subjects.value.length > 0) {
+  chosenSub.value = subjects.value[0].subject_id
+}
 
 const items = [{
   key: 'time-in',
@@ -123,14 +126,13 @@ const toast = useToast()
 
 </script> 
 <template>
-  <UContainer class="min-h-screen py-8">
+  <UContainer class="min-h-screen py-8" v-if="subjects && subjects.length > 0">
     <div class="max-w-6xl mx-auto space-y-8">
-      <UCard>
+      <UCard v-if="subjects">
         <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <h1 class="text-2xl font-bold text-gray-800 dark:text-white">UP Tap Attendance System</h1>
           <div class="w-full sm:w-64">
             <USelect
-              v-if="subjects"
               v-model="chosenSub"
               size="lg"
               placeholder="Select Subject"
@@ -203,6 +205,22 @@ const toast = useToast()
       </div>
     </div>
   </UContainer>
+  <UContainer class="min-h-screen py-8" v-else>
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="max-w-md w-full p-8 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-2">No Data Available</h2>
+        <p class="text-gray-600">
+          No subjects or students registered. Please add some in the dashboard or student page.
+        </p>
+        <div class="mt-6">
+          <NuxtLink to="/dashboard">
+            <UButton :ui="{ rounded: 'rounded-full' }">Go to Dashboard</UButton>
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+  </UContainer>
+
 </template>
 
 <style scoped>
