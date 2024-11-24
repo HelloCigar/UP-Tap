@@ -61,7 +61,7 @@ An attendance management system built for UP System. Uses facial recognition and
   pip install -r requirements.txt
   ```
 - Write necessary environment variables in .env file
-  ```
+  ```env
   #see https://djecrety.ir/
   DJANGO_SECRETKEY=<your_generated_django_secret_key> 
 
