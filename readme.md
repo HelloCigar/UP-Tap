@@ -8,7 +8,7 @@ An attendance management system built for UP System. Uses facial recognition and
 2. [Features](#features)
 3. [Technologies Used](#technologies-used)
 4. [Installation](#installation)
-5. [Usage](#usage)
+5. [Setting Up Locally](#setting-up-locally)
 6. [Contributing](#contributing)
 7. [License](#license)
 
@@ -95,3 +95,10 @@ An attendance management system built for UP System. Uses facial recognition and
   npm run dev
   ```
 - Open the link provided by the dev server, usually http://localhost:3000
+
+
+## Contributing
+  We are currently not accepting pull requests as this is our final project for the degree of BS Computer Science. Issues are open however. Thank you.
+
+### License
+Distributed under the GNU GENERAL PUBLIC LICENSE. See LICENSE.txt for more information.
