@@ -33,7 +33,7 @@ An attendance management system built for UP System. Uses facial recognition and
 ## Setting up locally
 
 ### PostgreSQL
-- Please see the database setup **[here](https://www.djangoproject.com/)**. You should have the following environment variables saved in the .env file after properly setting up Postgre.
+- Please see the database setup **[here](https://neon.tech/postgresql/postgresql-getting-started)**. You should have the following environment variables saved in the .env file after properly setting up Postgre.
   ```env
   DATABASE_NAME=<your_database_name>
   DATABASE_USER=<your_database_username> #defaults to 'postgre'
