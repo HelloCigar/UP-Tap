@@ -36,40 +36,39 @@ Reallocating 'singl_function' (item size: 4) to 100 items.
 Database file #1: myreferences.bib
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
 Warning--No journal in shoewu:2014
-<<<<<<< HEAD
 You've used 6 entries,
             6951 wiz_defined-function locations,
-            1321 strings with 11898 characters,
-and the built_in function-call counts, 11921 in all, are:
-= -- 1460
-> -- 102
-< -- 581
-+ -- 571
-- -- 22
-* -- 772
-:= -- 2263
+            1320 strings with 11955 characters,
+and the built_in function-call counts, 12168 in all, are:
+= -- 1488
+> -- 98
+< -- 615
++ -- 607
+- -- 18
+* -- 793
+:= -- 2349
 add.period$ -- 26
 call.type$ -- 6
-change.case$ -- 107
+change.case$ -- 109
 chr.to.int$ -- 0
 cite$ -- 13
-duplicate$ -- 277
-empty$ -- 461
-format.name$ -- 158
-if$ -- 2234
+duplicate$ -- 274
+empty$ -- 464
+format.name$ -- 148
+if$ -- 2258
 int.to.chr$ -- 0
 int.to.str$ -- 18
 missing$ -- 0
-newline$ -- 161
+newline$ -- 160
 num.names$ -- 48
-pop$ -- 235
+pop$ -- 232
 preamble$ -- 1
-purify$ -- 28
+purify$ -- 30
 quote$ -- 0
-skip$ -- 742
+skip$ -- 754
 stack$ -- 0
-substring$ -- 629
-swap$ -- 171
+substring$ -- 665
+swap$ -- 164
 text.length$ -- 28
 text.prefix$ -- 0
 top$ -- 1
@@ -77,48 +76,5 @@ type$ -- 544
 warning$ -- 1
 while$ -- 60
 width$ -- 0
-write$ -- 201
-=======
-You've used 3 entries,
-            6951 wiz_defined-function locations,
-            1300 strings with 11369 characters,
-and the built_in function-call counts, 5815 in all, are:
-= -- 693
-> -- 48
-< -- 282
-+ -- 289
-- -- 6
-* -- 386
-:= -- 1106
-add.period$ -- 12
-call.type$ -- 3
-change.case$ -- 55
-chr.to.int$ -- 0
-cite$ -- 7
-duplicate$ -- 150
-empty$ -- 237
-format.name$ -- 78
-if$ -- 1078
-int.to.chr$ -- 0
-int.to.str$ -- 9
-missing$ -- 0
-newline$ -- 85
-num.names$ -- 24
-pop$ -- 75
-preamble$ -- 1
-purify$ -- 16
-quote$ -- 0
-skip$ -- 387
-stack$ -- 0
-substring$ -- 312
-swap$ -- 87
-text.length$ -- 10
-text.prefix$ -- 0
-top$ -- 1
-type$ -- 240
-warning$ -- 1
-while$ -- 33
-width$ -- 0
-write$ -- 104
->>>>>>> 7c5f4886ee0e8bf592c765016b76a31816bf31ae
+write$ -- 196
 (There was 1 error message)
