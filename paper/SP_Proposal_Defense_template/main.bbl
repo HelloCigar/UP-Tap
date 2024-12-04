@@ -33,6 +33,39 @@ Ancheta, R\BPBI F.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Cawthra%
+\ \protect \BOthers {.}}{%
+Cawthra%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+cawthra2020data}
+\APACinsertmetastar {%
+cawthra2020data}%
+\begin{APACrefauthors}%
+Cawthra, J.%
+, Ekstrom, M.%
+, Lusty, L.%
+, Sexton, J.%
+, Sweetnam, J.%
+, Townsend, A.%
+\BCBL {}\ \BBA {} Corporation, T\BPBI M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{December}{}.
+\newblock
+\APACrefbtitle {Data Integrity: Detecting and Responding to Ransomware and
+  Other Destructive Events.} {Data integrity: Detecting and responding to
+  ransomware and other destructive events.}
+\newblock
+\APAChowpublished
+  {\url{https://www.nccoe.nist.gov/publication/1800-26/VolA/index.html}}.
+\newblock
+\APACrefnote{Retrieved December 4, 2024}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Fruhlinger%
 }{%
 Fruhlinger%
