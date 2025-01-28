@@ -10,12 +10,21 @@ Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visua
 	\label{fig:architecture}
 \end{figure}
 \section{Process Diagrams}
-\section{Time In Process}
+\subsection{Time In Process}
+	Time in process includes a check if the student already has time in records. First step in this is the student tapping the ID to the RFID sensor and trigger the photo capture to check the face.
+	\begin{figure}[h] % 'h' places the figure approximately here in the text
+		\centering
+		\includegraphics[width=1.0\textwidth]{figures/chapter4/timein.png} % Adjust width as needed
+		\caption{Time in}
+		\label{fig:timein}
+	\end{figure}
+\subsection{Time Out Process}
+
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=1.0\textwidth]{figures/chapter4/timein.png} % Adjust width as needed
-	\caption{Time in}
-	\label{fig:timein}
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/timeout.png} % Adjust width as needed
+	\caption{Time Out}
+	\label{fig:timeout}
 \end{figure}
 
 \section{Django Backend}
