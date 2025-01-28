@@ -9,6 +9,14 @@ Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visua
 	\caption{System Architecture}
 	\label{fig:architecture}
 \end{figure}
+\section{Process Diagrams}
+\section{Time In Process}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/timein.png} % Adjust width as needed
+	\caption{Time in}
+	\label{fig:timein}
+\end{figure}
 
 \section{Django Backend}
 \subsection{Models}
@@ -32,6 +40,15 @@ Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visua
 		CONSTRAINT unique_email UNIQUE (email)
 		);
 	\end{verbatim}
+\subsection{Database Tables}
+	Our database tables that can be accessed by Django's ORM. This includes the tables for Teachers, Subjects and tables for relationships. See Figure
+	\ref{fig:dbtables}
+	\begin{figure}[h] % 'h' places the figure approximately here in the text
+		\centering
+		\includegraphics[width=0.8\textwidth]{figures/chapter4/dbtables.png} % Adjust width as needed
+		\caption{Database Tables}
+		\label{fig:dbtables}
+	\end{figure}	
 	
 \subsection{REST API by Django Ninja}
 Figure~\ref{fig:api} is the automatic OpenAPI compliant documentation provided by Django Ninja. It contains all endpoints we can use to query data from the database. All endpoints are protected using HTTP Bearer token authentication.
