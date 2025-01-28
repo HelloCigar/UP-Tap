@@ -32,7 +32,7 @@ Face recognition pipeline can be simplified into 2 steps:
 	\item Face verification: This is a downstream task from face detection. We will use the cropped image from as input for the face recognition model to identify the individual. It is based on the same pretrained YOLOv8n model fine tuned for identifying faces. We used the YoloV8n as it is the only supported by YOLO toolkit to be exported to IMX500 chip. Also, 'n' means nano or the smallest model in the YoloV8 family of models as larger models like the YoloV8m are not able to fit to the 8mb memory of IMX500 \cite{sony_imx500}.
 \end{enumerate}
 \subsection{Face recognition model training} 
-Fortunately, Ultralytics(the team behind the YOLO model) provides complete documentation for finetuning a pretrained model using few lines of code. The data.yaml file contains the dataset information such as the directory of the images and their corresponding labels. The model can then be exported to the Sony IMX500 vision sensor for inference\cite{ultralytics_yolo_docs_2024}. 
+Fortunately, Ultralytics(the team behind the YOLO model) provides complete documentation for finetuning a pretrained model using few lines of code. The data.yaml file contains the dataset information such as the directory of the images and their corresponding labels. The model can then be exported to the Sony IMX500 vision sensor for inference\cite{ultralytics2025train}. We need to retrain our model for every new student identiy as this model at it's core is an object detection model.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1\textwidth]{figures/chapter3/train.png} % Adjust width as needed
