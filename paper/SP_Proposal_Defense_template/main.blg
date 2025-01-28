@@ -37,45 +37,45 @@ Database file #1: myreferences.bib
 Warning--I didn't find a database entry for "ultralytics_yolo_docs_2024"
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
 Warning--No journal in shoewu:2014
-You've used 7 entries,
+You've used 6 entries,
             6951 wiz_defined-function locations,
-            1328 strings with 12302 characters,
-and the built_in function-call counts, 14855 in all, are:
-= -- 1795
-> -- 125
-< -- 763
-+ -- 775
-- -- 20
-* -- 980
-:= -- 2876
-add.period$ -- 31
-call.type$ -- 7
-change.case$ -- 128
+            1323 strings with 12118 characters,
+and the built_in function-call counts, 12216 in all, are:
+= -- 1492
+> -- 111
+< -- 571
++ -- 594
+- -- 14
+* -- 783
+:= -- 2229
+add.period$ -- 27
+call.type$ -- 6
+change.case$ -- 109
 chr.to.int$ -- 0
-cite$ -- 15
-duplicate$ -- 362
-empty$ -- 556
-format.name$ -- 206
-if$ -- 2722
+cite$ -- 13
+duplicate$ -- 328
+empty$ -- 487
+format.name$ -- 182
+if$ -- 2303
 int.to.chr$ -- 0
-int.to.str$ -- 21
+int.to.str$ -- 18
 missing$ -- 0
-newline$ -- 190
-num.names$ -- 56
-pop$ -- 313
+newline$ -- 167
+num.names$ -- 48
+pop$ -- 300
 preamble$ -- 1
-purify$ -- 36
+purify$ -- 30
 quote$ -- 0
-skip$ -- 853
+skip$ -- 705
 stack$ -- 0
-substring$ -- 844
-swap$ -- 204
-text.length$ -- 32
+substring$ -- 658
+swap$ -- 188
+text.length$ -- 26
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 624
+type$ -- 544
 warning$ -- 1
-while$ -- 81
+while$ -- 72
 width$ -- 0
-write$ -- 237
+write$ -- 208
 (There was 1 error message)

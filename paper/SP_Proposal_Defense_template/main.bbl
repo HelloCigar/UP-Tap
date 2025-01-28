@@ -124,57 +124,30 @@ Shoewu, E\BPBI D\BPBI O.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
-Truein%
+Sony%
 }{%
-Truein%
+Sony%
 }{%
-{\protect \APACyear {2024}}%
+{\protect \APACyear {2023}}%
 }]{%
-Truein:2024}
+sony_imx500}
 \APACinsertmetastar {%
-Truein:2024}%
+sony_imx500}%
 \begin{APACrefauthors}%
-Truein.%
+Sony.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2024}{March 31}{}.
+\APACrefYearMonthDay{2023}{}{}.
 \newblock
-\APACrefbtitle {8 Disadvantages of fingerprint attendance system | Truein. Time
-  \& Attendance for Contractual and Distributed Staff.} {8 disadvantages of
-  fingerprint attendance system | truein. time \& attendance for contractual
-  and distributed staff.}
+{\BBOQ}\APACrefatitle {iMX500 Key Specifications} {imx500 key
+  specifications}{\BBCQ}\ [\bibcomputersoftwaremanual].
 \newblock
 \begin{APACrefURL}
-  \url{https://truein.com/disadvantages-of-fingerprint-attendance-system/}
+  \url{https://developer.sony.com/imx500/imx500-key-specifications}
   \end{APACrefURL}
-\PrintBackRefs{\CurrentBib}
-
-\bibitem [\protect \citeauthoryear {%
-Yang%
-\ \BBA {} Han%
-}{%
-Yang%
-\ \BBA {} Han%
-}{%
-{\protect \APACyear {2020}}%
-}]{%
-Yang:2020}
-\APACinsertmetastar {%
-Yang:2020}%
-\begin{APACrefauthors}%
-Yang%
-\BCBT {}\ \BBA {} Han.%
-\end{APACrefauthors}%
-\unskip\
 \newblock
-\APACrefYearMonthDay{2020}{}{}.
-\newblock
-{\BBOQ}\APACrefatitle {Face recognition attendance system based on real-time
-  video processing} {Face recognition attendance system based on real-time
-  video processing}.{\BBCQ}
-\newblock
-\APACjournalVolNumPages{IEEE Access}{8}{}{159143-159150}.
+\APACrefnote{Accessed: 2025-01-28}
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
