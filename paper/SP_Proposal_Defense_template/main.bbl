@@ -151,6 +151,32 @@ Sony.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+{Ultralytics}%
+}{%
+{Ultralytics}%
+}{%
+{\protect \APACyear {2025}}%
+}]{%
+ultralytics2025train}
+\APACinsertmetastar {%
+ultralytics2025train}%
+\begin{APACrefauthors}%
+{Ultralytics}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2025}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Train - Ultralytics YOLO Docs} {Train - ultralytics yolo
+  docs}{\BBCQ}\ [\bibcomputersoftwaremanual].
+\newblock
+\begin{APACrefURL} \url{https://docs.ultralytics.com/modes/train/}
+  \end{APACrefURL}
+\newblock
+\APACrefnote{Accessed: 2025-01-28}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Zhi%
 , Ibrahim%
 \BCBL {}\ \BBA {} Aris%
