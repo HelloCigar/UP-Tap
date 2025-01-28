@@ -94,6 +94,36 @@ Fruhlinger, J.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Romero%
+\ \BBA {} Lee%
+}{%
+Romero%
+\ \BBA {} Lee%
+}{%
+{\protect \APACyear {2007}}%
+}]{%
+romero2007national}
+\APACinsertmetastar {%
+romero2007national}%
+\begin{APACrefauthors}%
+Romero, M.%
+\BCBT {}\ \BBA {} Lee, Y\BHBI S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007}{October}{}.
+\newblock
+\APACrefbtitle {A National Portrait of Chronic Absenteeism in the Early
+  Grades.} {A national portrait of chronic absenteeism in the early grades.}
+\newblock
+\begin{APACrefURL}
+  \url{https://www.attendanceworks.org/wp-content/uploads/2017/09/A-National-Portrait-of-Chronic-Absenteeism-in-the-Early-Grades-Oct-2007.pdf}
+  \end{APACrefURL}
+\newblock
+\APACrefnote{Accessed: 2025-01-28}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Shoewu%
 , Makanjuola%
 \BCBL {}\ \BBA {} Olatinwo%
