@@ -34,11 +34,12 @@ Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'wiz_functions' (item size: 4) to 9000 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Database file #1: myreferences.bib
+Warning--I didn't find a database entry for "ultralytics_yolo_docs_2024"
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
 Warning--No journal in shoewu:2014
 You've used 7 entries,
             6951 wiz_defined-function locations,
-            1327 strings with 12276 characters,
+            1328 strings with 12302 characters,
 and the built_in function-call counts, 14855 in all, are:
 = -- 1795
 > -- 125
