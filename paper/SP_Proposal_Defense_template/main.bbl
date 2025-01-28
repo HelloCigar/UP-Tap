@@ -66,6 +66,34 @@ Cawthra, J.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Dewa%
+\ \BBA {} Nyanga%
+}{%
+Dewa%
+\ \BBA {} Nyanga%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+dewa2020development}
+\APACinsertmetastar {%
+dewa2020development}%
+\begin{APACrefauthors}%
+Dewa, M.%
+\BCBT {}\ \BBA {} Nyanga, L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Development of an Online Attendance Register System
+  (OARS) using barcode technology: Going green in class} {Development of an
+  online attendance register system (oars) using barcode technology: Going
+  green in class}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{SAIIE31 Proceedings, 5th--7th, Virtual Event}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Fruhlinger%
 }{%
 Fruhlinger%
