@@ -15,9 +15,14 @@ RFID scanner: Which will be used to read the RFID given to the students. This wi
 USB connector: This will be used to connect the RFID scanner to the Laptop or Raspberry Pi. Flex cable: This will be used to connect the Raspberry Pi Vision Camera to Raspberry Pi.
 Laptop / Raspberry Pi: This will serve as the main processing unit. The laptop or raspberry pi will be used for running the required algorithm to make the face recognition and read the RFID correctly. Overall, the laptop / raspberry pi will be in charge of handling the data.
 Raspberry Pi Vision Camera: In charge of capturing the student’s facial image while scanning the RFID to the RFID scanner. 
-Software
-Python facial recognition
 
+\section{RFID and Face Recognition}
+ We use the UP RFID for our system. This approach enhances security by combining something you have (the RFID token) with something you are (your face).
+ \subsection{RFID as a Token}
+ The RFID token (the UP RFID) provides a unique identifier (ID) for the user. The RFID reader scans the token and extracts the unique ID. This ID is used to retrieve the corresponding user profile from a database.
+ \subsection{Face Recognition as a Verifier}
+  Face recognition ensures that the person presenting the RFID token is the authorized user associated with that token.
+ 	
 \section{Face Recognition}
 Face recognition pipeline can be simplified into 2 steps:
 \begin{enumerate}
