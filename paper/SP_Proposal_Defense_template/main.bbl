@@ -66,6 +66,36 @@ Cawthra, J.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Chen%
+, Liu%
+, Gao%
+\BCBL {}\ \BBA {} Han%
+}{%
+Chen%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+chen2018mobilefacenets}
+\APACinsertmetastar {%
+chen2018mobilefacenets}%
+\begin{APACrefauthors}%
+Chen, S.%
+, Liu, Y.%
+, Gao, X.%
+\BCBL {}\ \BBA {} Han, Z.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+\APACrefbtitle {MobileFaceNets: Efficient CNNs for Accurate Real-Time Face
+  Verification on Mobile Devices.} {Mobilefacenets: Efficient cnns for accurate
+  real-time face verification on mobile devices.}
+\newblock
+\begin{APACrefURL} \url{https://arxiv.org/abs/1804.07573} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Dewa%
 \ \BBA {} Nyanga%
 }{%
@@ -203,32 +233,6 @@ Sony.%
 \newblock
 \begin{APACrefURL}
   \url{https://developer.sony.com/imx500/imx500-key-specifications}
-  \end{APACrefURL}
-\newblock
-\APACrefnote{Accessed: 2025-01-28}
-\PrintBackRefs{\CurrentBib}
-
-\bibitem [\protect \citeauthoryear {%
-{Ultralytics}%
-}{%
-{Ultralytics}%
-}{%
-{\protect \APACyear {2025}}%
-}]{%
-ultralytics2025train}
-\APACinsertmetastar {%
-ultralytics2025train}%
-\begin{APACrefauthors}%
-{Ultralytics}.%
-\end{APACrefauthors}%
-\unskip\
-\newblock
-\APACrefYearMonthDay{2025}{}{}.
-\newblock
-{\BBOQ}\APACrefatitle {Train - Ultralytics YOLO Docs} {Train - ultralytics yolo
-  docs}{\BBCQ}\ [\bibcomputersoftwaremanual].
-\newblock
-\begin{APACrefURL} \url{https://docs.ultralytics.com/modes/train/}
   \end{APACrefURL}
 \newblock
 \APACrefnote{Accessed: 2025-01-28}

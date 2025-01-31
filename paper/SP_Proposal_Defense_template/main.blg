@@ -38,43 +38,43 @@ apacite.bst [2013/07/21 v6.03 APA bibliography style]
 Warning--No journal in shoewu:2014
 You've used 9 entries,
             6951 wiz_defined-function locations,
-            1337 strings with 12649 characters,
-and the built_in function-call counts, 17626 in all, are:
-= -- 2161
-> -- 149
-< -- 840
-+ -- 853
-- -- 22
-* -- 1126
-:= -- 3269
+            1337 strings with 12739 characters,
+and the built_in function-call counts, 18515 in all, are:
+= -- 2252
+> -- 162
+< -- 915
++ -- 944
+- -- 20
+* -- 1206
+:= -- 3496
 add.period$ -- 39
 call.type$ -- 9
 change.case$ -- 162
 chr.to.int$ -- 0
 cite$ -- 19
-duplicate$ -- 446
-empty$ -- 708
-format.name$ -- 244
-if$ -- 3333
+duplicate$ -- 471
+empty$ -- 715
+format.name$ -- 271
+if$ -- 3447
 int.to.chr$ -- 0
 int.to.str$ -- 27
 missing$ -- 0
-newline$ -- 243
+newline$ -- 247
 num.names$ -- 72
-pop$ -- 476
+pop$ -- 468
 preamble$ -- 1
 purify$ -- 44
 quote$ -- 0
-skip$ -- 977
+skip$ -- 1005
 stack$ -- 0
-substring$ -- 938
-swap$ -- 256
-text.length$ -- 35
+substring$ -- 1030
+swap$ -- 260
+text.length$ -- 34
 text.prefix$ -- 0
 top$ -- 1
 type$ -- 784
 warning$ -- 1
-while$ -- 93
+while$ -- 102
 width$ -- 0
-write$ -- 298
+write$ -- 311
 (There was 1 error message)
