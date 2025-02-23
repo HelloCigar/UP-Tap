@@ -56,6 +56,11 @@ INSTALLED_APPS = [
 
 ASGI_APPLICATION = "UP_Tap.asgi.application"
 
+GRAPH_MODELS = {
+  'app_labels': ["rest_framework.authtoken", "teachers", "students", "attendance"],
+}
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

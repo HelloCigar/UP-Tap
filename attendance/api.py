@@ -7,7 +7,7 @@ from .models import AttendanceSheet, StudentAttendaceInfo
 from .schemas import TimeInData, TimeOutData, TimeInResponse, TimeOutResponse, TimeInError, TimeOutError, RecentTimeInResponse, RecentTimeOutResponse, RecentError
 from teachers.models import Subjects
 from students.models import Student, SubjectEnrollment
-from .services import process_attendance, get_student_and_enrollment 
+from .services import process_attendance, get_student_and_enrollment, get_student_and_active_subject 
 from django_eventstream import send_event
 
 
@@ -21,13 +21,12 @@ def test_sse(request):
 @router.post("/time-in", response={200: TimeInResponse, 206: TimeInError})
 def save_time_in(request, data: TimeInData):
     """Handle time-in requests."""
-    subject = get_object_or_404(Subjects, subject_id=data.subject_id)
     try:
-        student, _ = get_student_and_enrollment(data.student_id, data.subject_id)
+        student, subject, attendance_sheet = get_student_and_active_subject(data.student_id)
     except Exception as e:
         return 206, {"success": False, "message": str(e)}
 
-    result = process_attendance(student, subject, data.face_data, is_time_in=True)
+    result = process_attendance(student, subject, data.face_data, attendance_sheet=attendance_sheet, is_time_in=True)
     if isinstance(result, StudentAttendaceInfo):
         data = {
             "time_in": result.time_in.isoformat(),
@@ -41,13 +40,12 @@ def save_time_in(request, data: TimeInData):
 @router.post("/time-out", response={200: TimeOutResponse, 206: TimeOutError})
 def save_time_out(request, data: TimeOutData):
     """Handle time-out requests."""
-    subject = get_object_or_404(Subjects, subject_id=data.subject_id)
     try:
-        student, _ = get_student_and_enrollment(data.student_id, data.subject_id)
+        student, subject, attendance_sheet = get_student_and_active_subject(data.student_id)
     except Exception as e:
         return 206, {"success": False, "message": str(e)}
 
-    result = process_attendance(student, subject, data.face_data, is_time_in=False)
+    result = process_attendance(student, subject, data.face_data, attendance_sheet, False)
     if isinstance(result, StudentAttendaceInfo):
         data = {
             "time_out": result.time_out.isoformat(),

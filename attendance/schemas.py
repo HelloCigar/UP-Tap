@@ -4,7 +4,6 @@ from typing import Optional
 
 class TimeInData(Schema):
     student_id: int
-    subject_id: int
     face_data: str
 
 class TimeInResponse(Schema):
