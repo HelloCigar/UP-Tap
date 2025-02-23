@@ -35,6 +35,8 @@ TIME_ZONE = 'Asia/Manila'
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    'django_eventstream',
     'admin_interface',
     'colorfield',
     'django.contrib.admin',
@@ -51,6 +53,8 @@ INSTALLED_APPS = [
     'students',
     'attendance',
 ]
+
+ASGI_APPLICATION = "UP_Tap.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

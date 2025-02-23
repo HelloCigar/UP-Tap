@@ -8,9 +8,15 @@ from .schemas import TimeInData, TimeOutData, TimeInResponse, TimeOutResponse, T
 from teachers.models import Subjects
 from students.models import Student, SubjectEnrollment
 from .services import process_attendance, get_student_and_enrollment 
+from django_eventstream import send_event
 
 
 router = Router()
+
+@router.get("test_sse",)
+def test_sse(request):
+    send_event("timein", "message", {"text": "hello world"})
+    return {"success": True}
 
 @router.post("/time-in", response={200: TimeInResponse, 206: TimeInError})
 def save_time_in(request, data: TimeInData):
@@ -22,6 +28,14 @@ def save_time_in(request, data: TimeInData):
         return 206, {"success": False, "message": str(e)}
 
     result = process_attendance(student, subject, data.face_data, is_time_in=True)
+    if isinstance(result, StudentAttendaceInfo):
+        data = {
+            "time_in": result.time_in.isoformat(),
+            "subject_name": f'{result.sheet_id.subject_id.subject_name}',
+            "student_name": f'{result.student_id.first_name} {result.student_id.last_name}',
+            "date": result.sheet_id.session_date
+        }
+        send_event("attendance", "time_in", data)
     return (200, result) if isinstance(result, StudentAttendaceInfo) else (206, result)
 
 @router.post("/time-out", response={200: TimeOutResponse, 206: TimeOutError})
@@ -34,6 +48,14 @@ def save_time_out(request, data: TimeOutData):
         return 206, {"success": False, "message": str(e)}
 
     result = process_attendance(student, subject, data.face_data, is_time_in=False)
+    if isinstance(result, StudentAttendaceInfo):
+        data = {
+            "time_out": result.time_out.isoformat(),
+            "subject_name": f'{result.sheet_id.subject_id.subject_name}',
+            "student_name": f'{result.student_id.first_name} {result.student_id.last_name}',
+            "date": result.sheet_id.session_date
+        }
+        send_event("attendance", "time_out", data)
     return (200, result) if isinstance(result, StudentAttendaceInfo) else (206, result)
 
 @router.get("/recent", response={200: List[RecentTimeInResponse], 201: List[RecentTimeOutResponse], 206: RecentError})

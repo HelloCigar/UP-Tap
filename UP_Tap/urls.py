@@ -16,12 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from UP_Tap.api import api
+import django_eventstream
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/", api.urls),
     path("auth/", include('djoser.urls')),
     path("auth/", include('djoser.urls.authtoken')),
+    path("events/", include(django_eventstream.urls), {"channels": ["attendance"]}),
+    # path("events/<str:channel_name>/", include(django_eventstream.urls), {"channels": lambda request, channel_name: [channel_name]}),   
 ]
 
 

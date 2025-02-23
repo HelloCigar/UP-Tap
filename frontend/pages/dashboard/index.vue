@@ -109,6 +109,69 @@ const time_out_columns = [{
   label: 'Date',
 }]
 
+import { useEventSource } from '@vueuse/core'
+
+const { status, data, error, close, eventSource,  } = useEventSource('/api/sse', ['time_in', 'time_out'] as const, {
+  autoReconnect: true
+})
+
+onMounted(() => {
+  
+})
+
+onBeforeUnmount(() => {
+  close()
+})
+// const { data: timeInData, status: timeInStatus, close: closeTimeIn, eventSource: timeInEvent } = useEventSource('/api/sse/time_in', [], {
+//   autoReconnect: true
+// })
+
+// const { data: timeOutData, status: timeOutStatus, close: closeTimeOut, eventSource: timeOutEvent } = useEventSource('/api/sse/time_out', [], {
+//   autoReconnect: true
+// })
+
+// onMounted(() => {
+//   console.log('Time In Status:', timeInStatus.value)
+//   console.log('Time Out Status:', timeOutStatus.value)
+// })
+
+// onBeforeUnmount(() => {
+//   closeTimeIn()
+//   closeTimeOut()
+// })
+
+// watch(timeInData, (newData) => {
+//   console.log('New data:', newData)
+// })
+
+// watch(timeOutData, (newData) => {
+//   console.log('New data:', newData)
+// })
+
+// timeInEvent.value.onmessage = (event) => {
+//   timeInOutData.value?.unshift(JSON.parse(event.data) as {time_in: string, time_out: string, student_name: string})
+//   console.log(JSON.parse(event.data))
+// }
+
+// timeOutEvent.value.onmessage = (event) => {
+//   timeInOutData.value?.unshift(JSON.parse(event.data) as {time_in: string, time_out: string, student_name: string})
+//   console.log(JSON.parse(event.data))
+// }
+eventSource.value.addEventListener("time_in", function(event) {
+    const data = JSON.parse(event.data);
+    timeInOutData.value?.unshift(data as {time_in: string, time_out: string, student_name: string})
+    console.log("Received message:", data);
+});
+eventSource.value.addEventListener("time_out", function(event) {
+    const data = JSON.parse(event.data);
+    //find similar name and date, then add time_out field
+    timeInOutData.value?.forEach((item) => {
+      if (item.student_name === data.student_name && item.date === data.date) {
+        item.time_out = data.time_out
+      }
+    })
+    console.log("Received message:", data);
+})
 
 </script> 
 <template>

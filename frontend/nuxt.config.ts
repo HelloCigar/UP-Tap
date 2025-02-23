@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   //disable ssr
-  ssr: true,
+  ssr: false,
 
   modules: ['@nuxt/ui', '@pinia/nuxt', 'nuxt-auth-utils', '@pinegrow/nuxt-module', '@nuxt/image'],
   colorMode: {
