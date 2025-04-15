@@ -1,22 +1,24 @@
 import os
 from typing import Tuple, Union
-
+from model.inference import verify_face_similarity
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from attendance.models import AttendanceSheet, StudentAttendaceInfo
 from students.models import Student, SubjectEnrollment
 from teachers.models import Subjects
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
-
+import logging
 from deepface import DeepFace
 
 def verify_face(student_face_data, input_face_data):
     try:
-        check_face = DeepFace.verify(student_face_data, input_face_data, anti_spoofing=True, detector_backend='yolov8')
-        if not check_face['verified']:
+        is_face_similar = verify_face_similarity(student_face_data, input_face_data)
+        logging.info("is_face_similar: ", is_face_similar)
+        if not is_face_similar:
             return False, {"success": False, "message": "Face data mismatch!"}
         return True, None
     except ValueError:
+        logging.error("ValueError: ", ValueError)
         return False, {"success": False, "message": "Spoof image or no face detected!"}
 
 
