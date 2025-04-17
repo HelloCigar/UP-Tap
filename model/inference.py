@@ -1,8 +1,6 @@
 
 from .utils import *
 from scipy.spatial.distance import cosine
-import base64
-import cv2 
 
 def verify_face_similarity(face1_string, face2_string):
     # Face detection + cropping
