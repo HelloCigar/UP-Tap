@@ -47,7 +47,6 @@ class Teacher(AbstractUser):
 class Subjects(models.Model):
     subject_id = models.AutoField(primary_key=True)
     subject_name = models.CharField(max_length=100)
-    section = models.CharField(max_length=100)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='subjects')
 
     def __str__(self):
@@ -58,7 +57,7 @@ from django.utils import timezone
 
 class ClassSchedule(models.Model):
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
-    day_of_week = models.CharField(max_length=10)  # e.g., 'Monday', 'Tuesday'
+    day_of_week = models.CharField(max_length=10, unique=True)  # e.g., 'Monday', 'Tuesday'
     start_time = models.TimeField()
     end_time = models.TimeField()
 

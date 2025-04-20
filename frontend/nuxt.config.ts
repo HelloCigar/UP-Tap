@@ -6,20 +6,11 @@ export default defineNuxtConfig({
   //disable ssr
   ssr: false,
 
-  modules: ['@nuxt/ui', '@pinia/nuxt', 'nuxt-auth-utils', '@pinegrow/nuxt-module', '@nuxt/image'],
+  modules: ['@nuxt/ui', '@pinia/nuxt', 'nuxt-auth-utils', '@nuxt/image'],
   colorMode: {
     preference: 'light'
   },
-  pinegrow: {
-    liveDesigner: {
-      tailwindcss: {
-        /* Please ensure that you update the filenames and paths to accurately match those used in your project. */
-        configPath: 'tailwind.config.js',
-        cssPath: '@/assets/css/tailwind.css',
-        // themePath: false, // Set to false so that Design Panel is not used
-        // restartOnConfigUpdate: true,
-        restartOnThemeUpdate: true,
-      },
-    },
+  build: {
+    transpile: ['@vuepic/vue-datepicker']
   },
 })

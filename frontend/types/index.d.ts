@@ -1,10 +1,17 @@
 export { };
 
 declare global {
+
     interface Subjects {
         subject_id: number
         subject_name: string
-        section: string
+        time_and_schedule: SubjectTimeAndSchedule[]
+    }
+
+    interface SubjectTimeAndSchedule {
+        day_of_week: string,
+        start_time: string,
+        end_time: string,
     }
 
     interface Student {

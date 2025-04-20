@@ -13,6 +13,7 @@
     "@nuxt/image": "^1.8.1",
     "@nuxt/ui": "^2.18.7",
     "@pinia/nuxt": "^0.5.5",
+    "@vuepic/vue-datepicker": "^11.0.2",
     "face-api.js": "^0.22.2",
     "nuxt": "^3.13.0",
     "nuxt-auth-utils": "^0.4.4",

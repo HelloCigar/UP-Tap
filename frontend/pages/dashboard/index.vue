@@ -4,12 +4,18 @@ definePageMeta({
     middleware: 'auth'
 })
 
+type SubjectProps = {
+  subject_name: string,
+  days: string[],
+  start_time: string,
+  end_time: string
+}
 
 // UI State
 const showSubjectModal = ref(false)
 const selectedSubject = ref<Subjects | null>(null)
 const recordType = ref('time_in')
-const newSubject = ref({ subject_name: '', section: ''})
+const newSubject = ref<SubjectProps>({ subject_name: '', days: [], start_time: '', end_time: '' })
 const deleted = ref(false)
 
 const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subjects', 
@@ -22,21 +28,33 @@ const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subje
 // Modal handlers
 const openAddModal = () => {
   selectedSubject.value = null
-  newSubject.value = { subject_name: '', section: ''}
+  newSubject.value = { subject_name: '', days: [], start_time: '', end_time: '' }
   showSubjectModal.value = true
 }
 
 const openEditModal = (subject: Subjects) => {
   selectedSubject.value = subject
-  newSubject.value = { ...subject }
   showSubjectModal.value = true
 }
 
 const closeModal = () => {
   showSubjectModal.value = false
   selectedSubject.value = null
-  newSubject.value = { subject_name: '', section: ''}
+  newSubject.value = { subject_name: '', days: [] as string[], start_time: '', end_time: '' }
 }
+
+//emit handlers
+function handleTimeUpdate(newTime: { hours: number, minutes: number }[]) {
+  console.log('Updated time:', newTime[0], newTime[1]);
+  newSubject.value.start_time = `${newTime[0].hours}:${newTime[0].minutes}`
+  newSubject.value.end_time = `${newTime[1].hours}:${newTime[1].minutes}`
+}
+
+function handleDaysUpdate(newDays: string[]) {
+  console.log('Updated days:', newDays);
+  newSubject.value.days = newDays
+}
+
 
 async function saveSubject () {
   if (selectedSubject.value) {
@@ -48,6 +66,7 @@ async function saveSubject () {
       }
     })
   } else {
+    console.log('New subject:', newSubject.value);
     await $fetch('/api/subjects', {
       method: 'POST',
       body: newSubject.value,
@@ -110,6 +129,7 @@ const time_out_columns = [{
 }]
 
 import { useEventSource } from '@vueuse/core'
+import { string } from 'yup'
 
 const { status, data, error, close, eventSource,  } = useEventSource('/api/sse', ['time_in', 'time_out'] as const, {
   autoReconnect: true
@@ -132,48 +152,6 @@ if (eventSource.value) {
   })
 
 }
-onMounted(() => {
-  
-})
-
-onBeforeUnmount(() => {
-  close()
-})
-// const { data: timeInData, status: timeInStatus, close: closeTimeIn, eventSource: timeInEvent } = useEventSource('/api/sse/time_in', [], {
-//   autoReconnect: true
-// })
-
-// const { data: timeOutData, status: timeOutStatus, close: closeTimeOut, eventSource: timeOutEvent } = useEventSource('/api/sse/time_out', [], {
-//   autoReconnect: true
-// })
-
-// onMounted(() => {
-//   console.log('Time In Status:', timeInStatus.value)
-//   console.log('Time Out Status:', timeOutStatus.value)
-// })
-
-// onBeforeUnmount(() => {
-//   closeTimeIn()
-//   closeTimeOut()
-// })
-
-// watch(timeInData, (newData) => {
-//   console.log('New data:', newData)
-// })
-
-// watch(timeOutData, (newData) => {
-//   console.log('New data:', newData)
-// })
-
-// timeInEvent.value.onmessage = (event) => {
-//   timeInOutData.value?.unshift(JSON.parse(event.data) as {time_in: string, time_out: string, student_name: string})
-//   console.log(JSON.parse(event.data))
-// }
-
-// timeOutEvent.value.onmessage = (event) => {
-//   timeInOutData.value?.unshift(JSON.parse(event.data) as {time_in: string, time_out: string, student_name: string})
-//   console.log(JSON.parse(event.data))
-// }
 
 </script> 
 <template>
@@ -270,7 +248,6 @@ onBeforeUnmount(() => {
                  class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
               <div>
                 <h3 class="font-medium text-gray-900 dark:text-white">{{ subject.subject_name }}</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Section {{ subject.section }}</p>
               </div>
               <div class="flex gap-2">
                 <button
@@ -306,20 +283,29 @@ onBeforeUnmount(() => {
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject Name</label>
-            <UInput
+            <div v-if="selectedSubject">
+              <UInput
+              v-model="selectedSubject.subject_name"
+              type="text"
+              placeholder="CMSC..." 
+            />
+            </div>
+            <div v-else>
+              <UInput
               v-model="newSubject.subject_name"
               type="text"
               placeholder="CMSC..." 
             />
+            </div>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Section</label>
-            <UInput
-              v-model="newSubject.section"
-              type="text"
-              placeholder="1..." 
-            />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schedule</label>
+            <SubjectSchedule v-on:updateDays="handleDaysUpdate"  :current-days="selectedSubject?.time_and_schedule.map(day => day.day_of_week)" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start and End Time</label>
+            <SubjectTIme v-on:update-time="handleTimeUpdate" :current-time="selectedSubject ? selectedSubject.time_and_schedule : undefined" />
           </div>
         </div>
 
