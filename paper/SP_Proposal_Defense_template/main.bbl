@@ -239,6 +239,32 @@ Sony.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Ultralytics%
+}{%
+Ultralytics%
+}{%
+{\protect \APACyear {2024}}%
+}]{%
+ultralytics_imx500}
+\APACinsertmetastar {%
+ultralytics_imx500}%
+\begin{APACrefauthors}%
+Ultralytics.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+\APACrefbtitle {SONY IMX500 Export for Ultralytics YOLOv8.} {Sony imx500 export
+  for ultralytics yolov8.}
+\newblock
+\begin{APACrefURL} \url{https://docs.ultralytics.com/integrations/sony-imx500/}
+  \end{APACrefURL}
+\newblock
+\APACrefnote{Accessed: 2025-01-31}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Zhi%
 , Ibrahim%
 \BCBL {}\ \BBA {} Aris%
