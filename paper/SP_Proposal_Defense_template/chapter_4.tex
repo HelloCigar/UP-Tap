@@ -1,5 +1,5 @@
 %   Filename    : chapter_4.tex 
-\chapter{Preliminary Results/System Prototype}
+\chapter{System Architecture and Model Evaluation}
 
 \section{System Architecture}
 Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visualized as shown in Figure \ref{fig:architecture}: 
@@ -109,16 +109,56 @@ The RFID input is automatically highlighted upon opening the page so it will be 
 \end{figure}
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=1.0\textwidth]{figures/chapter4/backendrecord.png} % Adjust width as needed
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/backendrecord.png} % Adjust width as needed
 	\caption{Django saving the attendance time instance in 24-hr format}
 	\label{fig:record}
 \end{figure}
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=1.0\textwidth]{figures/chapter4/delay.png} % Adjust width as needed
+	\includegraphics[width=0.5\textwidth]{figures/chapter4/delay.png} % Adjust width as needed
 	\caption{Fake Delay}
 	\label{fig:delay}
 \end{figure}
+
+\clearpage
+\section{MobileFacenet in detail}
+The MobileFacenet model for was used face verification. The model takes in a 112x112x3 image and outputs an embedding(a mathematical representation of face). We then use Cosine similarity with a certain threshold to compute if two embeddings are similar, therefore concluding that both identities are the same. The model was converted to a Tensorflowlite model to run faster on the Raspberry Pi 5 hardware. The final size of the model is 863Kb.
+
+\subsection{Model Architecture}
+	Figure \ref{fig:mfn_arch} Shows the general architecture of the model as defined in the MobileFacenet paper \cite{chen2018mobilefacenets}.
+	 \begin{figure}[h] % 'h' places the figure approximately here in the text
+	 	\centering
+	 	\includegraphics[width=0.5\textwidth]{figures/chapter4/mfn_arch.png} % Adjust width as needed
+	 	\caption{MobileFaceNet}
+	 	\label{fig:mfn_arch}
+	 \end{figure}
+
+\clearpage 
+\subsection{Metrics}
+We tested the accuracy of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds.
+Compared to models of hundreds of MB in size, the performance of the model is good but can be better. An AUC of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
+ \begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/roc_curve.png} % Adjust width as needed
+	\caption{ROC AUC}
+	\label{fig:roc_curve}
+\end{figure}
+
+\clearpage
+Next we check the overall accuracy at the chosen threshold. We chose the 0.6 as threshold for a good balance of security and reliability. The threshold posted an average accuracy score of 68.6\% on all ten folds. While not impressive, note that the model we test here is a TensorFlow Lite version which was compressed for faster inference on RPI 5.
+ \begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/fixed_thresh_matrix.png} % Adjust width as needed
+	\caption{ROC AUC}
+	\label{fig:fixed_thresh}
+\end{figure}
+
+
+
+\section{YoloV8n for Face Detection}
+We used a pretrained YoloV8n model for face detection by Arnab Dhar on Huggingface. The main motivation was because Yolo models were the first to officially support exporting and deploying a model to the Raspberry Pi AI Camera. The Ultralytics team abstracted the process of model quantization and compression using Sony's Model Compression Toolkit into their Python library. Compression and quantization was required as the IMX500 chip has a limited memory for inference at approximately 8mb only. The original pickle file is around 6.0mb which is compressed down to around 3mb per Ultralytics documentation. It can be further finetuned using personal dataset for better accuracy. 
+
+
 
 
 

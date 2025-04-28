@@ -28,11 +28,11 @@ Face recognition pipeline can be simplified into 2 steps:
 \begin{enumerate}
 	\item Face Detection: The process of finding the faces in a viewfinder and draw bounding boxes around the detected face. We will use a pretrained YOLOv8n model as the base model for face detection. We will feed the resulting cropped image into the face recognition model. It will run on the IMX500 chip in the Raspberry Pi AI Camera for inference, freeing the CPU for other task \cite{sony_imx500}. As on now, only YoloV8 officially supports exporting their model to the Rasperberry Pi AI camera\cite{ultralytics_imx500}. For this to work seamlessly, it is recommended to avoid low-light conditions. According to Zhou (2025), images captured in low-light conditions tend to be of poor quality, are easily disrupted by background noise, and suffer loss of detail, which lowers the accuracy of facial verification in the next step.
 	
-	\item Face verification: The task of comparing 2 faces and checking if they are of the same identity. The model we chose for this is MobileFaceNet which a face recognition model optimized for mobile and embedded devices like the Raspberry Pi\cite{chen2018mobilefacenets}.
+	\item Face verification: The task of comparing 2 faces and checking if they are of the same identity. The model we chose for this is MobileFaceNet which is a face recognition model optimized for mobile and embedded devices like the Raspberry Pi\cite{chen2018mobilefacenets}.
 \end{enumerate}
 
 \subsection{Face recognition model fine tuning}
-The pretrained MobileFaceNet we chose is under the Apache 2.0 license. The model size is about 800kb by user Jason Wong on Kaggle which was trained on MS1M-ArcFace with 85k unique identities and 5.7 million images. We will use our collected face images from students as datasets to see if improvements to the accuracy of the model can be done.
+The pretrained MobileFaceNet we chose is under the Apache 2.0 license. The model size is about 800kb by user Jason Wong on Kaggle which was trained on MS1M-ArcFace with 85k unique identities and 5.7 million images.
 
 \section{Hardware Development Tools}
 Our current prototype uses hardware components that are commonly used in the industry to build an integrated system. All of the tools are readily available. These include but are not limited to:
