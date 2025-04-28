@@ -3,7 +3,10 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
 const props = defineProps<{
-  currentTime?: SubjectTimeAndSchedule[];
+  currentTime?: {
+    start_time: string;
+    end_time: string;
+  };
 }>()
 
 const time = ref();
@@ -35,6 +38,6 @@ watch(time, (newTime) => {
     time-picker 
     minutes-grid-increment="15"
     range
-    :placeholder="props.currentTime ?  `Current Schedule: ${props.currentTime[0].start_time} - ${props.currentTime[0].end_time}`: 'Time Schedule'"/>
+    :placeholder="props.currentTime ?  `Current Schedule: ${props.currentTime.start_time} - ${props.currentTime.end_time}`: 'Time Schedule'"/>
 </template>
 

@@ -52,12 +52,10 @@ class Subjects(models.Model):
     def __str__(self):
         return f'{self.subject_id} - {self.subject_name}'
 
-from django.db import models
-from django.utils import timezone
 
 class ClassSchedule(models.Model):
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
-    day_of_week = models.CharField(max_length=10, unique=True)  # e.g., 'Monday', 'Tuesday'
+    day_of_week = models.CharField(max_length=255)  # e.g., 'Monday', 'Tuesday'
     start_time = models.TimeField()
     end_time = models.TimeField()
 

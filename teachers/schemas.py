@@ -8,20 +8,21 @@ class SubjectsSchema(ModelSchema):
         model = Subjects
         fields = ["subject_id", "subject_name", ]
 
-class SubjectTimeAndSchedule(ModelSchema):
-    class Meta:
-        model = ClassSchedule
-        fields = ["day_of_week", "start_time", "end_time"]
+class SubjectTimeAndSchedule(Schema):
+    day_of_week: str
+    start_time: str
+    end_time: str
 
 class SubjectDetailSchema(Schema):
-    subject_id: int
+    subject_id: int = None
     subject_name: str
     time_and_schedule: List[SubjectTimeAndSchedule] = None
 
 class SubjectCRUDSchema(Schema):
+    subject_id: int = None
     subject_name: str
-    days: List[str] = None
-    start_time: str = None
-    end_time: str = None
+    schedule: List[str]
+    start_time: str
+    end_time: str
 
     

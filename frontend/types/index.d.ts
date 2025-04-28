@@ -5,15 +5,11 @@ declare global {
     interface Subjects {
         subject_id: number
         subject_name: string
-        time_and_schedule: SubjectTimeAndSchedule[]
-    }
-
-    interface SubjectTimeAndSchedule {
-        day_of_week: string,
+        schedule: string[]
         start_time: string,
         end_time: string,
     }
-
+    
     interface Student {
         student_id: number
         first_name: string

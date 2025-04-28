@@ -4,18 +4,11 @@ definePageMeta({
     middleware: 'auth'
 })
 
-type SubjectProps = {
-  subject_name: string,
-  days: string[],
-  start_time: string,
-  end_time: string
-}
-
 // UI State
 const showSubjectModal = ref(false)
-const selectedSubject = ref<Subjects | null>(null)
+const selectedSubject = ref<Subjects>()
 const recordType = ref('time_in')
-const newSubject = ref<SubjectProps>({ subject_name: '', days: [], start_time: '', end_time: '' })
+const newSubject = ref<Subjects>()
 const deleted = ref(false)
 
 const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subjects', 
@@ -27,32 +20,68 @@ const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subje
 
 // Modal handlers
 const openAddModal = () => {
-  selectedSubject.value = null
-  newSubject.value = { subject_name: '', days: [], start_time: '', end_time: '' }
+  newSubject.value = {
+    subject_id: 0,
+    subject_name: '',
+    schedule: [],
+    start_time: '',
+    end_time: '',
+  }
+  selectedSubject.value = undefined
   showSubjectModal.value = true
 }
 
 const openEditModal = (subject: Subjects) => {
+  console.log('Edit subject:', subject)
   selectedSubject.value = subject
   showSubjectModal.value = true
 }
 
 const closeModal = () => {
   showSubjectModal.value = false
-  selectedSubject.value = null
-  newSubject.value = { subject_name: '', days: [] as string[], start_time: '', end_time: '' }
+  deleted.value = !deleted.value
 }
 
 //emit handlers
 function handleTimeUpdate(newTime: { hours: number, minutes: number }[]) {
-  console.log('Updated time:', newTime[0], newTime[1]);
-  newSubject.value.start_time = `${newTime[0].hours}:${newTime[0].minutes}`
-  newSubject.value.end_time = `${newTime[1].hours}:${newTime[1].minutes}`
+  //handle single digits 
+  let start_hours = `${newTime[0].hours}`
+  let start_minutes = `${newTime[0].minutes}`
+  let end_hours = `${newTime[1].hours}`
+  let end_minutes = `${newTime[1].minutes}`
+  if (newTime[0].hours < 10) {
+    start_hours = `0${newTime[0].hours}`
+  }
+  if (newTime[0].minutes < 10) {
+    start_minutes = `0${newTime[0].minutes}`
+  }
+  if (newTime[1].hours < 10) {
+    end_hours = `0${newTime[1].hours}`
+  }
+  if (newTime[1].minutes < 10) {
+    end_minutes = `0${newTime[1].minutes}`
+  }
+  if(newSubject.value) {
+    newSubject.value.start_time = `${start_hours}:${start_minutes}`
+    newSubject.value.end_time = `${end_hours}:${end_minutes}`
+  }
+  if (selectedSubject.value) {
+    selectedSubject.value.start_time = `${start_hours}:${start_minutes}`
+    selectedSubject.value.end_time = `${end_hours}:${end_minutes}`
+    console.log('Selected subject:', selectedSubject.value);
+  }
 }
 
 function handleDaysUpdate(newDays: string[]) {
-  console.log('Updated days:', newDays);
-  newSubject.value.days = newDays
+  if (newSubject.value) {
+    newSubject.value.schedule = newDays
+  }
+  if (selectedSubject.value) {
+    selectedSubject.value.schedule = newDays
+  }
+  console.log(newSubject.value);
+  console.log(selectedSubject.value);
+  console.log(newDays);
 }
 
 
@@ -60,11 +89,12 @@ async function saveSubject () {
   if (selectedSubject.value) {
     await $fetch('/api/subjects', {
       method: 'PUT',
-      body: newSubject.value,
+      body: selectedSubject.value,
       query: {
         subject_id: selectedSubject.value.subject_id
       }
-    })
+    }
+  )
   } else {
     console.log('New subject:', newSubject.value);
     await $fetch('/api/subjects', {
@@ -75,16 +105,26 @@ async function saveSubject () {
   closeModal()
 }
 
-async function deleteSubject (subject_id: number) {
-  await $fetch('/api/subjects', {
-    method: 'DELETE',
-    query: {
-      subject_id: subject_id
+const modal = useModal()
+import { SubjectDeleteModal } from '#components'
+async function deleteSubject (subject: Subjects) {
+  modal.open(
+    SubjectDeleteModal, {
+      subject_id: subject.subject_id,
+      subject_name: subject.subject_name,
+      onSuccess: async () => {
+        await $fetch('/api/subjects', {
+          method: 'DELETE',
+          query: {
+            subject_id: subject.subject_id
+          }
+        })
+        closeModal()
+      }
     }
-  })
+  )
   deleted.value = !deleted.value
 }
-
 
 async function logout() {
   await $fetch('/api/logout', { method: 'POST' })
@@ -129,7 +169,6 @@ const time_out_columns = [{
 }]
 
 import { useEventSource } from '@vueuse/core'
-import { string } from 'yup'
 
 const { status, data, error, close, eventSource,  } = useEventSource('/api/sse', ['time_in', 'time_out'] as const, {
   autoReconnect: true
@@ -259,7 +298,7 @@ if (eventSource.value) {
                   </svg>
                 </button>
                 <button
-                  @click="deleteSubject(subject.subject_id)"
+                  @click="deleteSubject(subject)"
                   class="p-2 text-red-500 hover:text-red-700"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,11 +340,11 @@ if (eventSource.value) {
           
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schedule</label>
-            <SubjectSchedule v-on:updateDays="handleDaysUpdate"  :current-days="selectedSubject?.time_and_schedule.map(day => day.day_of_week)" />
+            <SubjectSchedule v-on:updateDays="handleDaysUpdate"  :current-days="selectedSubject?.schedule" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start and End Time</label>
-            <SubjectTIme v-on:update-time="handleTimeUpdate" :current-time="selectedSubject ? selectedSubject.time_and_schedule : undefined" />
+            <SubjectTIme v-on:update-time="handleTimeUpdate" :current-time="selectedSubject ? { start_time: selectedSubject.start_time, end_time: selectedSubject.end_time } : undefined" />
           </div>
         </div>
 
