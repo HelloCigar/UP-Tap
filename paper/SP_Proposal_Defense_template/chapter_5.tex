@@ -2,11 +2,18 @@
 
 \section{Summary}
 
-	The created system is an automated attendance checker with the use of an RFID together with facial authentication to eliminate inefficiencies in conventional practices at UP Visayas. The system integrated the UP RFID's exclusive identification with real-time facial identification using pretrained YOLOv8 and MobileFaceNet models with 1-2 second processing times per student. Major features were a Django-Nuxt web interface, hardware integration with Raspberry Pi, and two-factor authentication to maintain the CIA Triad principles (confidentiality, integrity, availability). Testing validated its superiority to manual roll calls and spreadsheet monitoring in terms of speed, accuracy, and fraud prevention, although light conditions and RFID reliance presented limitations.
+	This study proposed the integration of the UP RFID and facial recognition technology for an automated, secure, and efficient attendance system at the University of the Philippines Visayas. The system was designed to reduce the time and effort required by faculty and students to manage traditional manual and digital attendance methods. By utilizing a pretrained facial recognition model in combination with RFID, we aimed to provide a reliable and secure solution to track attendance in face-to-face classes.
 
+	Specifically, the system integrated the UP RFID's exclusive identification with real-time facial identification using the pretrained YOLOv8 and MobileFaceNet models with 1-2 second processing times per student. Major features were a Django-Nuxt web interface, hardware integration with Raspberry Pi, and two-factor authentication to maintain the CIA Triad principles (confidentiality, integrity, availability). Testing validated its superiority to manual roll calls and spreadsheet monitoring in terms of speed, accuracy, and fraud prevention, although light conditions and RFID reliance presented limitations.
+
+	The system's performance was evaluated using the Labeled Faces in the Wild (LFW) Dataset, which yielded an Area Under the Curve (AUC) score of 0.77. This indicates that there is a 77\% chance the model will correctly identify a genuine pair of faces over an impostor pair when randomly selected. 
+	
 \section{Conclusion}
-
+	
+	The proposed system meets its objectives of improving the efficiency, security, and accuracy of attendance tracking. The integration of UP RFID and facial recognition technology addresses the gaps found in traditional methods, and its scalability suggests that it could be adopted by other universities and even large organizations in the future. Although the result is promising, further optimizations could improve performance, especially considering the constraints of the hardware used, such as the Raspberry Pi 5, which was limited to compressed models for faster recognition.
+	
 \section{Recommendation}
+	
 	For future development and improvement of the system, the following recommendation are proposed:
 	
 	\begin{enumerate}

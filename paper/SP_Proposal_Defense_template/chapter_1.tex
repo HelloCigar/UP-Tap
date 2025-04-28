@@ -9,13 +9,13 @@ Attendance plays an important role in improving the academic performance of stud
 
 The traditional pen and paper attendance system has existed since the invention of paper itself. It is used for time keeping by manually writing or checking the ``present" status in a paper log book. Manually writing names takes an average of 17 seconds per student \cite{shoewu:2014}, and for class size of 30 students that leads to approximately 8 minutes of class time wasted. While it is recognized that such system is time-consuming and wastes resources, it persisted because of its familiarity. Going to class means bringing pen and paper for most students and teachers alike, so using the same material for recording attendance seemed the most practical.
 
-In recent years, as laptops and portable computers became more accessible, some faculty of UP started transitioning to digital spreadsheets provided by services like Microsoft Excel. While it seemed to have moved the traditional pen and paper towards digitalization, another problem arises as this required manually roll calling students to say ``present". It had the same problem of being a manual process. It is easily disrupted by a noisy class. Some time that was supposed to be utilized for immediate teaching was used for roll call.
+In recent years, as laptops and portable computers became more accessible, some faculty of UP started transitioning to digital spreadsheets provided by services such as Microsoft Excel. While it seemed to have moved the traditional pen and paper towards digitalization, another problem arises as this required manually roll calling students to say ``present". It had the same problem of being a manual process. It is easily disrupted by a noisy class. Some time that was supposed to be utilized for immediate teaching was used for roll call.
 
 Both systems mentioned are prone to errors and unnecessarily increases administrative burden for the faculty. Reduction in teaching time means frequently moving the lesson discussions by the faculty, with some topics being rushed or skip entirely by the end of semester. This reduces overall the quality of education students received and may negatively impact their readiness for subsequent courses they may take. 
 
 It is also useful to analyze the traditional attendance methods from the lens of CIA triad since we are dealing with information security. It is a guiding model comprised of 3 key principles: Confidentiality - the protection of data from unauthorized access. Integrity - prevent that data from tampering. Availability - data is present whenever you need them \cite{cawthra2020data}. The traditional pen and paper violates confidentiality as there no strict restrictions on who accesses the paper for keeping the attendance data. As a consequence, integrity is also violated as anyone with a pen can easily modify attendance records. Availability also cannot be ensured since paper as a storage medium is easily destructible via wear or tear. Replacing paper with digital counterparts such as Microsoft Excel might address these violations, although indirectly. Teachers put passwords on their laptops, but no authentication is done for the Excel file itself unless it is explicitly encrypted. The file is also prone to accidental deletion.
 
-Therefore, we propose a fully automatic, digital attendance system that addresses these concerns. We utilize the already distributed UP ID and pretrained face recognition models that ensures an easy, accurate, attendance keeping. It aims to ease the burden of faculty and students from manual methods of attendance system, allowing them to focus on class discussions instead.
+Therefore, we propose a fully automatic, digital attendance system that addresses these concerns. We utilize the already distributed UP ID and pretrained face recognition models that ensures an easy and accurate attendance keeping. It aims to ease the burden of faculty and students from manual methods of attendance system, allowing them to focus on class discussions instead.
 
 \section{Problem Statement}
 The current methods of taking attendance today such as the manual call roll, biometrics, and online or remote attendance provides challenges in terms of efficiency, security, and authenticity. Manual roll calls are time consuming, according to (Mahato \& Suman, 2013, p. 5875), it consumes an average of 5 to 15 minutes in order to complete an attendance using manual roll call attendance. It also provides a burden to some of the teachers through the disruptive behaviors of the students which lower the efficiency of manual roll call ("How Teachers Can Meet the Challenges," 2015). Biometrics attendance systems like fingerprint and facial scanning provide efficiency in taking an attendance but it is more costly and widely not accessible. The online or remote attendance system is only advisable in virtual class and not in face to face class as it is prone to attendance fraud.
@@ -125,7 +125,7 @@ Specific Objective:
 
 The focus of this project is to create an attendance system that uses RFID together with facial technology. This project takes real time attendance by scanning the student's RFID and verify the student's identity using facial technology. It also focuses on the User Experience part where students can take their attendance as quickly as possible by aligning their faces while they scan their RFIDs. In that way this approach enhances the overall efficiency and accuracy of taking attendance in the university.
 
-This project does not involve the training of face recognition models, as there are high-performance, pretrained models readily available. Instead, it utilizes these existing face recognition models for the development of an effective attendance tracking system. This project will only limit face to face classes and does not cover the virtual or online classes, it will also not cover the other forms of biometric authentication such as fingerprint and eyes (iris scanning) because of its expensive hardware and the privacy concerns of the students.
+This project does not involve the training of face recognition models, as there are high-performance, pretrained models readily available. Instead, it utilizes these existing face recognition models for the development of an effective attendance tracking system. This project is limited to only face-to-face classes and does not cover the virtual or online classes. It does not cover the other forms of biometric authentication such as fingerprint and eyes (iris scanning) due to its expensive hardware and the privacy concerns of the students.
 
 
 \begin{comment}
@@ -152,7 +152,7 @@ Each paragraph also includes a description of the scope/limitation of your study
 \section{Significance of the Research}
 \label{sec:significance}
 
-	Facial recognition has been in use mobile applications for validation of identity and the performance has significantly improved over the years. This allowed us to explore the possibility of using it in attendance tracking of students in UP Visayas as there are currently no system like it in place. We also intend for this project to be open-source. Some of the people that will benefit from our developed app are:
+	Facial recognition has been used in mobile applications for validation of identity and its performance has significantly improved over the years. This allowed us to explore the possibility of using it in attendance tracking of students in UP Visayas as there are currently no system like it in place. We also intend this project to be open-source. Some of the people that will benefit from our developed application are:
 	
 	\begin{itemize}
 		\item Students - will benefit from the increased class time. This allow better retention of topics and lesson discussions. This complements the goal of recording attendance itself, which is to increase the quality of education the students receive.
@@ -169,7 +169,7 @@ Each paragraph also includes a description of the scope/limitation of your study
 	\end{itemize}
 	
 	
-	We also hope that this project will bring focus on the growing accessibility of facial recognition technologies and inspire the community to explore on how it can be incorporated their own projects.
+	We hope that this project will bring focus on the growing accessibility of facial recognition technologies and inspire the community to explore on how it can be incorporated their own projects.
 	
 \begin{comment}
 	content...%
