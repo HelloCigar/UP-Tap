@@ -17,7 +17,7 @@ const minTime = ref({
   minutes: 0
 });
 const maxTime = ref({
-  hours: 20,
+  hours: 24,
   minutes: 0
 });
 
