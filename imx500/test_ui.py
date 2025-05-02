@@ -1,196 +1,389 @@
-import sys, base64, threading
+import argparse
+import sys
 from functools import lru_cache
 
 import cv2
 import numpy as np
-import requests
+
 from picamera2 import MappedArray, Picamera2
 from picamera2.devices import IMX500
-from picamera2.devices.imx500 import NetworkIntrinsics, postprocess_nanodet_detection
-# Use PySide6-compatible GL widget
-from picamera2.previews.qt import QGlSide6Picamera2 as QGlPicamera2
-from PySide6.QtCore import QTimer, Qt, QThread, Signal, QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator
-from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QLineEdit, QLabel, QComboBox,
-)
+from picamera2.devices.imx500 import (NetworkIntrinsics,
+                                      postprocess_nanodet_detection)
+                                      
+from threading import Lock
+last_results = None
+results_lock = Lock()
 
-# ---------- IMX500 Detection Utilities ----------
+global last_detections
+
+
+from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, 
+                            QLineEdit, QHBoxLayout, QPushButton)
+from PyQt5.QtCore import Qt, pyqtSignal, QObject
+from PyQt5.QtCore import QThread, pyqtSlot
+import base64
+import requests
+import time
+import os
+
+# Add these global variables
+class FaceSignals(QObject):
+    status_update = pyqtSignal(str)
+    input_toggle = pyqtSignal(bool)
+    show_message = pyqtSignal(str)
+
+face_signals = FaceSignals()
+
+
+class Detection:
+    def __init__(self, coords, category, conf, metadata):
+        """Create a Detection object, recording the bounding box, category and confidence."""
+        self.category = category
+        self.conf = conf
+        self.box = imx500.convert_inference_coords(coords, metadata, picam2)
+
+
+def parse_detections(metadata: dict):
+    """Parse the output tensor into a number of detected objects, scaled to the ISP output."""
+    global last_detections
+    bbox_normalization = intrinsics.bbox_normalization
+    bbox_order = intrinsics.bbox_order
+    threshold = args.threshold
+    iou = args.iou
+    max_detections = args.max_detections
+
+    np_outputs = imx500.get_outputs(metadata, add_batch=True)
+    input_w, input_h = imx500.get_input_size()
+    if np_outputs is None:
+        return last_detections
+    if intrinsics.postprocess == "nanodet":
+        boxes, scores, classes = \
+            postprocess_nanodet_detection(outputs=np_outputs[0], conf=threshold, iou_thres=iou,
+                                          max_out_dets=max_detections)[0]
+        from picamera2.devices.imx500.postprocess import scale_boxes
+        boxes = scale_boxes(boxes, 1, 1, input_h, input_w, False, False)
+    else:
+        boxes, scores, classes = np_outputs[0][0], np_outputs[1][0], np_outputs[2][0]
+        if bbox_normalization:
+            boxes = boxes / input_h
+
+        if bbox_order == "xy":
+            boxes = boxes[:, [1, 0, 3, 2]]
+        boxes = np.array_split(boxes, 4, axis=1)
+        boxes = zip(*boxes)
+
+    last_detections = [
+        Detection(box, category, score, metadata)
+        for box, score, category in zip(boxes, scores, classes)
+        if score > threshold
+    ]
+    return last_detections
+
+
 @lru_cache
-def get_labels(intrinsics: NetworkIntrinsics):
-    labels = intrinsics.labels or []
+def get_labels():
+    labels = intrinsics.labels
+
     if intrinsics.ignore_dash_labels:
-        labels = [l for l in labels if l and l != "-"]
+        labels = [label for label in labels if label and label != "-"]
     return labels
 
 
-def parse_detections(metadata: dict, imx500: IMX500, intrinsics: NetworkIntrinsics):
-    outputs = imx500.get_outputs(metadata, add_batch=True)
-    if outputs is None:
-        return []
-    threshold = intrinsics.conf_threshold
-    iou = intrinsics.iou_threshold
-    max_dets = intrinsics.max_detections
-    if intrinsics.postprocess == 'nanodet':
-        boxes, scores, classes = postprocess_nanodet_detection(
-            outputs[0][0], conf=threshold, iou_thres=iou, max_out_dets=max_dets
-        )[0]
-        from picamera2.devices.imx500.postprocess import scale_boxes
-        h, w = imx500.get_input_size()
-        boxes = scale_boxes(boxes, 1, 1, h, w, False, False)
+# Modified draw_detections function
+def draw_detections(request):
+    """Draw the detections for this request onto the ISP output."""
+    global current_frame
+    with results_lock:
+        detections = last_results
+        current_frame = request
+        
+    if not detections:
+        face_signals.status_update.emit("Waiting for face...")
+        return
+
+    face_count = len(detections)
+    
+    if face_count == 0:
+        print("Here")
+        face_signals.status_update.emit("Waiting for face...")
+    elif face_count > 1:
+        face_signals.status_update.emit("Multiple faces detected!")
+        face_signals.input_toggle.emit(False)
     else:
-        b, s, c = outputs[0][0], outputs[1][0], outputs[2][0]
-        if intrinsics.bbox_normalization:
-            b = b / imx500.get_input_size()[1]
-        coords = np.split(b, 4, axis=1)
-        boxes = list(zip(*coords))
-        scores, classes = s, c
-    detections = [
-        (int(x), int(y), int(w), int(h), int(cat), float(conf))
-        for (x, y, w, h), conf, cat in zip(boxes, scores, classes)
-        if conf >= threshold
-    ]
-    return detections
+        face_signals.status_update.emit("Ready for RFID input")
+        face_signals.input_toggle.emit(True)
 
-# ---------- Worker Thread for Posting ----------
-class PostWorker(QThread):
-    finished = Signal(str)
+    # Rest of drawing logic...
+    labels = get_labels()
+    with MappedArray(request, 'main') as m:
+        for detection in detections:
+            x, y, w, h = detection.box
+            label = f"{labels[int(detection.category)]} ({detection.conf:.2f})"
 
-    def __init__(self, rfid: str, face_jpg: bytes, endpoint: str, parent=None):
-        super().__init__(parent)
+            # Calculate text size and position
+            (text_width, text_height), baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            text_x = x + 5
+            text_y = y + 15
+
+            # Create a copy of the array to draw the background with opacity
+            overlay = m.array.copy()
+
+            # Draw the background rectangle on the overlay
+            cv2.rectangle(overlay,
+                          (text_x, text_y - text_height),
+                          (text_x + text_width, text_y + baseline),
+                          (255, 255, 255),  # Background color (white)
+                          cv2.FILLED)
+
+            alpha = 0.30
+            cv2.addWeighted(overlay, alpha, m.array, 1 - alpha, 0, m.array)
+
+            # Draw text on top of the background
+            cv2.putText(m.array, label, (text_x, text_y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+            # Draw detection box
+            cv2.rectangle(m.array, (x, y), (x + w, y + h), (0, 255, 0, 0), thickness=2)
+
+        if intrinsics.preserve_aspect_ratio:
+            b_x, b_y, b_w, b_h = imx500.get_roi_scaled(request)
+            color = (255, 0, 0)  # red
+            cv2.putText(m.array, "ROI", (b_x + 5, b_y + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+            cv2.rectangle(m.array, (b_x, b_y), (b_x + b_w, b_y + b_h), (255, 0, 0, 0))
+
+
+# Add this class for background POST operations
+class ApiWorker(QThread):
+    finished = pyqtSignal(bool, str)
+
+    def __init__(self, rfid, image_data):
+        super().__init__()
         self.rfid = rfid
-        self.face_jpg = face_jpg
-        self.endpoint = endpoint
+        self.image_data = image_data
 
     def run(self):
         try:
-            b64 = base64.b64encode(self.face_jpg).decode('utf-8')
-            payload = {"student_id": int(self.rfid), "face_data": b64}
-            headers = {"Authorization": "Bearer 99cbb9718d1c98f66d5a99372a4782ed9206ddd6"}
-            url = f"http://127.0.0.1:8000/api/attendance/{self.endpoint}"
-            res = requests.post(url, json=payload, headers=headers)
-            res.raise_for_status()
-            data = res.json()
-            if data.get('success'):
-                key = 'time_in' if self.endpoint == 'time-in' else 'time_out'
-                self.finished.emit(
-                    f"{self.endpoint.replace('-', ' ').title()} @ {data.get(key)} - {data.get('student_name')}"
-                )
+            response = requests.post(
+                "https://your-api-endpoint.com/register",
+                json={
+                    "rfid": self.rfid,
+                    "face_image": self.image_data
+                },
+                timeout=5  # Add timeout
+            )
+            if response.status_code == 200:
+                self.finished.emit(True, "Registration successful!")
             else:
-                self.finished.emit(data.get('message', 'Unknown response'))
+                self.finished.emit(False, "Registration failed!")
         except Exception as e:
-            self.finished.emit(f"Error: {e}")
+            self.finished.emit(False, f"Error: {str(e)}")
 
-# ---------- Main Application ----------
-class MainWindow(QMainWindow):
-    def __init__(self, model_path, inference_rate=20):
+
+class MainWindow(QWidget):
+    def __init__(self):
         super().__init__()
-        self.setWindowTitle("UPTap Attendance (IMX500)")
-
-        # Setup IMX500 and Picamera2
-        self.imx500 = IMX500(model_path)
-        self.intr = self.imx500.network_intrinsics or NetworkIntrinsics()
-        self.intr.update_with_defaults()
-        self.picam2 = Picamera2(self.imx500.camera_num)
-
-        # Embed camera preview widget
-        self.preview = QGlPicamera2(self.picam2, width=640, height=480, keep_ar=True)
-
-        # Start camera
-        self.picam2.start(self.picam2.create_preview_configuration(
-            {'format': 'RGB888'}, controls={'FrameRate': self.intr.inference_rate}
-        ), show_preview=False)
-
-        # UI Elements
-        self.endpoint_selector = QComboBox()
-        self.endpoint_selector.addItem("Time In", "time-in")
-        self.endpoint_selector.addItem("Time Out", "time-out")
-        self.rfid_input = QLineEdit()
-        self.rfid_input.setMaxLength(10)
-        self.rfid_input.setPlaceholderText("Scan RFID…")
-        self.rfid_input.setValidator(QRegularExpressionValidator(
-            QRegularExpression("\d+"), self))
-        self.rfid_input.hide()
-        self.rfid_input.returnPressed.connect(self.on_rfid)
-        self.status_label = QLabel("", alignment=Qt.AlignCenter)
-        self.status_label.setStyleSheet("color:black;")
-
-        # Layout
+        self.init_ui()
+        self.api_workers = []
+        
+    def init_ui(self):
         layout = QVBoxLayout()
-        for w in (self.preview, self.endpoint_selector, self.rfid_input, self.status_label):
-            layout.addWidget(w)
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
+        
+        # Camera preview
+        self.preview = QGlPicamera2(picam2, width=800, height=600, keep_ar=False)
+        layout.addWidget(self.preview)
+        
+        # Status label
+        self.status_label = QLabel("Initializing...")
+        self.status_label.setAlignment(Qt.AlignCenter)
+        self.status_label.setStyleSheet("font-size: 18px; color: white; background-color: #333;")
+        layout.addWidget(self.status_label)
+        
+        # RFID input
+        input_layout = QHBoxLayout()
+        self.rfid_input = QLineEdit()
+        self.rfid_input.setPlaceholderText("Enter 10-digit RFID")
+        self.rfid_input.setEnabled(False)
+        self.rfid_input.setMaxLength(10)
+        input_layout.addWidget(QLabel("RFID:"))
+        input_layout.addWidget(self.rfid_input)
+        
+        self.submit_btn = QPushButton("Submit")
+        self.submit_btn.clicked.connect(self.handle_rfid)
+        input_layout.addWidget(self.submit_btn)
+        
+        layout.addLayout(input_layout)
+        
+        # Message label
+        self.message_label = QLabel()
+        self.message_label.setAlignment(Qt.AlignCenter)
+        self.message_label.setStyleSheet("font-size: 14px; color: #666;")
+        layout.addWidget(self.message_label)
+        
+        self.setLayout(layout)
+        
+        # Connect signals
+        face_signals.status_update.connect(self.update_status)
+        face_signals.input_toggle.connect(self.toggle_input)
+        face_signals.show_message.connect(self.show_message)
+        self.rfid_input.returnPressed.connect(self.handle_rfid)
+        
+    def update_status(self, text):
+        self.status_label.setText(text)
+        
+    def toggle_input(self, enabled):
+        self.rfid_input.setEnabled(enabled)
+        if enabled:
+            self.rfid_input.setFocus()
+            
+    def show_message(self, text):
+        self.message_label.setText(text)
+        QTimer.singleShot(3000, lambda: self.message_label.setText(""))
+        
+    def handle_api_response(self, success, message):
+        # Clean up finished workers
+        self.api_workers = [w for w in self.api_workers if w.isRunning()]
+        face_signals.show_message.emit(message)
 
-        # Detection timer
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.process_detections)
-        self.timer.start(int(1000/inference_rate))
-        self._last_count = 0
-        self.current_face = None
+    def handle_rfid(self):
+        rfid = self.rfid_input.text()
+        if len(rfid) != 10 or not rfid.isdigit():
+            self.show_message("Invalid RFID - must be 10 digits!")
+            return
+            
+        self.rfid_input.clear()
+        self.toggle_input(False)
+        self.send_face_data(rfid) 
+    
+    def send_face_data(self, rfid):
+        global current_frame
+        if not current_frame or not last_results:
+            return
+        
+        face_detections = [d for d in last_results if d.category == 0]
+        if not face_detections:
+            return
+        
+        detection = face_detections[0]
+        x, y, w, h = detection.box
+        
+        with MappedArray(current_frame, 'main') as m:
+            face_img = m.array[y:y+h, x:x+w]
+            retval, buffer = cv2.imencode('.jpg', face_img)
+            if retval:
+                b64_str = base64.b64encode(buffer).decode('utf-8')
+                
+                # Create and start worker
+                worker = ApiWorker(rfid, b64_str)
+                worker.finished.connect(self.handle_api_response)
+                worker.start()
+                self.api_workers.append(worker)  # Maintain reference
 
-    def set_status(self, msg, kind='info'):
-        cmap = {'info':'black','success':'green','warning':'orange','error':'red'}
-        self.status_label.setStyleSheet(f"color:{cmap.get(kind,'black')};")
-        self.status_label.setText(msg)
+                # Save locally
+                self.save_image_local(rfid, face_img)
+                
+    def save_image_local(self, rfid, image):
+        os.makedirs("captures", exist_ok=True)
+        filename = f"captures/{rfid}_{int(time.time())}.jpg"
+        cv2.imwrite(filename, image)
 
-    def process_detections(self):
-        req = self.picam2.capture_request()
-        meta = req.get_metadata()
-        dets = parse_detections(meta, self.imx500, self.intr)
-        # draw overlay RGBA
-        overlay = np.zeros((480,640,4), dtype=np.uint8)
-        faces = []
-        for x,y,w,h,cat,conf in dets:
-            if get_labels(self.intr)[cat]=='person':
-                faces.append((x,y,w,h))
-                cv2.rectangle(overlay,(x,y),(x+w,y+h),(0,255,0,150),2)
-        self.preview.add_overlay(overlay)
-        req.release()
-        # UI logic same as before
-        cnt = len(faces)
-        if cnt>1:
-            self.rfid_input.hide(); self.set_status("Multiple people","warning")
-        elif cnt==1:
-            if self._last_count!=1:
-                self.rfid_input.clear(); self.rfid_input.show(); self.rfid_input.setFocus();
-                self.set_status("","info"); self.current_face = faces[0]
-        else:
-            self.rfid_input.hide(); self.set_status("","info")
-        self._last_count = cnt
+    def handle_api_response(self, success, message):
+        # Clean up finished workers
+        self.api_workers = [w for w in self.api_workers if w.isRunning()]
+        self.show_message(message)
 
-    def on_rfid(self):
-        text = self.rfid_input.text()
-        if len(text)!=10:
-            self.set_status("RFID must be 10 digits","error"); return
-        self.rfid_input.setDisabled(True); self.set_status("Posting...","info")
-        x,y,w,h = self.current_face
-        req = self.picam2.capture_request()
-        with MappedArray(req,'main') as m:
-            roi = m.array[y:y+h, x:x+w]
-        req.release()
-        ok,j = cv2.imencode('.jpg', cv2.cvtColor(roi, cv2.COLOR_RGB2BGR))
-        if not ok:
-            self.set_status("Encode error","error"); self.rfid_input.setEnabled(True); return
-        endpt = self.endpoint_selector.currentData()
-        worker = PostWorker(text, j.tobytes(), endpt, self)
-        worker.finished.connect(lambda m: self.set_status(m,'success' if ' @ ' in m else 'error'))
-        worker.finished.connect(lambda _: self.reset_input())
-        worker.start()
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, help="Path of the model",
+                        default="/home/UPtap/Desktop/UP-Tap/model/yolo_face_detect/model_imx_model/rpk_output/network.rpk")
+    parser.add_argument("--fps", type=int, help="Frames per second", default=60)
+    parser.add_argument("--bbox-normalization", action=argparse.BooleanOptionalAction, help="Normalize bbox", default=True)
+    parser.add_argument("--bbox-order", choices=["yx", "xy"], default="xy",
+                        help="Set bbox order yx -> (y0, x0, y1, x1) xy -> (x0, y0, x1, y1)")
+    parser.add_argument("--threshold", type=float, default=0.55, help="Detection threshold")
+    parser.add_argument("--iou", type=float, default=0.65, help="Set iou threshold")
+    parser.add_argument("--max-detections", type=int, default=10, help="Set max detections")
+    parser.add_argument("--ignore-dash-labels", action=argparse.BooleanOptionalAction, help="Remove '-' labels ")
+    parser.add_argument("--postprocess", choices=["", "nanodet"],
+                        default=None, help="Run post process of type")
+    parser.add_argument("-r", "--preserve-aspect-ratio", action=argparse.BooleanOptionalAction,
+                        help="preserve the pixel aspect ratio of the input tensor")
+    parser.add_argument("--labels", type=str, default="/home/UPtap/Desktop/UP-Tap/model/yolo_face_detect/model_imx_model/labels.txt",
+                        help="Path to the labels file")
+    parser.add_argument("--print-intrinsics", action="store_true",
+                        help="Print JSON network_intrinsics then exit")
+    return parser.parse_args()
 
-    def reset_input(self):
-        self.rfid_input.clear(); self.rfid_input.setEnabled(True)
-        QTimer.singleShot(4000, lambda: self.set_status("","info"))
-        self.rfid_input.show(); self.rfid_input.setFocus()
 
-    def closeEvent(self, e):
-        self.picam2.stop()
-        super().closeEvent(e)
+if __name__ == "__main__":
+    last_detections = []
+    args = get_args()
 
-if __name__=='__main__':
-    app = QApplication(sys.argv)
-    model = "/usr/share/imx500-models/imx500_network_ssd_mobilenetv2_fpnlite_320x320_pp.rpk"
-    win = MainWindow(model)
-    win.show(); sys.exit(app.exec_())
+    # This must be called before instantiation of Picamera2
+    imx500 = IMX500(args.model)
+    intrinsics = imx500.network_intrinsics
+    if not intrinsics:
+        intrinsics = NetworkIntrinsics()
+        intrinsics.task = "object detection"
+    elif intrinsics.task != "object detection":
+        print("Network is not an object detection task", file=sys.stderr)
+        exit()
+
+    # Override intrinsics from args
+    for key, value in vars(args).items():
+        if key == 'labels' and value is not None:
+            with open(value, 'r') as f:
+                intrinsics.labels = f.read().splitlines()
+        elif hasattr(intrinsics, key) and value is not None:
+            setattr(intrinsics, key, value)
+
+    # Defaults
+    if intrinsics.labels is None:
+        with open("assets/coco_labels.txt", "r") as f:
+            intrinsics.labels = f.read().splitlines()
+    intrinsics.update_with_defaults()
+
+    if args.print_intrinsics:
+        print(intrinsics)
+        exit()
+
+    picam2 = Picamera2(imx500.camera_num)
+    config = picam2.create_preview_configuration(controls={"FrameRate": intrinsics.inference_rate}, buffer_count=12)
+
+    imx500.show_network_fw_progress_bar()
+    #picam2.start(config, show_preview=True)
+
+    if intrinsics.preserve_aspect_ratio:
+        imx500.set_auto_aspect_ratio()
+
+    from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtCore import QTimer
+    from picamera2.previews.qt import QGlPicamera2
+    
+    app = QApplication([])
+    main_window = MainWindow()
+    main_window.setWindowTitle("UPTap Attendance System")
+    main_window.resize(1000, 800)
+
+    
+    last_results = None
+    picam2.pre_callback = draw_detections
+    import threading
+    def detections_loop():
+        global last_results
+        while True:
+            # Get fresh metadata from a captured frame
+            request = picam2.capture_request()
+            metadata = request.get_metadata()
+            request.release()
+            
+            # Process and update results atomically
+            with results_lock:
+                global last_results
+                last_results = parse_detections(metadata)
+    thread = threading.Thread(target=detections_loop, daemon=True)
+    thread.start()
+    
+    picam2.start()
+    main_window.show()
+    app.exec()
+    
