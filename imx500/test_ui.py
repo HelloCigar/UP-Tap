@@ -1,30 +1,32 @@
 import argparse
 import sys
-from functools import lru_cache
-
+import base64
+import requests
+import time
+import os
 import cv2
 import numpy as np
+import threading
+from threading import Lock
+
+from functools import lru_cache
 
 from picamera2 import MappedArray, Picamera2
 from picamera2.devices import IMX500
 from picamera2.devices.imx500 import (NetworkIntrinsics,
                                       postprocess_nanodet_detection)
-                                      
-from threading import Lock
-last_results = None
-results_lock = Lock()
-
-global last_detections
+from picamera2.previews.qt import QGlPicamera2
 
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, 
                             QLineEdit, QHBoxLayout, QPushButton)
-from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtCore import QThread, pyqtSlot
-import base64
-import requests
-import time
-import os
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QObject, QThread, pyqtSlot
+
+                                      
+last_results = None
+results_lock = Lock()
+global last_detections
+
 
 # Add these global variables
 class FaceSignals(QObject):
@@ -33,14 +35,6 @@ class FaceSignals(QObject):
     show_message = pyqtSignal(str)
 
 face_signals = FaceSignals()
-
-
-class Detection:
-    def __init__(self, coords, category, conf, metadata):
-        """Create a Detection object, recording the bounding box, category and confidence."""
-        self.category = category
-        self.conf = conf
-        self.box = imx500.convert_inference_coords(coords, metadata, picam2)
 
 
 def parse_detections(metadata: dict):
@@ -152,6 +146,14 @@ def draw_detections(request):
             cv2.rectangle(m.array, (b_x, b_y), (b_x + b_w, b_y + b_h), (255, 0, 0, 0))
 
 
+class Detection:
+    def __init__(self, coords, category, conf, metadata):
+        """Create a Detection object, recording the bounding box, category and confidence."""
+        self.category = category
+        self.conf = conf
+        self.box = imx500.convert_inference_coords(coords, metadata, picam2)
+
+
 # Add this class for background POST operations
 class ApiWorker(QThread):
     finished = pyqtSignal(bool, str)
@@ -189,7 +191,7 @@ class MainWindow(QWidget):
         layout = QVBoxLayout()
         
         # Camera preview
-        self.preview = QGlPicamera2(picam2, width=800, height=600, keep_ar=False)
+        self.preview = QGlPicamera2(picam2, width=800, height=600, keep_ar=True)
         layout.addWidget(self.preview)
         
         # Status label
@@ -355,19 +357,15 @@ if __name__ == "__main__":
     if intrinsics.preserve_aspect_ratio:
         imx500.set_auto_aspect_ratio()
 
-    from PyQt5.QtWidgets import QApplication
-    from PyQt5.QtCore import QTimer
-    from picamera2.previews.qt import QGlPicamera2
     
     app = QApplication([])
     main_window = MainWindow()
     main_window.setWindowTitle("UPTap Attendance System")
     main_window.resize(1000, 800)
 
-    
     last_results = None
     picam2.pre_callback = draw_detections
-    import threading
+
     def detections_loop():
         global last_results
         while True:
