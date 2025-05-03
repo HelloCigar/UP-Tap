@@ -1,6 +1,7 @@
 from ninja import Schema, ModelSchema
 from datetime import date, time, datetime
 from typing import Optional
+from attendance.models import StudentAttendaceInfo
 
 class TimeInData(Schema):
     student_id: int
@@ -54,3 +55,25 @@ class RecentTimeOutResponse(RecentTimeInResponse):
 
 class RecentError(TimeInError):
     pass
+
+class StudentAttendanceSchema(Schema):
+    attendance_info_id: int
+    is_present: bool
+    time_in: Optional[time] = None
+    time_out: Optional[time] = None
+    student_name: str
+    subject_name: str
+    session_date: date
+
+    
+    @staticmethod
+    def resolve_student_name(obj):
+        return f'{obj.student_id.first_name} {obj.student_id.last_name}'
+    
+    @staticmethod
+    def resolve_subject_name(obj):
+        return f'{obj.sheet_id.subject_id.subject_name}'
+    
+    @staticmethod
+    def resolve_session_date(obj):
+        return obj.sheet_id.session_date

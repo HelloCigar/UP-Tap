@@ -4,7 +4,8 @@ from django.db.models import Prefetch
 from django.utils import timezone
 from typing import List, Tuple, Union
 from .models import AttendanceSheet, StudentAttendaceInfo
-from .schemas import TimeInData, TimeOutData, TimeInResponse, TimeOutResponse, TimeInError, TimeOutError, RecentTimeInResponse, RecentTimeOutResponse, RecentError
+from django.db.models import Q
+from .schemas import StudentAttendanceSchema, TimeInData, TimeOutData, TimeInResponse, TimeOutResponse, TimeInError, TimeOutError, RecentTimeInResponse, RecentTimeOutResponse, RecentError
 from teachers.models import Subjects
 from students.models import Student, SubjectEnrollment
 from .services import process_attendance, get_student_and_enrollment, get_student_and_active_subject 
@@ -13,10 +14,6 @@ from django_eventstream import send_event
 
 router = Router()
 
-@router.get("test_sse",)
-def test_sse(request):
-    send_event("timein", "message", {"text": "hello world"})
-    return {"success": True}
 
 @router.post("/time-in", response={200: TimeInResponse, 206: TimeInError})
 def save_time_in(request, data: TimeInData):
@@ -78,3 +75,62 @@ def get_recent_attendance(request, type: str):
         return 206, {"success": False, "message": "No recent attendance records found!"}
 
     return (200 if type == 'time_in' else 201), recent_attendance_info
+
+@router.get("/all", response={200: List[StudentAttendanceSchema], 206: RecentError})
+def get_all_student_attendance(request, 
+        student_id: str = None, 
+        subject_id: str = None, 
+        is_present: bool = None, 
+        start_date: str = None, 
+        end_date: str = None, 
+        q: str = None
+    ):
+
+    attendance_records = StudentAttendaceInfo.objects.all()
+
+    if student_id:
+        try:
+            student = get_object_or_404(Student, student_id=student_id)
+            attendance_records = attendance_records.objects.filter(student_id=student) #.order_by('-sheet_id__session_date', '-time_in')
+        except Exception as e:
+            return 206, {"success": False, "message": str(e)}
+
+    if subject_id:
+        try:
+            subject = get_object_or_404(Subjects, subject_id=subject_id)
+            attendance_records = attendance_records.filter(sheet_id__subject_id=subject) #.order_by('-sheet_id__session_date', '-time_in')
+        except Exception as e:
+            return 206, {"success": False, "message": str(e)}
+    
+    if is_present is not None:
+        attendance_records = attendance_records.filter(is_present=is_present)
+    
+    if start_date:
+        try:
+            start_date = timezone.datetime.strptime(start_date, "%Y-%m-%d").date()
+            attendance_records = attendance_records.filter(sheet_id__session_date__gte=start_date)
+        except Exception as e:
+            return 206, {"success": False, "message": str(e)}
+    
+    if end_date:
+        try:
+            end_date = timezone.datetime.strptime(end_date, "%Y-%m-%d").date()
+            attendance_records = attendance_records.filter(sheet_id__session_date__lte=end_date)
+        except Exception as e:
+            return 206, {"success": False, "message": str(e)}
+    
+    if q:
+        attendance_records = attendance_records.filter(
+            Q(student_id__first_name__icontains=q) |
+            Q(student_id__last_name__icontains=q) |
+            Q(sheet_id__subject_id__subject_name__icontains=q)
+        )
+    
+    attendance_records = attendance_records.select_related('student_id', 'sheet_id__subject_id').order_by(
+        '-sheet_id__session_date', '-time_in'
+    ).distinct()
+
+    if not attendance_records:
+        return 206, {"success": False, "message": "No attendance records found!"}
+
+    return 200, attendance_records
