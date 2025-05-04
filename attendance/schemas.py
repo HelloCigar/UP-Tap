@@ -59,8 +59,8 @@ class RecentError(TimeInError):
 class StudentAttendanceSchema(Schema):
     attendance_info_id: int
     is_present: bool
-    time_in: Optional[time] = None
-    time_out: Optional[time] = None
+    time_in: Optional[str] = None
+    time_out: Optional[str] = None
     student_name: str
     subject_name: str
     session_date: date
@@ -77,3 +77,12 @@ class StudentAttendanceSchema(Schema):
     @staticmethod
     def resolve_session_date(obj):
         return obj.sheet_id.session_date
+    
+    @staticmethod
+    def resolve_time_in(obj):
+        return obj.time_in.strftime("%I:%S %p") if obj.time_in else None
+    
+    @staticmethod
+    def resolve_time_out(obj):
+        return obj.time_out.strftime("%I:%S %p") if obj.time_out else None
+

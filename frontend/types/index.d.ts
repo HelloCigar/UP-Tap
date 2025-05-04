@@ -56,4 +56,16 @@ declare global {
         last_name: string
         email: string
     }
+
+    interface AttendanceRecord {
+        attendance_info_id: number
+        is_present: boolean
+        time_in: string | null
+        time_out: string | null
+        sheet_id: number
+        student_id: number
+        student_name: string
+        subject_name: string
+        session_date: string
+    }
 }

@@ -23,7 +23,7 @@ const columns = [{
   sortable: true
 }, {
   key: 'actions'
-}
+  }
 ]
 
 const selectedColumns = ref(columns)

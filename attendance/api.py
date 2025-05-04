@@ -1,3 +1,4 @@
+import logging
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
@@ -76,34 +77,31 @@ def get_recent_attendance(request, type: str):
 
     return (200 if type == 'time_in' else 201), recent_attendance_info
 
-@router.get("/all", response={200: List[StudentAttendanceSchema], 206: RecentError})
+
+from typing import Optional
+from ninja import Schema
+class FilterSchema(Schema):
+    subject_ids: List[int] = None
+    is_present: List[bool] = None
+
+@router.post("/all", response={200: List[StudentAttendanceSchema], 206: RecentError})
 def get_all_student_attendance(request, 
-        student_id: str = None, 
-        subject_id: str = None, 
-        is_present: bool = None, 
         start_date: str = None, 
         end_date: str = None, 
-        q: str = None
+        q: str = None,
+        filter: FilterSchema = None,
     ):
 
     attendance_records = StudentAttendaceInfo.objects.all()
 
-    if student_id:
+    if filter.subject_ids:
         try:
-            student = get_object_or_404(Student, student_id=student_id)
-            attendance_records = attendance_records.objects.filter(student_id=student) #.order_by('-sheet_id__session_date', '-time_in')
-        except Exception as e:
-            return 206, {"success": False, "message": str(e)}
-
-    if subject_id:
-        try:
-            subject = get_object_or_404(Subjects, subject_id=subject_id)
-            attendance_records = attendance_records.filter(sheet_id__subject_id=subject) #.order_by('-sheet_id__session_date', '-time_in')
+            attendance_records = attendance_records.filter(sheet_id__subject_id__in=filter.subject_ids)
         except Exception as e:
             return 206, {"success": False, "message": str(e)}
     
-    if is_present is not None:
-        attendance_records = attendance_records.filter(is_present=is_present)
+    if filter.is_present:
+        attendance_records = attendance_records.filter(is_present__in=filter.is_present)
     
     if start_date:
         try:
