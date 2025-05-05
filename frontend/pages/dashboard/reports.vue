@@ -172,19 +172,6 @@ const calculateStats = computed(() => {
         </div>
 
       <div class="flex gap-1.5 items-center">
-        <UDropdown 
-          :ui="{ width: 'w-36' }">
-          <!-- v-if="selectedRows.length > 1" :items="actions"  -->
-          <UButton
-            icon="i-heroicons-chevron-down"
-            trailing
-            color="gray"
-            size="xs"
-          >
-            Mark as
-          </UButton>
-        </UDropdown>
-
         <USelectMenu v-model="selectedColumns" :options="excludeSelectColumn" multiple>
           <UButton
             icon="i-heroicons-view-columns"
@@ -200,7 +187,7 @@ const calculateStats = computed(() => {
           color="gray"
           size="xs"
           
-          :disabled="search === '' && selectedStatus.length === 0 && selectedSubjects.length === 0 && startDate === new Date() && endDate === new Date()"
+          :disabled="search === '' && selectedStatus.length === 0 && selectedSubjects.length === 0 && startDate === subDays(new Date(), 7) && endDate === new Date()"
           @click="resetFilters"
         >
           Reset

@@ -310,6 +310,14 @@ if (eventSource.value) {
           </div>
         </UCard>
       </div>
+      <UCard class="mt-8">
+        <template #header>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Subject Time Table
+          </h2>
+        </template>
+        <SubjectTimeTable :subjects="subjects"/>
+      </UCard>
     </div>
     <UModal v-model="showSubjectModal">
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
@@ -368,7 +376,6 @@ if (eventSource.value) {
     </div>
 
     <template #footer>
-      <div class="h-8"></div>
     </template>
   </UCard>
 </template>
