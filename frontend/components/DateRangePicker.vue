@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sub, format, isSameDay, type Duration } from 'date-fns'
+import { sub, format, subDays, isSameDay, type Duration } from 'date-fns'
 const emit = defineEmits(['selectedRange'])
 
 const ranges = [

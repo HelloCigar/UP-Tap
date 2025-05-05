@@ -4,7 +4,6 @@ definePageMeta({
   middleware: 'auth'
 })
 
-import { is } from 'date-fns/locale'
 import DateRangePicker from '~/components/DateRangePicker.vue'
 const datePicker = ref()
 
@@ -54,13 +53,13 @@ const statusOptions = [{
 const search = ref('')
 const selectedStatus = ref<boolean[]>([])
 const selectedSubjects = ref<number[]>([])
-const startDate = ref<Date>(new Date())
+import { subDays } from 'date-fns'
+const startDate = ref<Date>(subDays(new Date(), 7))
 const endDate = ref<Date>(new Date())
 
 function handleDateRangeChange(range: { start: Date, end: Date }) {
   startDate.value = range.start
   endDate.value = range.end
-  console.log('Selected date range:', startDate.value, endDate.value)
 }
 
 function resetFilters() {
@@ -89,6 +88,26 @@ const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[
 })
 
 const { data: subjects } = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
+
+const calculateStats = computed(() => {
+
+  if (!attendanceRecords.value) return { uniqueSessions: 0, presentCount: 0, absentCount: 0, attendanceRate: 0 }
+
+  const uniqueSessions = new Set(attendanceRecords.value.map((r) => r.sheet_id)).size
+  const presentCount = attendanceRecords.value.filter((r) => r.is_present).length
+  const absentCount = attendanceRecords.value.filter((r) => !r.is_present).length
+  const totalRecords = attendanceRecords.value.length
+
+  const attendanceRate = ((presentCount / totalRecords) * 100).toFixed(2)
+
+  return {
+    uniqueSessions: uniqueSessions,
+    presentCount,
+    absentCount,
+    attendanceRate
+  }
+})
+
 </script>
 
 
@@ -106,25 +125,25 @@ const { data: subjects } = await useFetch<Subjects[]>('/api/teachers/subjects', 
         <UCard>
             <p class="text-gray-700 dark:text-gray-300">Total Sessions</p>
             <h4 class="text-lg font-bold">
-              1,234
+              {{ calculateStats.uniqueSessions }}
             </h4>
         </UCard>
         <UCard>
             <p class="text-gray-700 dark:text-gray-300">Present</p>
             <h4 class="text-lg font-bold">
-              1,234
+              {{ calculateStats.presentCount }}
             </h4>
         </UCard>
         <UCard>
-            <p class="text-gray-700 dark:text-gray-300">Absent</p>
+            <p class="text-gray-700 dark:text-gray-300">No Time Out</p>
             <h4 class="text-lg font-bold">
-              1,234
+              {{ calculateStats.absentCount }}
             </h4>
         </UCard>
         <UCard>
             <p class="text-gray-700 dark:text-gray-300">Attendance Rate</p>
             <h4 class="text-lg font-bold">
-              1,234
+              {{ calculateStats.attendanceRate }}%
             </h4>
           </UCard>
       </div>

@@ -61,6 +61,7 @@ class StudentAttendanceSchema(Schema):
     is_present: bool
     time_in: Optional[str] = None
     time_out: Optional[str] = None
+    sheet_id: int
     student_name: str
     subject_name: str
     session_date: date
@@ -78,6 +79,10 @@ class StudentAttendanceSchema(Schema):
     def resolve_session_date(obj):
         return obj.sheet_id.session_date
     
+    @staticmethod
+    def resolve_sheet_id(obj):
+        return obj.sheet_id.sheet_id
+
     @staticmethod
     def resolve_time_in(obj):
         return obj.time_in.strftime("%I:%S %p") if obj.time_in else None
