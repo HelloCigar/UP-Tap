@@ -114,30 +114,30 @@ def draw_detections(request):
             x, y, w, h = detection.box
             label = f"{labels[int(detection.category)]} ({detection.conf:.2f})"
 
-            # Calculate text size and position
-            (text_width, text_height), baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            text_x = x + 5
-            text_y = y + 15
+            # # Calculate text size and position
+            # (text_width, text_height), baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            # text_x = x + 5
+            # text_y = y + 15
 
             # Create a copy of the array to draw the background with opacity
             overlay = m.array.copy()
 
-            # Draw the background rectangle on the overlay
-            cv2.rectangle(overlay,
-                          (text_x, text_y - text_height),
-                          (text_x + text_width, text_y + baseline),
-                          (255, 255, 255),  # Background color (white)
-                          cv2.FILLED)
+            # # Draw the background rectangle on the overlay
+            # cv2.rectangle(overlay,
+                          # (text_x, text_y - text_height),
+                          # (text_x + text_width, text_y + baseline),
+                          # (255, 255, 255),  # Background color (white)
+                          # cv2.FILLED)
 
             alpha = 0.30
             cv2.addWeighted(overlay, alpha, m.array, 1 - alpha, 0, m.array)
 
-            # Draw text on top of the background
-            cv2.putText(m.array, label, (text_x, text_y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+            # # Draw text on top of the background
+            # cv2.putText(m.array, label, (text_x, text_y),
+                        # cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 
             # Draw detection box
-            cv2.rectangle(m.array, (x, y), (x + w, y + h), (0, 255, 0, 0), thickness=2)
+            cv2.rectangle(m.array, (x - 15, y - 15), (x + w + 15, y + h + 15), (0, 255, 0, 0), thickness=2)
 
         if intrinsics.preserve_aspect_ratio:
             b_x, b_y, b_w, b_h = imx500.get_roi_scaled(request)
@@ -180,6 +180,18 @@ class ApiWorker(QThread):
         except Exception as e:
             self.finished.emit(False, f"Error: {str(e)}")
 
+class RawCaptureWorker(QThread):
+    frame_ready = pyqtSignal(np.ndarray)
+    
+    def __init__(self, picam2):
+        super().__init__()
+        self.picam2 = picam2
+        
+    def run(self):
+        frame = self.picam2.capture_array("main")
+        print(frame.shape)
+        self.frame_ready.emit(frame)
+
 class TimeInWorker(QThread):
     # index, success flag, message (error or empty), student_name (or ""), time_in (or "")
     finished = pyqtSignal(int, bool, str, str, str)
@@ -193,16 +205,19 @@ class TimeInWorker(QThread):
     def run(self):
         try:
             response = requests.post(
-                "http://127.0.0.1:8000/time-in",
+                "http://127.0.0.1:8000/api/attendance/time-in",
                 json={
                     "student_id": self.student_id,
                     "face_data": self.face_data
+                },
+                headers={
+                    "Authorization" : "Bearer ae8b38a36238ffbce630250a9b37727589e635ba"
                 },
                 timeout=5
             )
             payload = response.json()
             # 200 → success:true + time_in + student_name
-            if response.status_code == 200 and payload.get("success", False):
+            if response.status_code == 200 and payload.get("success", True):
                 self.finished.emit(
                     self.index,
                     True,
@@ -218,7 +233,7 @@ class TimeInWorker(QThread):
                     payload.get("message", "Verification failed"),
                     "",
                     ""
-                )
+                    )
         except Exception as e:
             self.finished.emit(self.index, False, str(e), "", "")
 
@@ -232,7 +247,8 @@ class MainWindow(QWidget):
         self._any_match = False
         self._matched_name = ""
         self._matched_time = ""
-
+        self._raw_capture_worker = RawCaptureWorker(picam2)
+        self._raw_capture_worker.frame_ready.connect(self._on_raw_frame)
         
     def init_ui(self):
         layout = QVBoxLayout()
@@ -321,21 +337,11 @@ class MainWindow(QWidget):
         self.rfid_input.clear()
         self.toggle_input(False)
         self.send_face_data(rfid) 
-    
-    def send_face_data(self, rfid_text):
-        global current_frame, last_results
-        if not current_frame or not last_results:
-            return
-
-        try:
-            student_id = int(rfid_text)
-        except ValueError:
-            return
-
+        
+    def _on_raw_frame(self, raw_frame):
         face_detections = [d for d in last_results if d.category == 0][:5]
         if not face_detections:
             return
-
         # Reset our aggregate state
         self._pending_calls = len(face_detections)
         self._any_match = False
@@ -343,24 +349,75 @@ class MainWindow(QWidget):
         self._matched_time = ""
 
         # Grab one copy of the frame buffer
-        with MappedArray(current_frame, 'main') as m:
-            frame = m.array.copy()
+        # with MappedArray(current_frame, 'main') as m:
+            # frame = m.array.copy()
 
+        # for idx, det in enumerate(face_detections):
+            # x, y, w, h = det.box
+            # face_img = frame[y: y+h, x: x+w]
         for idx, det in enumerate(face_detections):
             x, y, w, h = det.box
-            face_img = frame[y: y+h, x: x+w]
+            face_img = raw_frame[y:y+h, x:x+w]
+            corrected = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
             ok, buf = cv2.imencode('.jpg', face_img)
             if not ok:
                 self._pending_calls -= 1
                 continue
 
             b64 = base64.b64encode(buf).decode('utf-8')
-            worker = TimeInWorker(idx, student_id, b64)
+            worker = TimeInWorker(idx, self._pending_rfid, b64)
             worker.finished.connect(self.handle_timein_response)
             worker.start()
             self.api_workers.append(worker)
             # (optional) save locally
-            self.save_image_local(f"{student_id}_{idx}", face_img)
+            self.save_image_local(f"{self._pending_rfid}_{idx}", face_img)
+    
+    def send_face_data(self, rfid_text):
+        self._pending_rfid = rfid_text
+        self._raw_capture_worker.start()
+        # try:
+            # student_id = int(rfid_text)
+        # except ValueError:
+            # return
+            
+        # global current_frame, last_results
+        # if not current_frame or not last_results:
+            # return
+
+        # raw_frame = picam2.capture_array("main")
+
+        face_detections = [d for d in last_results if d.category == 0][:5]
+        if not face_detections:
+            return
+
+        # # Reset our aggregate state
+        # self._pending_calls = len(face_detections)
+        # self._any_match = False
+        # self._matched_name = ""
+        # self._matched_time = ""
+
+        # # Grab one copy of the frame buffer
+        # # with MappedArray(current_frame, 'main') as m:
+            # # frame = m.array.copy()
+
+        # # for idx, det in enumerate(face_detections):
+            # # x, y, w, h = det.box
+            # # face_img = frame[y: y+h, x: x+w]
+        # for idx, det in enumerate(face_detections):
+            # x, y, w, h = det.box
+            # face_img = raw_frame[y:y+h, x:x+w]
+            # ok, buf = cv2.imencode('.png', face_img)
+            # if not ok:
+                # self._pending_calls -= 1
+                # continue
+
+            # b64 = base64.b64encode(buf).decode('utf-8')
+            # worker = TimeInWorker(idx, student_id, b64)
+            # worker.finished.connect(self.handle_timein_response)
+            # worker.start()
+            # self.api_workers.append(worker)
+            # # (optional) save locally
+            # self.save_image_local(f"{student_id}_{idx}", face_img)
          
     def save_image_local(self, rfid, image):
         os.makedirs("captures", exist_ok=True)
@@ -428,13 +485,13 @@ if __name__ == "__main__":
         exit()
 
     picam2 = Picamera2(imx500.camera_num)
-    config = picam2.create_preview_configuration(controls={"FrameRate": intrinsics.inference_rate}, buffer_count=12)
+    config = picam2.create_preview_configuration(main={"format": "XRGB888", "size": (1920, 1080)}, lores={"format": "XRGB888"}, controls={"FrameRate": intrinsics.inference_rate}, buffer_count=12)
 
     imx500.show_network_fw_progress_bar()
     #picam2.start(config, show_preview=True)
 
-    if intrinsics.preserve_aspect_ratio:
-        imx500.set_auto_aspect_ratio()
+    # if intrinsics.preserve_aspect_ratio:
+        # imx500.set_auto_aspect_ratio()
 
     
     app = QApplication([])
