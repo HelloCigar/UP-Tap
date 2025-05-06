@@ -54,7 +54,7 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
     """
 
     teacher = request.user
-    students = Student.objects.filter(enrollments__subject_id__teacher=teacher).distinct()
+    students = Student.objects.all()
 
     if q:
         students = students.filter(

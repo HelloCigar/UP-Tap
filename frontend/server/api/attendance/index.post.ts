@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
     const query = await getQuery(event)
     const body = await readBody(event)
     if (session.secure){
-      const result = await $fetch<AttendanceRecord[]>("http://127.0.0.1:8000/api/attendance/all", {
+      const result = await $fetch<AttendanceRecord[] | QueryError>("http://127.0.0.1:8000/api/attendance/all", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${session.secure.auth_token}`

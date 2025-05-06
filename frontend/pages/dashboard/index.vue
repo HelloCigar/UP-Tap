@@ -14,7 +14,7 @@ const deleted = ref(false)
 const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subjects', 
   { 
     method: 'GET',
-    watch: [newSubject, deleted]
+    watch: [newSubject, deleted, newSubject]
   },
 )
 

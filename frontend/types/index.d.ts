@@ -68,4 +68,9 @@ declare global {
         subject_name: string
         session_date: string
     }
+
+    interface QueryError {
+        success: boolean
+        message?: string
+    }
 }

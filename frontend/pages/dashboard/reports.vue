@@ -72,7 +72,7 @@ function resetFilters() {
 }
 
 // Data
-const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[]>('attendance', () => ($fetch as any)('/api/attendance/', {
+const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[] | QueryError>('attendance', () => ($fetch as any)('/api/attendance/', {
   method: 'POST',
   query: {
     q: search.value,
@@ -88,10 +88,11 @@ const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[
 })
 
 const { data: subjects } = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
+console.log(attendanceRecords.value)
 
 const calculateStats = computed(() => {
 
-  if (!attendanceRecords.value) return { uniqueSessions: 0, presentCount: 0, absentCount: 0, attendanceRate: 0 }
+  if (!attendanceRecords.value || 'success' in attendanceRecords.value &&  attendanceRecords.value.success == false) return { uniqueSessions: 0, presentCount: 0, absentCount: 0, attendanceRate: 0 }
 
   const uniqueSessions = new Set(attendanceRecords.value.map((r) => r.sheet_id)).size
   const presentCount = attendanceRecords.value.filter((r) => r.is_present).length

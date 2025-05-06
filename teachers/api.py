@@ -3,6 +3,7 @@ from ninja import Router, PatchDict
 from typing import List
 from .models import Subjects
 from .schemas import *
+from students.models import Student, SubjectEnrollment
 from django.shortcuts import get_object_or_404
 import datetime
 import django
@@ -108,6 +109,7 @@ def update_subject(request, subject_id: int, payload: SubjectCRUDSchema):
 @router.delete("/subjects/{subject_id}")
 def delete_subject(request, subject_id: int):
     subject = get_object_or_404(Subjects, subject_id=subject_id, teacher=request.user)
+    SubjectEnrollment.objects.filter(subject_id=subject).delete()
     subject.delete()
     return {"success": True}
 
