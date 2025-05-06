@@ -180,12 +180,59 @@ class ApiWorker(QThread):
         except Exception as e:
             self.finished.emit(False, f"Error: {str(e)}")
 
+class TimeInWorker(QThread):
+    # index, success flag, message (error or empty), student_name (or ""), time_in (or "")
+    finished = pyqtSignal(int, bool, str, str, str)
+
+    def __init__(self, index: int, student_id: int, face_data: str):
+        super().__init__()
+        self.index = index
+        self.student_id = student_id
+        self.face_data = face_data
+
+    def run(self):
+        try:
+            response = requests.post(
+                "http://127.0.0.1:8000/time-in",
+                json={
+                    "student_id": self.student_id,
+                    "face_data": self.face_data
+                },
+                timeout=5
+            )
+            payload = response.json()
+            # 200 → success:true + time_in + student_name
+            if response.status_code == 200 and payload.get("success", False):
+                self.finished.emit(
+                    self.index,
+                    True,
+                    "",
+                    payload.get("student_name", ""),
+                    payload.get("time_in", "")
+                )
+            else:
+                # 206 or any other non‑200 → success:false + message
+                self.finished.emit(
+                    self.index,
+                    False,
+                    payload.get("message", "Verification failed"),
+                    "",
+                    ""
+                )
+        except Exception as e:
+            self.finished.emit(self.index, False, str(e), "", "")
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
+        # for managing parallel API calls…
         self.api_workers = []
+        self._pending_calls = 0
+        self._any_match = False
+        self._matched_name = ""
+        self._matched_time = ""
+
         
     def init_ui(self):
         layout = QVBoxLayout()
@@ -241,10 +288,29 @@ class MainWindow(QWidget):
         self.message_label.setText(text)
         QTimer.singleShot(3000, lambda: self.message_label.setText(""))
         
-    def handle_api_response(self, success, message):
-        # Clean up finished workers
+    @pyqtSlot(int, bool, str, str, str)
+    def handle_timein_response(self, idx, success, message, student_name, time_in):
+        # drop finished threads
         self.api_workers = [w for w in self.api_workers if w.isRunning()]
-        face_signals.show_message.emit(message)
+
+        if success and not self._any_match:
+            # capture first successful match
+            self._any_match = True
+            self._matched_name = student_name
+            self._matched_time = time_in
+
+        self._pending_calls -= 1
+
+        # once all have returned…
+        if self._pending_calls == 0:
+            if self._any_match:
+                face_signals.show_message.emit(
+                    f"Time‑in recorded for {self._matched_name} at {self._matched_time}"
+                )
+            else:
+                face_signals.show_message.emit(
+                    f"Face not verified: {message}"
+                )
 
     def handle_rfid(self):
         rfid = self.rfid_input.text()
@@ -256,33 +322,46 @@ class MainWindow(QWidget):
         self.toggle_input(False)
         self.send_face_data(rfid) 
     
-    def send_face_data(self, rfid):
-        global current_frame
+    def send_face_data(self, rfid_text):
+        global current_frame, last_results
         if not current_frame or not last_results:
             return
-        
-        face_detections = [d for d in last_results if d.category == 0]
+
+        try:
+            student_id = int(rfid_text)
+        except ValueError:
+            return
+
+        face_detections = [d for d in last_results if d.category == 0][:5]
         if not face_detections:
             return
-        
-        detection = face_detections[0]
-        x, y, w, h = detection.box
-        
-        with MappedArray(current_frame, 'main') as m:
-            face_img = m.array[y:y+h, x:x+w]
-            retval, buffer = cv2.imencode('.jpg', face_img)
-            if retval:
-                b64_str = base64.b64encode(buffer).decode('utf-8')
-                
-                # Create and start worker
-                worker = ApiWorker(rfid, b64_str)
-                worker.finished.connect(self.handle_api_response)
-                worker.start()
-                self.api_workers.append(worker)  # Maintain reference
 
-                # Save locally
-                self.save_image_local(rfid, face_img)
-                
+        # Reset our aggregate state
+        self._pending_calls = len(face_detections)
+        self._any_match = False
+        self._matched_name = ""
+        self._matched_time = ""
+
+        # Grab one copy of the frame buffer
+        with MappedArray(current_frame, 'main') as m:
+            frame = m.array.copy()
+
+        for idx, det in enumerate(face_detections):
+            x, y, w, h = det.box
+            face_img = frame[y: y+h, x: x+w]
+            ok, buf = cv2.imencode('.jpg', face_img)
+            if not ok:
+                self._pending_calls -= 1
+                continue
+
+            b64 = base64.b64encode(buf).decode('utf-8')
+            worker = TimeInWorker(idx, student_id, b64)
+            worker.finished.connect(self.handle_timein_response)
+            worker.start()
+            self.api_workers.append(worker)
+            # (optional) save locally
+            self.save_image_local(f"{student_id}_{idx}", face_img)
+         
     def save_image_local(self, rfid, image):
         os.makedirs("captures", exist_ok=True)
         filename = f"captures/{rfid}_{int(time.time())}.jpg"
