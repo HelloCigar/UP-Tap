@@ -176,15 +176,13 @@ class MainWindow(QWidget):
         self._any_match = False
         self._matched_name = ""
         self._matched_time = ""
+        self.api_type = "Time In"
         self._raw_capture_worker = RawCaptureWorker(picam2)
         self._raw_capture_worker.frame_ready.connect(self._on_raw_frame)
         
     def init_ui(self):
         layout = QVBoxLayout()
         layout.setSpacing(10)
-
-        # window title
-        self.setWindowTitle("UP-Tap Attendance System")
         
         #Header
         header = QLabel("UP-Tap Attendance System")
@@ -335,7 +333,7 @@ class MainWindow(QWidget):
             elif self.api_type == 'Time Out':
                 worker = TimeOutWorker(idx, self._pending_rfid, b64)
                 worker.finished.connect(self.handle_timeout_response)
-            
+                
             worker.start()
             self.api_workers.append(worker)
             # (optional) save locally
@@ -456,6 +454,7 @@ if __name__ == "__main__":
     
     app = QApplication([])
     main_window = MainWindow()
+    main_window.setWindowTitle("UP-Tap")
 
     last_results = None
     picam2.pre_callback = draw_detections
