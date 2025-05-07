@@ -82,25 +82,39 @@ watch(detections, (newDetections) => {
 });
 
 
-// Capture photo from video and emit as a Blob URL
-const capturePhoto = () => {
-  const canvas = document.createElement('canvas');
+const capturePhoto = async () => {
   const video = videoElement.value;
-  
-  // Set canvas size to match video dimensions
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  
-  // Draw the current video frame to the canvas
+  const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-  // Convert canvas to Blob and create a Blob URL
+
+  const options = new faceapi.TinyFaceDetectorOptions();
+  const detection = await faceapi.detectSingleFace(video, options).withFaceLandmarks();
+
+  if (!detection) {
+    console.warn("No face detected at capture.");
+    return;
+  }
+
+  const { box } = detection.detection;
+
+  // Set canvas size to match the bounding box size
+  canvas.width = box.width;
+  canvas.height = box.height;
+
+  // Draw only the face region
+  context.drawImage(
+    video,
+    box.x, box.y, box.width, box.height,  // Source
+    0, 0, box.width, box.height           // Destination
+  );
+
+  // Convert canvas to Blob
   canvas.toBlob((blob) => {
-    const photoURL = URL.createObjectURL(blob); // Create object URL from the Blob
-    emit('photo-taken', photoURL); // Emit the Blob URL to the parent
+    const photoURL = URL.createObjectURL(blob);
+    emit('photo-taken', photoURL); // Send cropped face
   }, 'image/png');
 };
+
   
 // Expose the `capturePhoto` method to the parent
 defineExpose({

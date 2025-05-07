@@ -21,7 +21,7 @@ def register_student(request, data: StudentSchema, subjects: str):
     Returns:
         dict: A dictionary with the student_id of the newly created student
     """
-    try:
+    try:        
         student = Student.objects.create(**data.dict())
     except IntegrityError:
         return {"error": "Student already exists!"}

@@ -18,7 +18,7 @@ declare global {
     }
 
     interface StudentQueryResponse {
-        items: Student[]
+        items?: Student[]
         count: number
     }
 

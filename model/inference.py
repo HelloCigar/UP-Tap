@@ -4,8 +4,8 @@ from scipy.spatial.distance import cosine
 
 def verify_face_similarity(face1_string, face2_string):
     # Face detection + cropping
-    face1 = detect_and_crop_face(face1_string)
-    face2 = detect_and_crop_face(face2_string)
+    face1 = align_face(face1_string)
+    face2 = align_face(face2_string)
 
     # Compute embeddings
     embedding1 = compute_embedding(face1)
