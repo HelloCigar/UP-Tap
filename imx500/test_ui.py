@@ -153,33 +153,6 @@ class Detection:
         self.conf = conf
         self.box = imx500.convert_inference_coords(coords, metadata, picam2)
 
-
-# Add this class for background POST operations
-class ApiWorker(QThread):
-    finished = pyqtSignal(bool, str)
-
-    def __init__(self, rfid, image_data):
-        super().__init__()
-        self.rfid = rfid
-        self.image_data = image_data
-
-    def run(self):
-        try:
-            response = requests.post(
-                "https://your-api-endpoint.com/register",
-                json={
-                    "rfid": self.rfid,
-                    "face_image": self.image_data
-                },
-                timeout=5  # Add timeout
-            )
-            if response.status_code == 200:
-                self.finished.emit(True, "Registration successful!")
-            else:
-                self.finished.emit(False, "Registration failed!")
-        except Exception as e:
-            self.finished.emit(False, f"Error: {str(e)}")
-
 class RawCaptureWorker(QThread):
     frame_ready = pyqtSignal(np.ndarray)
     
@@ -252,30 +225,36 @@ class MainWindow(QWidget):
         
     def init_ui(self):
         layout = QVBoxLayout()
+        layout.setSpacing(10)
+        
+        #Header
+        header = QLabel("UP-Tap Attendance System")
+        header.setStyleSheet("font-size: 18px; font-weight: bold;")
+        desc = QLabel("Scan your RFID card while looking straight into the camera for face verification")
+        layout.addWidget(header)
+        layout.addWidget(desc)
         
         # Camera preview
-        self.preview = QGlPicamera2(picam2, width=800, height=600, keep_ar=True)
+        self.preview = QGlPicamera2(picam2, width=640, height=480, keep_ar=True)
+        self.preview.setFixedSize(640, 480)
+        self.preview.setStyleSheet("background-color: black; border-radius: 8px;")
         layout.addWidget(self.preview)
         
         # Status label
         self.status_label = QLabel("Initializing...")
         self.status_label.setAlignment(Qt.AlignCenter)
-        self.status_label.setStyleSheet("font-size: 18px; color: white; background-color: #333;")
+        self.status_label.setStyleSheet("font-size: 18px; background-color: #f1f1f1; border: 1px solid #ddd; padding: 10px; border-radius: 6px;")
         layout.addWidget(self.status_label)
         
         # RFID input
         input_layout = QHBoxLayout()
         self.rfid_input = QLineEdit()
-        self.rfid_input.setPlaceholderText("Enter 10-digit RFID")
+        self.rfid_input.setPlaceholderText("Tap your UP RFID to the scanner...")
         self.rfid_input.setEnabled(False)
         self.rfid_input.setMaxLength(10)
         input_layout.addWidget(QLabel("RFID:"))
         input_layout.addWidget(self.rfid_input)
-        
-        self.submit_btn = QPushButton("Submit")
-        self.submit_btn.clicked.connect(self.handle_rfid)
-        input_layout.addWidget(self.submit_btn)
-        
+    
         layout.addLayout(input_layout)
         
         # Message label
@@ -370,21 +349,11 @@ class MainWindow(QWidget):
             worker.start()
             self.api_workers.append(worker)
             # (optional) save locally
-            self.save_image_local(f"{self._pending_rfid}_{idx}", face_img)
+            # self.save_image_local(f"{self._pending_rfid}_{idx}", face_img)
     
     def send_face_data(self, rfid_text):
         self._pending_rfid = rfid_text
         self._raw_capture_worker.start()
-        # try:
-            # student_id = int(rfid_text)
-        # except ValueError:
-            # return
-            
-        # global current_frame, last_results
-        # if not current_frame or not last_results:
-            # return
-
-        # raw_frame = picam2.capture_array("main")
 
         face_detections = [d for d in last_results if d.category == 0][:5]
         if not face_detections:
@@ -497,7 +466,6 @@ if __name__ == "__main__":
     app = QApplication([])
     main_window = MainWindow()
     main_window.setWindowTitle("UPTap Attendance System")
-    main_window.resize(1000, 800)
 
     last_results = None
     picam2.pre_callback = draw_detections

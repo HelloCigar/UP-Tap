@@ -1,5 +1,5 @@
 
-from .utils import *
+from .inference_utils import align_face, compute_embedding
 from scipy.spatial.distance import cosine
 
 def verify_face_similarity(face1_string, face2_string):
