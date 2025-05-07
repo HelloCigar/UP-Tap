@@ -203,7 +203,7 @@ class MainWindow(QWidget):
         layout.addWidget(self.status_label)
 
         apiType = QComboBox()
-        apiType.addItems(['time_in', 'time_out'])
+        apiType.addItems(['Time In', 'Time Out'])
         layout.addWidget(apiType)
         apiType.currentTextChanged.connect(self.on_api_type_change)
         
@@ -327,10 +327,10 @@ class MainWindow(QWidget):
                 continue
 
             b64 = base64.b64encode(buf).decode('utf-8')
-            if self.api_type == 'time_in':
+            if self.api_type == 'Time In':
                 worker = TimeInWorker(idx, self._pending_rfid, b64)
                 worker.finished.connect(self.handle_timein_response)
-            elif self.api_type == 'time_out':
+            elif self.api_type == 'Time Out':
                 worker = TimeOutWorker(idx, self._pending_rfid, b64)
                 worker.finished.connect(self.handle_timeout_response)
             
