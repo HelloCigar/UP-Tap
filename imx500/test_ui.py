@@ -17,12 +17,12 @@ from picamera2.devices.imx500 import (NetworkIntrinsics,
                                       postprocess_nanodet_detection)
 from picamera2.previews.qt import QGlPicamera2
 
-
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, 
-                            QLineEdit, QHBoxLayout, QPushButton)
+                            QLineEdit, QHBoxLayout, QComboBox)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QObject, QThread, pyqtSlot
 
-                                      
+from ApiWorkers import TimeInWorker, TimeOutWorker
+                   
 last_results = None
 results_lock = Lock()
 global last_detections
@@ -165,50 +165,6 @@ class RawCaptureWorker(QThread):
         print(frame.shape)
         self.frame_ready.emit(frame)
 
-class TimeInWorker(QThread):
-    # index, success flag, message (error or empty), student_name (or ""), time_in (or "")
-    finished = pyqtSignal(int, bool, str, str, str)
-
-    def __init__(self, index: int, student_id: int, face_data: str):
-        super().__init__()
-        self.index = index
-        self.student_id = student_id
-        self.face_data = face_data
-
-    def run(self):
-        try:
-            response = requests.post(
-                "http://127.0.0.1:8000/api/attendance/time-in",
-                json={
-                    "student_id": self.student_id,
-                    "face_data": self.face_data
-                },
-                headers={
-                    "Authorization" : "Bearer ae8b38a36238ffbce630250a9b37727589e635ba"
-                },
-                timeout=5
-            )
-            payload = response.json()
-            # 200 → success:true + time_in + student_name
-            if response.status_code == 200 and payload.get("success", True):
-                self.finished.emit(
-                    self.index,
-                    True,
-                    "",
-                    payload.get("student_name", ""),
-                    payload.get("time_in", "")
-                )
-            else:
-                # 206 or any other non‑200 → success:false + message
-                self.finished.emit(
-                    self.index,
-                    False,
-                    payload.get("message", "Verification failed"),
-                    "",
-                    ""
-                    )
-        except Exception as e:
-            self.finished.emit(self.index, False, str(e), "", "")
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -245,6 +201,11 @@ class MainWindow(QWidget):
         self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setStyleSheet("font-size: 18px; background-color: #f1f1f1; border: 1px solid #ddd; padding: 10px; border-radius: 6px;")
         layout.addWidget(self.status_label)
+
+        apiType = QComboBox()
+        apiType.addItems(['time_in', 'time_out'])
+        layout.addWidget(apiType)
+        apiType.currentTextChanged.connect(self.on_api_type_change)
         
         # RFID input
         input_layout = QHBoxLayout()
@@ -271,6 +232,7 @@ class MainWindow(QWidget):
         face_signals.show_message.connect(self.show_message)
         self.rfid_input.returnPressed.connect(self.handle_rfid)
         
+        
     def update_status(self, text):
         self.status_label.setText(text)
         
@@ -282,6 +244,11 @@ class MainWindow(QWidget):
     def show_message(self, text):
         self.message_label.setText(text)
         QTimer.singleShot(3000, lambda: self.message_label.setText(""))
+
+    def on_api_type_change(self, s: str):
+        self.api_type = s
+
+        
         
     @pyqtSlot(int, bool, str, str, str)
     def handle_timein_response(self, idx, success, message, student_name, time_in):
@@ -301,6 +268,29 @@ class MainWindow(QWidget):
             if self._any_match:
                 face_signals.show_message.emit(
                     f"Time‑in recorded for {self._matched_name} at {self._matched_time}"
+                )
+            else:
+                face_signals.show_message.emit(
+                    f"Face not verified: {message}"
+                )
+    @pyqtSlot(int, bool, str, str, str)
+    def handle_timeout_response(self, idx, success, message, student_name, time_out):
+        # drop finished threads
+        self.api_workers = [w for w in self.api_workers if w.isRunning()]
+
+        if success and not self._any_match:
+            # capture first successful match
+            self._any_match = True
+            self._matched_name = student_name
+            self._matched_time = time_out
+
+        self._pending_calls -= 1
+
+        # once all have returned…
+        if self._pending_calls == 0:
+            if self._any_match:
+                face_signals.show_message.emit(
+                    f"Time‑out recorded for {self._matched_name} at {self._matched_time}"
                 )
             else:
                 face_signals.show_message.emit(
@@ -327,13 +317,6 @@ class MainWindow(QWidget):
         self._matched_name = ""
         self._matched_time = ""
 
-        # Grab one copy of the frame buffer
-        # with MappedArray(current_frame, 'main') as m:
-            # frame = m.array.copy()
-
-        # for idx, det in enumerate(face_detections):
-            # x, y, w, h = det.box
-            # face_img = frame[y: y+h, x: x+w]
         for idx, det in enumerate(face_detections):
             x, y, w, h = det.box
             face_img = raw_frame[y:y+h, x:x+w]
@@ -344,8 +327,13 @@ class MainWindow(QWidget):
                 continue
 
             b64 = base64.b64encode(buf).decode('utf-8')
-            worker = TimeInWorker(idx, self._pending_rfid, b64)
-            worker.finished.connect(self.handle_timein_response)
+            if self.api_type == 'time_in':
+                worker = TimeInWorker(idx, self._pending_rfid, b64)
+                worker.finished.connect(self.handle_timein_response)
+            elif self.api_type == 'time_out':
+                worker = TimeOutWorker(idx, self._pending_rfid, b64)
+                worker.finished.connect(self.handle_timeout_response)
+            
             worker.start()
             self.api_workers.append(worker)
             # (optional) save locally
