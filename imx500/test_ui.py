@@ -182,10 +182,14 @@ class MainWindow(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
         layout.setSpacing(10)
+
+        # window title
+        self.setWindowTitle("UP-Tap Attendance System")
         
         #Header
         header = QLabel("UP-Tap Attendance System")
         header.setStyleSheet("font-size: 18px; font-weight: bold;")
+        header.setAlignment(Qt.AlignCenter)
         desc = QLabel("Scan your RFID card while looking straight into the camera for face verification")
         layout.addWidget(header)
         layout.addWidget(desc)
@@ -247,8 +251,6 @@ class MainWindow(QWidget):
 
     def on_api_type_change(self, s: str):
         self.api_type = s
-
-        
         
     @pyqtSlot(int, bool, str, str, str)
     def handle_timein_response(self, idx, success, message, student_name, time_in):
@@ -445,6 +447,7 @@ if __name__ == "__main__":
     config = picam2.create_preview_configuration(main={"format": "XRGB888", "size": (1920, 1080)}, lores={"format": "XRGB888"}, controls={"FrameRate": intrinsics.inference_rate}, buffer_count=12)
 
     imx500.show_network_fw_progress_bar()
+
     #picam2.start(config, show_preview=True)
 
     # if intrinsics.preserve_aspect_ratio:
@@ -453,7 +456,6 @@ if __name__ == "__main__":
     
     app = QApplication([])
     main_window = MainWindow()
-    main_window.setWindowTitle("UPTap Attendance System")
 
     last_results = None
     picam2.pre_callback = draw_detections
