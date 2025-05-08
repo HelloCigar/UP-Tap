@@ -11,7 +11,7 @@ import django
 router = Router()
 
 
-@router.get("/subjects", response=List[SubjectCRUDSchema])
+@router.get("/subjects", response=List[SubjectCRUDSchema], auth=None)
 def get_subjects(request):
     result = []
     teacher = request.user
