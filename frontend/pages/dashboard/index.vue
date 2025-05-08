@@ -131,6 +131,7 @@ async function logout() {
   await navigateTo('/login')
 }
 
+const live_time_event = ref(true)
 const { data: timeInOutData, status: timeInOutStatus } = await useAsyncData<{time_in: string, time_out: string, student_name: string}[]>
     ('', () => $fetch(`/api/attendance/recent/`, {
        method: 'GET', 
@@ -138,7 +139,7 @@ const { data: timeInOutData, status: timeInOutStatus } = await useAsyncData<{tim
       { type: recordType.value } 
       }
     ),
-    { watch: [recordType] }
+    { watch: [recordType, live_time_event] }
   )
 const time_in_columns = [{
   key: 'student_name',
@@ -173,21 +174,13 @@ import { useEventSource } from '@vueuse/core'
 const { status, data, error, close, eventSource,  } = useEventSource('/api/sse', ['time_in', 'time_out'] as const, {
   autoReconnect: true
 })
+
 if (eventSource.value) {
   eventSource.value.addEventListener("time_in", function(event) {
-    const data = JSON.parse(event.data);
-    timeInOutData.value?.unshift(data as {time_in: string, time_out: string, student_name: string})
-    console.log("Received message:", data);
+    live_time_event.value = !live_time_event.value
   });
   eventSource.value.addEventListener("time_out", function(event) {
-      const data = JSON.parse(event.data);
-      //find similar name and date, then add time_out field
-      timeInOutData.value?.forEach((item) => {
-        if (item.student_name === data.student_name && item.date === data.date) {
-          item.time_out = data.time_out
-        }
-      })
-      console.log("Received message:", data);
+    live_time_event.value = !live_time_event.value
   })
 
 }
