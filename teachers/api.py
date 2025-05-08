@@ -40,7 +40,7 @@ def get_subjects(request):
     return result
 
 @router.get("/subjects/noauth", response=List[SubjectCRUDSchema], auth=None)
-def get_subjects(request):
+def get_subjects_noauth(request):
     result =[]
     subjects = Subjects.objects.all()
     for subj in subjects:
