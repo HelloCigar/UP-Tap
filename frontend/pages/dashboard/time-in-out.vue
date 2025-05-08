@@ -66,8 +66,7 @@ watch(rfidNumber, async (newVal: string) => {
     const time_in = await $fetch<TimeInOutResponse>(`/api/attendance/${time_in_out.value}`, {
         method: 'POST',
         body: {
-          student_id: +rfidNumber.value,
-          subject_id: chosenSub.value,
+          rfid: +rfidNumber.value,
           face_data: face_data,
         }
       }

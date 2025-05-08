@@ -17,7 +17,7 @@ class TimeInWorker(QThread):
             response = requests.post(
                 "http://127.0.0.1:8000/api/attendance/time-in",
                 json={
-                    "student_id": self.student_id,
+                    "rfid": self.student_id,
                     "face_data": self.face_data
                 },
                 headers={
@@ -53,7 +53,7 @@ class TimeOutWorker(TimeInWorker):
             response = requests.post(
                 "http://127.0.0.1:8000/api/attendance/time-out",
                 json={
-                    "student_id": self.student_id,
+                    "rfid": self.student_id,
                     "face_data": self.face_data
                 },
                 headers={
