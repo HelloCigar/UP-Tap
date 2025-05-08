@@ -18,6 +18,9 @@ class UPRFID(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE)
     rfid_num = models.BigIntegerField(unique=True)
 
+    def __str__(self):
+        return f'{self.student} - {self.rfid_num}'
+
     
 class SubjectEnrollment(models.Model):
     enrollment_id = models.AutoField(primary_key=True)

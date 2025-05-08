@@ -223,8 +223,8 @@ if (eventSource.value) {
       <!-- Attendance Records -->
       <div class="grid gap-8 md:grid-cols-2 items-start">
         <!-- Recent Attendance -->
-        <UCard>
-          <div class="flex justify-between items-center mb-6">
+        <UCard class="flex flex-col h-96">
+          <div class="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Recent Attendance</h2>
             <div class="flex gap-2">
               <button
@@ -244,7 +244,7 @@ if (eventSource.value) {
             </div>
           </div>
           
-          <div class="space-y-4">
+          <div class="overflow-auto flex-1 space-y-4">
             <UTable
               v-if="timeInOutData"
               :loading="timeInOutStatus === 'pending'"
@@ -265,21 +265,20 @@ if (eventSource.value) {
         </UCard>
 
         <!-- Subjects Management -->
-        <UCard>
-          <div class="flex justify-between items-center mb-6">
+        <UCard class="flex flex-col h-96">
+          <div class="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Subjects</h2>
-            <UButton
-              @click="openAddModal"
-            >
-              Add Subject
-            </UButton>
+            <UButton @click="openAddModal">Add Subject</UButton>
           </div>
 
-          <div class="space-y-4">
-            <div v-for="subject in subjects" :key="subject.subject_id" 
-                 class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+          <div class="overflow-scroll h-64 flex-1 space-y-4">
+            <div 
+              v-for="subject in subjects" 
+              :key="subject.subject_id" 
+              class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
               <div>
                 <h3 class="font-medium text-gray-900 dark:text-white">{{ subject.subject_name }}</h3>
+                <p class="font-thin text-gray-900 dark:text-white">{{ subject.start_time }} to {{ subject.end_time }}</p>
               </div>
               <div class="flex gap-2">
                 <button
@@ -366,7 +365,7 @@ if (eventSource.value) {
       </UCard>
     </UModal>
     </div>
-    </div>
+  </div>
 
     <template #footer>
     </template>
