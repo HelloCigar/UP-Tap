@@ -15,7 +15,12 @@ router = Router()
 def get_subjects(request):
     result = []
     teacher = request.user
-    subjects = Subjects.objects.filter(teacher=teacher)
+
+    subjects = Subjects.objects.all()
+
+    if teacher.is_authenticated:
+        subjects = Subjects.objects.filter(teacher=teacher)
+
     for subj in subjects:
         qs = subj.classschedule_set.all()
         days = [s.day_of_week for s in qs]

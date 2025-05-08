@@ -151,7 +151,6 @@ const items = [{
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
               Register a new student
             </h3>
-            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isOpen = false" />
           </div>
         </template>
 
@@ -182,14 +181,6 @@ const items = [{
                         </UForm>
                     </div>
                     <div v-if="selectedTab === 1">
-                        <div class="flex flex-col w-full items-center justify-center">
-                            <NuxtImg src="/images/RFID.png" width="500"/>
-                            <div class="w-36">
-                                <UInput color="white" v-model="rfidNumber" variant="outline" autofocus ref="rfidRef" placeholder="Your RFID number..." /> 
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="selectedTab === 2">
                         <div v-if="!photo" class="flex flex-col w-full items-center justify-center gap-y-4">
                             <h3 v-if="faceDetected" class="text-base font-semibold leading-6 text-green-600 dark:text-white">
                                 Face detected
