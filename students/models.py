@@ -14,6 +14,11 @@ class Student(models.Model):
     def __str__(self):
         return self.full_name()
     
+class UPRFID(models.Model):
+    student = models.OneToOneField(Student, on_delete=models.CASCADE)
+    rfid_num = models.BigIntegerField(unique=True)
+
+    
 class SubjectEnrollment(models.Model):
     enrollment_id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='enrollments')
