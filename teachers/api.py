@@ -11,7 +11,7 @@ import django
 router = Router()
 
 
-@router.get("/subjects", response=List[SubjectCRUDSchema], auth=None)
+@router.get("/subjects", response=List[SubjectCRUDSchema])
 def get_subjects(request):
     result = []
     teacher = request.user
@@ -21,6 +21,28 @@ def get_subjects(request):
     if teacher.is_authenticated and teacher.is_superuser == False:
         subjects = Subjects.objects.filter(teacher=teacher)
 
+    for subj in subjects:
+        qs = subj.classschedule_set.all()
+        days = [s.day_of_week for s in qs]
+        # assume all entries share the same times
+        if qs:
+            st = qs[0].start_time.strftime("%H:%M")
+            et = qs[0].end_time.strftime("%H:%M")
+        else:
+            st = et = ""
+        result.append({
+            "subject_id": subj.subject_id,
+            "subject_name": subj.subject_name,
+            "schedule": days,
+            "start_time": st,
+            "end_time": et,
+        })
+    return result
+
+@router.get("/subjects/noauth", response=List[SubjectCRUDSchema], auth=None)
+def get_subjects(request):
+    result =[]
+    subjects = Subjects.objects.all()
     for subj in subjects:
         qs = subj.classschedule_set.all()
         days = [s.day_of_week for s in qs]
