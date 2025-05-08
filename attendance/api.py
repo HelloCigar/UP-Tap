@@ -8,8 +8,7 @@ from .models import AttendanceSheet, StudentAttendaceInfo
 from django.db.models import Q
 from .schemas import StudentAttendanceSchema, TimeInData, TimeOutData, TimeInResponse, TimeOutResponse, TimeInError, TimeOutError, RecentTimeInResponse, RecentTimeOutResponse, RecentError
 from teachers.models import Subjects
-from students.models import Student, SubjectEnrollment
-from .services import process_attendance, get_student_and_enrollment, get_student_and_active_subject 
+from .services import process_attendance, get_student_and_active_subject 
 from django_eventstream import send_event
 
 
@@ -20,7 +19,7 @@ router = Router()
 def save_time_in(request, data: TimeInData):
     """Handle time-in requests."""
     try:
-        student, subject, attendance_sheet = get_student_and_active_subject(data.student_id)
+        student, subject, attendance_sheet = get_student_and_active_subject(data.rfid)
     except Exception as e:
         return 206, {"success": False, "message": str(e)}
 
@@ -39,7 +38,7 @@ def save_time_in(request, data: TimeInData):
 def save_time_out(request, data: TimeOutData):
     """Handle time-out requests."""
     try:
-        student, subject, attendance_sheet = get_student_and_active_subject(data.student_id)
+        student, subject, attendance_sheet = get_student_and_active_subject(data.rfid)
     except Exception as e:
         return 206, {"success": False, "message": str(e)}
 

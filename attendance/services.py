@@ -4,7 +4,7 @@ from model.inference import verify_face_similarity
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from attendance.models import AttendanceSheet, StudentAttendaceInfo
-from students.models import Student, SubjectEnrollment
+from students.models import Student, SubjectEnrollment, UPRFID
 from teachers.models import Subjects
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
 import logging
@@ -61,9 +61,10 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from teachers.models import ClassSchedule
 
-def get_student_and_active_subject(student_id: str) -> Tuple[Student, Subjects, AttendanceSheet]:
+def get_student_and_active_subject(rfid: str) -> Tuple[Student, Subjects, AttendanceSheet]:
     """Get student, active subject, and attendance sheet or raise appropriate errors."""
-    student = get_object_or_404(Student, student_id=student_id)
+
+    student = get_object_or_404(Student, uprfid__rfid_num=rfid)
     
     # Get the current time and day
     now = timezone.now()

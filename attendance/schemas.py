@@ -4,7 +4,7 @@ from typing import Optional
 from attendance.models import StudentAttendaceInfo
 
 class TimeInData(Schema):
-    student_id: int
+    rfid: int
     face_data: str
 
 class TimeInResponse(Schema):
