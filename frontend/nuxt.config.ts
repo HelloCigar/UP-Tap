@@ -13,4 +13,8 @@ export default defineNuxtConfig({
   build: {
     transpile: ['@vuepic/vue-datepicker']
   },
+  devServer: {
+    host: '0.0.0.0',
+    port: 3000
+  }
 })
