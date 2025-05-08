@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       return result
     }
     else if(!session.secure) {
-      const result = await $fetch("http://127.0.0.1:8000/api/teachers/subjects", {
+      const result = await $fetch("http://127.0.0.1:8000/api/teachers/subjects/noauth", {
         method: "GET",
           query: query
         }
