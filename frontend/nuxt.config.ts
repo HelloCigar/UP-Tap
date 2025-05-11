@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import {resolve} from 'pathe'
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
@@ -15,6 +17,10 @@ export default defineNuxtConfig({
   },
   devServer: {
     host: '0.0.0.0',
-    port: 3000
+    port: 3000,
+    //https: {
+		//key: resolve(__dirname, 'localhost-key.pem'),
+		//cert: resolve(__dirname, 'localhost.pem')
+	//}
   }
 })
