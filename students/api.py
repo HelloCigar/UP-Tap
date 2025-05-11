@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 
 router = Router()
 
-@router.post("/register")
+@router.post("/register", auth=None)
 def register_student(request, data: StudentSchema, subjects: str):
     """
     Register a new student.
@@ -21,7 +21,7 @@ def register_student(request, data: StudentSchema, subjects: str):
     Returns:
         dict: A dictionary with the student_id of the newly created student
     """
-    try:        
+    try:       
         student = Student.objects.create(**data.dict())
     except IntegrityError:
         return {"error": "Student already exists!"}

@@ -1,24 +1,28 @@
 <script setup lang="ts">
-import { object, string, type InferType } from 'yup'
+import { object, string, number,type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
 import { RegisterModal } from '#components'
 
 const isOpen = ref(false)
-const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
+const {data: subjects} = await useFetch<Subjects[]>('/api/subjects', { method: 'GET' } )
 const selectedSubjects = ref<number[]>([])
 const emit = defineEmits(['register-done'])
 const modal = useModal()
 const rfidNumber = ref("");
 const selectedTab = ref(0)
 
+console.log(subjects)
+
 
 const schema = object({
+  student_id: number().integer().typeError('Student ID must be a number').required('Required'),
   email: string().email('Invalid email').required('Required'),
   first_name: string().required('Required'),
   last_name: string().required('Required'),
 })
 type Schema = InferType<typeof schema>
 const state = reactive({
+  student_id: undefined,
   email: undefined,
   first_name: undefined,
   last_name: undefined,
@@ -37,17 +41,15 @@ function nextTab() {
 
 const allowNext = computed(() => !(state.email && state.first_name && state.last_name));
 
-watch(rfidNumber, (newVal) => { if (newVal.length === 10) nextTab(); });
-
 watch(selectedTab, (newVal) => { if (newVal === 1) rfidNumber.value = ''; });
 
 watch(isOpen, (newVal) => { if (!newVal) resetForm(); });
 
 function resetForm() {
-  rfidNumber.value = ''
   state.first_name = undefined
   state.last_name = undefined
   state.email = undefined
+  state.student_id = undefined
   photo.value = ''
   base64String.value = ''
   selectedSubjects.value = []
@@ -66,7 +68,7 @@ async function registerStudent() {
     registerResult.value = await $fetch<StudentRegister>('/api/students/register', {
       method: 'POST',
       body: {
-        student_id: Number(rfidNumber.value),
+        student_id: state.student_id,
         first_name: state.first_name,
         last_name: state.last_name,
         email: state.email,
@@ -161,6 +163,9 @@ const items = [{
                     <UDivider />
                     <div v-if="selectedTab === 0" class="flex flex-col gap-y-4 w-1/2">
                         <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+                            <UFormGroup label="Student ID" name="student_id" description="The student number assigned by the university" required>
+                                <UInput v-model="state.student_id" />
+                            </UFormGroup>
                             <UFormGroup label="Email" name="email" required>
                                 <UInput v-model="state.email" />
                             </UFormGroup>

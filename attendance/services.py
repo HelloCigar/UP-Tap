@@ -17,7 +17,6 @@ def verify_face(student_face_data, input_face_data):
             return False, {"success": False, "message": "Face data mismatch!"}
         return True, None
     except ValueError:
-        logging.error("ValueError: ", ValueError)
         return False, {"success": False, "message": "Spoof image or no face detected!"}
 
 
@@ -86,12 +85,15 @@ def get_student_and_active_subject(rfid: str) -> Tuple[Student, Subjects, Attend
     if not active_schedule:
         raise ValueError("No active class session found at this time!")
 
+    try:
     # Check if student is enrolled in this subject
-    enrollment = get_object_or_404(
-        SubjectEnrollment, 
-        student_id=student, 
-        subject_id=active_schedule.subject_id
-    )
+        enrollment = SubjectEnrollment.objects.filter(
+            student_id=student,
+            subject_id=active_schedule.subject_id
+        )
+        print(enrollment)
+    except SubjectEnrollment.DoesNotExist:
+        raise ValueError("Student is not enrolled in this subject!")
 
     # Get or create the AttendanceSheet for today
     attendance_sheet, _ = AttendanceSheet.objects.get_or_create(
