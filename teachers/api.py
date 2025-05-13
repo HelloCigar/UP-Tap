@@ -21,7 +21,7 @@ def get_subjects(request):
 
     subjects = Subjects.objects.all()
 
-    if teacher.is_authenticated and teacher.is_superuser == False:
+    if teacher.is_superuser == False:
         subjects = Subjects.objects.filter(teacher=teacher)
 
     for subj in subjects:

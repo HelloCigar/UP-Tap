@@ -90,7 +90,7 @@ def align_face(image_string: str):
 
         # Crop the aligned image
         face_crop = aligned_pil.crop((x_min, y_min, x_max, y_max))
-        face_crop.show()
+        #face_crop.show()
         return face_crop
 
     return img  # return original if no face found

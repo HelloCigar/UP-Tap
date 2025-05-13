@@ -19,7 +19,7 @@ router = Router()
 def save_time_in(request, data: TimeInData):
     """Handle time-in requests."""
     try:
-        student, subject, attendance_sheet = get_student_and_active_subject(data.rfid)
+        student, subject, attendance_sheet = get_student_and_active_subject(data.rfid, request.user)
     except Exception as e:
         return 206, {"success": False, "message": str(e)}
 
@@ -92,6 +92,11 @@ def get_all_student_attendance(request,
     ):
 
     attendance_records = StudentAttendaceInfo.objects.all()
+
+    if not request.user.is_superuser:
+        attendance_records = attendance_records.filter(
+            student_id__enrollments__subject_id__teacher=request.user
+        )
 
     if filter.subject_ids:
         try:

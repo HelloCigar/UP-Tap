@@ -60,7 +60,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from teachers.models import ClassSchedule
 
-def get_student_and_active_subject(rfid: str) -> Tuple[Student, Subjects, AttendanceSheet]:
+def get_student_and_active_subject(rfid: str, user) -> Tuple[Student, Subjects, AttendanceSheet]:
     """Get student, active subject, and attendance sheet or raise appropriate errors."""
 
     student = get_object_or_404(Student, uprfid__rfid_num=rfid)
@@ -79,7 +79,8 @@ def get_student_and_active_subject(rfid: str) -> Tuple[Student, Subjects, Attend
     active_schedule = ClassSchedule.objects.filter(
         day_of_week=today,
         start_time__lte=adjusted_time,
-        end_time__gte=current_time
+        end_time__gte=current_time,
+        subject_id__teacher=user
     ).select_related('subject_id').first()
 
     if not active_schedule:
