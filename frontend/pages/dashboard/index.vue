@@ -272,7 +272,7 @@ if (eventSource.value) {
           </div>
 
           <div class="overflow-scroll h-64 flex-1 space-y-4">
-            <div 
+            <div v-if="subjects && subjects.length > 0"
               v-for="subject in subjects" 
               :key="subject.subject_id" 
               class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
@@ -298,6 +298,9 @@ if (eventSource.value) {
                   </svg>
                 </button>
               </div>
+            </div>
+            <div v-else class="text-center">
+              <p class="text-gray-900 dark:text-white">No subjects found.</p>
             </div>
           </div>
         </UCard>

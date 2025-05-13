@@ -6,31 +6,31 @@ const props = defineProps<{
 const DAYS = [
   {
     key: "Sunday",
-    label: "S"
+    label: "Sun"
   },
   {
     key: "Monday",
-    label: "M"
+    label: "Mon"
   },
   {
     key: "Tuesday",
-    label: "T"
+    label: "Tue"
   },
   {
     key: "Wednesday",
-    label: "W"
+    label: "Wed"
   },
   {
     key: "Thursday",
-    label: "T"
+    label: "Thu"
   },
   {
     key: "Friday",
-    label: "F"
+    label: "Fri"
   },
   {
     key: "Saturday",
-    label: "S"
+    label: "Sun"
   }
 ];
 

@@ -1,7 +1,7 @@
 from ninja import Schema, ModelSchema
 from .models import Subjects, ClassSchedule
 from typing import List, Optional
-
+from datetime import time
 
 class SubjectsSchema(ModelSchema):
     class Meta:
@@ -24,5 +24,13 @@ class SubjectCRUDSchema(Schema):
     schedule: List[str]
     start_time: str
     end_time: str
+
+class TimeSlot(Schema):
+    start: time
+    end: time
+    
+class AvailableTimeSlotSchema(Schema):
+    day_of_week: str
+    free_slots: List[TimeSlot]
 
     

@@ -1,6 +1,9 @@
 import logging
+import pprint
 from ninja import Router, PatchDict
 from typing import List
+
+from teachers.util_funcs import get_daily_available_slots
 from .models import Subjects
 from .schemas import *
 from students.models import Student, SubjectEnrollment
@@ -60,6 +63,18 @@ def get_subjects_noauth(request):
             "end_time": et,
         })
     return result
+
+@router.get("/subjects/availabletimeslots")
+def get_available_time_slots(request):
+    slots_by_day = get_daily_available_slots()  # your utility from earlier
+    # Transform dict into list of schemas
+    return [
+        {"day_of_week": day, "free_slots": [
+            {"start": s, "end": e} for s, e in slots
+        ]}
+        for day, slots in slots_by_day.items()
+    ]
+
 
 @router.post("/subjects")
 def create_subject(request, payload: SubjectCRUDSchema):
@@ -139,4 +154,5 @@ def delete_subject(request, subject_id: int):
     SubjectEnrollment.objects.filter(subject_id=subject).delete()
     subject.delete()
     return {"success": True}
+
 

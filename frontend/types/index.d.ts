@@ -73,4 +73,18 @@ declare global {
         success: boolean
         message?: string
     }
+
+    interface TimeSlot {
+        start: string
+        end: string
+    }
+    
+    interface DayData {
+        day_of_week: string
+        free_slots: TimeSlot[]
+    }
+
+    interface DayScheduleProps {
+        day: DayData
+    }
 }
