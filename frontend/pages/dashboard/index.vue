@@ -106,7 +106,7 @@ async function saveSubject () {
 }
 
 const modal = useModal()
-import { SubjectDeleteModal } from '#components'
+import { AvailablePage, SubjectDeleteModal } from '#components'
 async function deleteSubject (subject: Subjects) {
   modal.open(
     SubjectDeleteModal, {
@@ -268,7 +268,10 @@ if (eventSource.value) {
         <UCard class="flex flex-col h-96">
           <div class="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Subjects</h2>
-            <UButton @click="openAddModal">Add Subject</UButton>
+            <UButton
+              icon="i-heroicons-pencil-square" 
+              size="sm"
+              @click="openAddModal">New</UButton>
           </div>
 
           <div class="overflow-scroll h-64 flex-1 space-y-4">
@@ -349,6 +352,7 @@ if (eventSource.value) {
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start and End Time</label>
             <SubjectTIme v-on:update-time="handleTimeUpdate" :current-time="selectedSubject ? { start_time: selectedSubject.start_time, end_time: selectedSubject.end_time } : undefined" />
           </div>
+          <AvailablePage />
         </div>
 
         <template #footer>
@@ -361,7 +365,7 @@ if (eventSource.value) {
           <UButton
             @click="saveSubject"
           >
-            {{ selectedSubject ? 'Save Changes' : 'Add Subject' }}
+            {{ selectedSubject ? 'Save Changes' : 'Save' }}
           </UButton>
         </div>
         </template>

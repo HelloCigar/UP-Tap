@@ -12,9 +12,9 @@ import mediapipe as medpipe
 mp_face_mesh = medpipe.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh()
 
-# # Load YOLOv8 face detection model
-# model_path = hf_hub_download(repo_id="arnabdhar/YOLOv8-Face-Detection", filename="model.pt")
-# face_detector = YOLO(model_path)
+# Load YOLOv8 face detection model
+model_path = hf_hub_download(repo_id="arnabdhar/YOLOv8-Face-Detection", filename="model.pt")
+face_detector = YOLO(model_path)
 
 
 # Load TFLite MobileFaceNet
@@ -33,16 +33,16 @@ def base64_to_image(base64_string):
     image = Image.open(io.BytesIO(image_data))
     return image
 
-# # Function to detect and crop a face
-# def detect_and_crop_face(image_string: str):
-#     img = base64_to_image(image_string)
-#     results = face_detector(img)
+# Function to detect and crop a face
+def detect_and_crop_face(image_string: str):
+    img = base64_to_image(image_string)
+    results = face_detector(img)
 
-#     if len(results[0].boxes) == 0:
-#         return None  # No face detected
+    if len(results[0].boxes) == 0:
+        return None  # No face detected
 
-#     bbox = results[0].boxes.xyxy[0].int().tolist()
-#     return img.crop(bbox)
+    bbox = results[0].boxes.xyxy[0].int().tolist()
+    return img.crop(bbox)
 
 # Function to preprocess a face for MobileFaceNet
 def preprocess_face(face):
@@ -60,7 +60,7 @@ def compute_embedding(face):
 
 
 def align_face(image_string: str):
-    img = base64_to_image(image_string)
+    img = detect_and_crop_face(image_string)
     image = np.array(img)
     h, w = image.shape[:2]
     rgb = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

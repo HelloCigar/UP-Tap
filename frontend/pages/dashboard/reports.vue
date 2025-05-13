@@ -88,12 +88,12 @@ const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[
 })
 
 const { data: subjects } = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
-console.log(attendanceRecords.value)
 
 const calculateStats = computed(() => {
 
   if (!attendanceRecords.value || 'success' in attendanceRecords.value &&  attendanceRecords.value.success == false) return { uniqueSessions: 0, presentCount: 0, absentCount: 0, attendanceRate: 0 }
 
+  if(!Array.isArray(attendanceRecords.value)) return { uniqueSessions: 0, presentCount: 0, absentCount: 0, attendanceRate: 0 }
   const uniqueSessions = new Set(attendanceRecords.value.map((r) => r.sheet_id)).size
   const presentCount = attendanceRecords.value.filter((r) => r.is_present).length
   const absentCount = attendanceRecords.value.filter((r) => !r.is_present).length
@@ -108,6 +108,44 @@ const calculateStats = computed(() => {
     attendanceRate
   }
 })
+
+function downloadPDFReport() {
+  // Pass in the current records and date range
+  generatePDF(
+    attendanceRecords.value as AttendanceRecord[],
+    startDate.value,
+    endDate.value
+  )
+}
+
+function downloadCsv() {
+  // cast to correct type
+  const records = attendanceRecords.value as AttendanceRecord[]
+  generateCSV(records)
+}
+
+const disableDownload = computed(() => {
+  return !attendanceRecords.value || 'success' in attendanceRecords.value &&  attendanceRecords.value.success == false
+})
+
+const items = [
+  [{
+    label: 'Export CSV',
+    icon: 'i-heroicons-document-text-solid',
+    click: () => {
+      downloadCsv()
+    },
+    disabled: disableDownload.value,
+  }, {
+    label: 'Download PDF',
+    icon: 'i-heroicons-document-arrow-down',
+    click: () => {
+      downloadPDFReport()
+    },
+    disabled: disableDownload.value
+  }]]
+
+
 
 </script>
 
@@ -168,8 +206,6 @@ const calculateStats = computed(() => {
             class="me-2 w-20"
             size="xs"
           />
-          <!-- v-model="pageCount" -->
-
         </div>
 
       <div class="flex gap-1.5 items-center">
@@ -193,6 +229,10 @@ const calculateStats = computed(() => {
         >
           Reset
         </UButton>
+        <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
+          <UButton color="white" size="xs" label="Download/Export" trailing-icon="i-heroicons-arrow-right-circle-16-solid" :disabled="disableDownload"/>
+        </UDropdown>
+        
       </div>
       </div>
       <template #footer class="w-full h-full">

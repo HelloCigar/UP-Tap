@@ -87,4 +87,11 @@ declare global {
     interface DayScheduleProps {
         day: DayData
     }
+
+    interface Stats {
+        totalSessions: number
+        presentCount: number
+        absentCount: number
+        averageAttendance: number
+    }
 }
