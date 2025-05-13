@@ -7,7 +7,7 @@ definePageMeta({
 // Columns
 const columns = [{
   key: 'student_id',
-  label: 'RFID #',
+  label: 'Student #',
   sortable: true
 }, {
   key: 'first_name',
@@ -117,6 +117,7 @@ const items = (row: Student) => [
     label: 'Edit',
     icon: 'i-heroicons-pencil-square-20-solid',
     click: () => {
+      console.log(row.student_id)
       modal.open(StudentEdit, { 
         student_id: row.student_id,
         first_name: row.first_name,

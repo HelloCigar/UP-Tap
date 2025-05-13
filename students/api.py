@@ -1,6 +1,6 @@
 from ninja import Router, PatchDict
 from typing import List
-from .models import Student, SubjectEnrollment
+from .models import UPRFID, Student, SubjectEnrollment
 from teachers.models import Subjects
 from ninja.pagination import paginate
 from django.db.models import Q
@@ -54,7 +54,7 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
     """
 
     teacher = request.user
-    students = Student.objects.all()
+    students = Student.objects.filter(enrollments__subject_id__teacher=teacher)
 
     if q:
         students = students.filter(
@@ -80,7 +80,7 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
 
 
 @router.put("/{student_id}")
-def edit_student(request, student_id: int, data: PatchDict[StudentSchema], subjects: str):
+def edit_student(request, student_id: int, data: PatchDict[StudentSchema], subjects: str, rfid: str):
     """
     Register a new student.
 
@@ -96,6 +96,11 @@ def edit_student(request, student_id: int, data: PatchDict[StudentSchema], subje
         for attr, value in data.items():
             setattr(student, attr, value)
         student.save()
+
+        student_rfid = UPRFID.objects.get(student=student)
+        student_rfid.rfid_num = rfid
+        student_rfid.save()
+
     except Exception as e:
         return {"error": str(e)}
     

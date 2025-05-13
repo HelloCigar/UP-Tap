@@ -10,7 +10,8 @@ export default defineEventHandler(async (event) => {
         },
         body: body,
         query: {
-            subjects: query.subjects
+            subjects: query.subjects,
+            rfid: query.rfid
         }    
       }
     )
