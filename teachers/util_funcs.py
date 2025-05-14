@@ -45,10 +45,4 @@ def get_daily_available_slots(day_start=time(5, 0), day_end=time(23, 0)):
     for d in all_days:
         available_by_day.setdefault(d, [(day_start, day_end)])
 
-    print([
-        {"day_of_week": day, "free_slots": [
-            {"start": s, "end": e} for s, e in slots
-        ]}
-        for day, slots in available_by_day.items()
-    ])
     return available_by_day

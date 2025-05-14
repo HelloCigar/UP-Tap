@@ -1,17 +1,21 @@
-import logging
-import pprint
 from ninja import Router, PatchDict
 from typing import List
-
 from teachers.util_funcs import get_daily_available_slots
 from .models import Subjects
 from .schemas import *
 from students.models import Student, SubjectEnrollment
 from django.shortcuts import get_object_or_404
 import datetime
-import django
+from rest_framework.authtoken.models import Token
 
 router = Router()
+
+@router.get("/latest_token/", response={200: TokenSchema})
+def get_latest_token(request):
+    # get the latest token by login time
+    latest_token = Token.objects.all().order_by('-created').first()
+    return {"token": latest_token.key}
+
 
 
 @router.get("/subjects", response=List[SubjectCRUDSchema])

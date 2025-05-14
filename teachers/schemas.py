@@ -34,3 +34,5 @@ class AvailableTimeSlotSchema(Schema):
     free_slots: List[TimeSlot]
 
     
+class TokenSchema(Schema):
+    token: str

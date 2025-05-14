@@ -27,6 +27,7 @@ sleep 1  # let frontend spin up
 # 3) Python script in window #3
 lxterminal -e bash -c "
   cd $SCRIPT_DIR &&
+  source venv/bin/activate &&
   python $SCRIPT_NAME
 " &
 
