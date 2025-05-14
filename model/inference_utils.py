@@ -2,27 +2,21 @@ import io
 import base64
 from PIL import Image
 import numpy as np
-from huggingface_hub import hf_hub_download
-from ultralytics import YOLO
 import tensorflow.lite as tflite
 import cv2
-import numpy as np
-import mediapipe as medpipe
+import mediapipe as mp
 
-mp_face_mesh = medpipe.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh()
-
-# Load YOLOv8 face detection model
-model_path = hf_hub_download(repo_id="arnabdhar/YOLOv8-Face-Detection", filename="model.pt")
-face_detector = YOLO(model_path)
-
+# Initialize MediaPipe Face Detection and Face Mesh
+mp_face_detection = mp.solutions.face_detection
+mp_face_mesh = mp.solutions.face_mesh
+face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True)
 
 # Load TFLite MobileFaceNet
 interpreter = tflite.Interpreter(model_path="model/output_model.tflite")
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
-
 
 def base64_to_image(base64_string):
     if base64_string.startswith("data:"):
@@ -33,16 +27,31 @@ def base64_to_image(base64_string):
     image = Image.open(io.BytesIO(image_data))
     return image
 
-# Function to detect and crop a face
+# Function to detect and crop a face using MediaPipe
 def detect_and_crop_face(image_string: str):
     img = base64_to_image(image_string)
-    results = face_detector(img)
+    image_np = np.array(img.convert('RGB'))
+    results = face_detection.process(image_np)
 
-    if len(results[0].boxes) == 0:
+    if not results.detections:
         return None  # No face detected
 
-    bbox = results[0].boxes.xyxy[0].int().tolist()
-    return img.crop(bbox)
+    # Get bounding box of the first detected face
+    detection = results.detections[0]
+    bboxC = detection.location_data.relative_bounding_box
+    ih, iw, _ = image_np.shape
+    x = int(bboxC.xmin * iw)
+    y = int(bboxC.ymin * ih)
+    w = int(bboxC.width * iw)
+    h = int(bboxC.height * ih)
+
+    # Ensure the bounding box is within image bounds
+    x = max(0, x)
+    y = max(0, y)
+    x2 = min(iw, x + w)
+    y2 = min(ih, y + h)
+
+    return img.crop((x, y, x2, y2))
 
 # Function to preprocess a face for MobileFaceNet
 def preprocess_face(face):
@@ -58,10 +67,12 @@ def compute_embedding(face):
     interpreter.invoke()
     return interpreter.get_tensor(output_details[0]['index']).flatten()
 
-
 def align_face(image_string: str):
     img = detect_and_crop_face(image_string)
-    image = np.array(img)
+    if img is None:
+        return None  # No face detected
+
+    image = np.array(img.convert('RGB'))
     h, w = image.shape[:2]
     rgb = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     results = face_mesh.process(rgb)
@@ -82,7 +93,6 @@ def align_face(image_string: str):
         # Rotate image using PIL
         aligned_pil = img.rotate(angle, center=center, resample=Image.BILINEAR)
 
-
         x_coords = [lm.x * w for lm in landmarks]
         y_coords = [lm.y * h for lm in landmarks]
         x_min, x_max = int(min(x_coords)), int(max(x_coords))
@@ -90,7 +100,6 @@ def align_face(image_string: str):
 
         # Crop the aligned image
         face_crop = aligned_pil.crop((x_min, y_min, x_max, y_max))
-        #face_crop.show()
         return face_crop
 
-    return img  # return original if no face found
+    return img  # return original if no face landmarks found
