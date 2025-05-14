@@ -23,7 +23,7 @@ class TimeInWorker(QThread):
         self.student_id = student_id
         self.face_data = face_data
         self.token = '8c89bd60a7e5343d46a4f587615ff169b5afaf74'
-        self.endpoint = "http://127.0.0.1:8000/api/teachers/time_in/"
+        self.endpoint = "http://127.0.0.1:8000/api/attendance/time-in"
 
     def run(self):
         try:
@@ -79,6 +79,14 @@ class TimeInWorker(QThread):
             self.finished.emit(self.index, False, str(e), "", "")
 
 class TimeOutWorker(TimeInWorker):
+    def __init__(self, index: int, student_id: int, face_data: str):
+        super().__init__()
+        self.index = index
+        self.student_id = student_id
+        self.face_data = face_data
+        self.token = '8c89bd60a7e5343d46a4f587615ff169b5afaf74'
+        self.endpoint = "http://127.0.0.1:8000/api/attendance/time-out"
+        
     def run(self):
         try:
             headers = {
