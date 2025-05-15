@@ -321,7 +321,7 @@ class MainWindow(QWidget):
             x, y, w, h = det.box
             face_img = raw_frame[y:y+h, x:x+w]
             corrected = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
-            ok, buf = cv2.imencode('.jpg', face_img)
+            ok, buf = cv2.imencode('.jpg', corrected)
             if not ok:
                 self._pending_calls -= 1
                 continue
@@ -336,8 +336,8 @@ class MainWindow(QWidget):
                 
             worker.start()
             self.api_workers.append(worker)
-            # (optional) save locally
-            # self.save_image_local(f"{self._pending_rfid}_{idx}", face_img)
+            #(optional) save locally
+            self.save_image_local(f"{self._pending_rfid}_{idx}", corrected)
     
     def send_face_data(self, rfid_text):
         self._pending_rfid = rfid_text

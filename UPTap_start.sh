@@ -27,8 +27,6 @@ sleep 1  # let frontend spin up
 # 3) Python script in window #3
 lxterminal -e bash -c "
   cd $DJANGO_DIR &&
-  source venv/bin/activate &&
-  cd $DJANGO_DIR &&
   python $SCRIPT_NAME
 " &
 
