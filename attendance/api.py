@@ -38,7 +38,7 @@ def save_time_in(request, data: TimeInData):
 def save_time_out(request, data: TimeOutData):
     """Handle time-out requests."""
     try:
-        student, subject, attendance_sheet = get_student_and_active_subject(data.rfid)
+        student, subject, attendance_sheet = get_student_and_active_subject(data.rfid, request.user)
     except Exception as e:
         return 206, {"success": False, "message": str(e)}
 
