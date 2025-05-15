@@ -62,10 +62,22 @@ def preprocess_face(face):
 
 # Function to compute face embeddings
 def compute_embedding(face):
-    face = preprocess_face(face)
+    # 1. Preprocess as before
+    face = preprocess_face(face)  
+
+    # 2. Feed input
     interpreter.set_tensor(input_details[0]['index'], face)
+
+    # 3. Run inference
     interpreter.invoke()
-    return interpreter.get_tensor(output_details[0]['index']).flatten()
+
+    # 4. Grab the *view* into the interpreter’s output buffer…
+    raw_output = interpreter.tensor(output_details[0]['index'])()  
+
+    # 5. …then immediately copy it so that no internal references remain
+    embedding = np.copy(raw_output).flatten()
+
+    return embedding
 
 def align_face(image_string: str):
     img = base64_to_image(image_string)
