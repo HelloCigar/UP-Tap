@@ -10,29 +10,26 @@ const datePicker = ref()
 const columns = [{
   key: 'student_name',
   label: 'Student',
-  sortable: true
 }, {
   key: 'subject_name',
   label: 'Subject',
-  sortable: true
-}, {
-  key: 'session_date',
-  label: 'Date',
-  sortable: true,
 }, {
   key: 'is_present',
   label: 'Status',
-  sortable: true
+},
+{
+  key: 'session_date',
+  label: 'Date',
 },
 {
   key: 'time_in',
   label: 'Time In',
-  sortable: true
 }, {
   key: 'time_out',
   label: 'Time Out',
-  sortable: true
 }]
+
+
 
 
 
@@ -77,7 +74,7 @@ const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[
   query: {
     q: search.value,
     start_date: startDate.value.toLocaleDateString('en-CA'),
-    end_date: endDate.value.toLocaleDateString('en-CA'),
+    end_date: endDate.value.toLocaleDateString('en-CA')
   },
   body:{
     is_present: selectedStatus.value.length > 0 ? selectedStatus.value : undefined,
@@ -242,7 +239,6 @@ const items = [
           :loading="status === 'pending'"
           sort-asc-icon="i-heroicons-arrow-up"
           sort-desc-icon="i-heroicons-arrow-down"
-          sort-mode="manual"
           :ui="{ td: { base: 'max-w-[0] truncate' }, default: { checkbox: { color: 'gray' as any } } }"
           
         >

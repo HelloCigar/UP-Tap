@@ -128,7 +128,7 @@ def get_all_student_attendance(request,
             Q(student_id__last_name__icontains=q) |
             Q(sheet_id__subject_id__subject_name__icontains=q)
         )
-    
+
     attendance_records = attendance_records.select_related('student_id', 'sheet_id__subject_id').order_by(
         '-sheet_id__session_date', '-time_in'
     ).distinct()
