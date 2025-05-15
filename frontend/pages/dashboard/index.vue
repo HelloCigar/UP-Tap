@@ -234,15 +234,18 @@ if (eventSource.value) {
             </div>
           </div>
           
-          <div class="overflow-auto flex-1 space-y-4">
+          <div class="w-full h-96 flex-1 space-y-4">
             <UTable
               v-if="timeInOutData"
+              class="w-full max-h-64"
               :loading="timeInOutStatus === 'pending'"
               :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
               :progress="{ color: 'primary', animation: 'carousel' }"
-              class="w-full"
               :rows="timeInOutData" :columns="recordType === 'time_in' ? time_in_columns : time_out_columns"
               :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' }" 
+              :ui="{
+                tbody: 'h-72 overflow-auto'
+              }"
               >
             <template #time_in-data="{ row }">
               {{ convertTo12HourFormat(row.time_in) }}
