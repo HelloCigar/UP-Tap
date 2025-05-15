@@ -244,7 +244,7 @@ if (eventSource.value) {
               :rows="timeInOutData" :columns="recordType === 'time_in' ? time_in_columns : time_out_columns"
               :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' }" 
               :ui="{
-                tbody: 'h-72 overflow-auto'
+                tbody: 'overflow-auto'
               }"
               >
             <template #time_in-data="{ row }">
