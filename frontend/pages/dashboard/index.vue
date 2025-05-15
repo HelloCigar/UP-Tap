@@ -202,16 +202,6 @@ if (eventSource.value) {
         <div class="">
           <h1 class="text-xl font-semibold text-gray-900 dark:text-white">UP Tap Dashboard</h1>
         </div>
-        <AuthState>
-          <UButton
-              icon="i-heroicons-arrow-left-start-on-rectangle"
-              size="sm"
-              color="red"
-              variant="outline"
-              label="Logout"
-              @click="logout"
-          />
-      </AuthState>
       </div>
     </template>
 
