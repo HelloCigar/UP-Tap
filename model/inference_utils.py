@@ -55,7 +55,7 @@ def detect_and_crop_face(image_string: str):
 
 # Function to preprocess a face for MobileFaceNet
 def preprocess_face(face):
-    face = face.convert('RGB')  # Convert to RGB to remove alpha channel if present
+    face = face.convert("RGB")
     face = face.resize((112, 112))
     face = np.array(face).astype(np.float32) / 255.0
     return np.expand_dims(face, axis=0)
@@ -68,7 +68,7 @@ def compute_embedding(face):
     return interpreter.get_tensor(output_details[0]['index']).flatten()
 
 def align_face(image_string: str):
-    img = detect_and_crop_face(image_string)
+    img = base64_to_image(image_string)
     if img is None:
         return None  # No face detected
 

@@ -18,6 +18,7 @@ router = Router()
 @router.post("/time-in", response={200: TimeInResponse, 206: TimeInError})
 def save_time_in(request, data: TimeInData):
     """Handle time-in requests."""
+    print(request.user)
     try:
         student, subject, attendance_sheet = get_student_and_active_subject(data.rfid, request.user)
     except Exception as e:
