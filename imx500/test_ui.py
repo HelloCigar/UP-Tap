@@ -98,43 +98,19 @@ def draw_detections(request):
     face_count = len(detections)
     
     if face_count == 0:
-        print("Here")
         face_signals.status_update.emit("Waiting for face...")
-    elif face_count > 1:
-        face_signals.status_update.emit("Multiple faces detected!")
-        face_signals.input_toggle.emit(False)
     else:
         face_signals.status_update.emit("Ready for RFID input")
         face_signals.input_toggle.emit(True)
 
-    # Rest of drawing logic...
-    labels = get_labels()
     with MappedArray(request, 'main') as m:
         for detection in detections:
             x, y, w, h = detection.box
-            label = f"{labels[int(detection.category)]} ({detection.conf:.2f})"
-
-            # # Calculate text size and position
-            # (text_width, text_height), baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            # text_x = x + 5
-            # text_y = y + 15
-
-            # Create a copy of the array to draw the background with opacity
+            
             overlay = m.array.copy()
-
-            # # Draw the background rectangle on the overlay
-            # cv2.rectangle(overlay,
-                          # (text_x, text_y - text_height),
-                          # (text_x + text_width, text_y + baseline),
-                          # (255, 255, 255),  # Background color (white)
-                          # cv2.FILLED)
 
             alpha = 0.30
             cv2.addWeighted(overlay, alpha, m.array, 1 - alpha, 0, m.array)
-
-            # # Draw text on top of the background
-            # cv2.putText(m.array, label, (text_x, text_y),
-                        # cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 
             # Draw detection box
             cv2.rectangle(m.array, (x - 15, y - 15), (x + w + 15, y + h + 15), (0, 255, 0, 0), thickness=2)
@@ -223,7 +199,7 @@ class MainWindow(QWidget):
         # Message label
         self.message_label = QLabel()
         self.message_label.setAlignment(Qt.AlignCenter)
-        self.message_label.setStyleSheet("font-size: 14px; color: #666;")
+        self.message_label.setStyleSheet("font-size: 16px; color: #666;")
         layout.addWidget(self.message_label)
         
         self.setLayout(layout)
@@ -243,8 +219,14 @@ class MainWindow(QWidget):
         if enabled:
             self.rfid_input.setFocus()
             
-    def show_message(self, text):
+    def show_message(self, text: str):
+        if text.startswith("Error: "):
+            self.message_label.setStyleSheet("font-size: 16px; color: red;")
+        else:
+            self.message_label.setStyleSheet("font-size: 16px; color: green;")
+            
         self.message_label.setText(text)
+        
         QTimer.singleShot(3000, lambda: self.message_label.setText(""))
 
     def on_api_type_change(self, s: str):
@@ -271,7 +253,7 @@ class MainWindow(QWidget):
                 )
             else:
                 face_signals.show_message.emit(
-                    f"Face not verified: {message}"
+                    f"Error: {message}"
                 )
     @pyqtSlot(int, bool, str, str, str)
     def handle_timeout_response(self, idx, success, message, student_name, time_out):
@@ -342,39 +324,6 @@ class MainWindow(QWidget):
     def send_face_data(self, rfid_text):
         self._pending_rfid = rfid_text
         self._raw_capture_worker.start()
-
-        face_detections = [d for d in last_results if d.category == 0][:5]
-        if not face_detections:
-            return
-
-        # # Reset our aggregate state
-        # self._pending_calls = len(face_detections)
-        # self._any_match = False
-        # self._matched_name = ""
-        # self._matched_time = ""
-
-        # # Grab one copy of the frame buffer
-        # # with MappedArray(current_frame, 'main') as m:
-            # # frame = m.array.copy()
-
-        # # for idx, det in enumerate(face_detections):
-            # # x, y, w, h = det.box
-            # # face_img = frame[y: y+h, x: x+w]
-        # for idx, det in enumerate(face_detections):
-            # x, y, w, h = det.box
-            # face_img = raw_frame[y:y+h, x:x+w]
-            # ok, buf = cv2.imencode('.png', face_img)
-            # if not ok:
-                # self._pending_calls -= 1
-                # continue
-
-            # b64 = base64.b64encode(buf).decode('utf-8')
-            # worker = TimeInWorker(idx, student_id, b64)
-            # worker.finished.connect(self.handle_timein_response)
-            # worker.start()
-            # self.api_workers.append(worker)
-            # # (optional) save locally
-            # self.save_image_local(f"{student_id}_{idx}", face_img)
          
     def save_image_local(self, rfid, image):
         os.makedirs("captures", exist_ok=True)
