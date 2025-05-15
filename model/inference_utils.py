@@ -63,7 +63,7 @@ def preprocess_face(face):
 def compute_embedding(face):
     face = preprocess_face(face)
     # Create a new interpreter per request
-    interpreter = tflite.lite.Interpreter(model_path="model/output_model.tflite")
+    interpreter = tflite.Interpreter(model_path="model/output_model.tflite")
     interpreter.allocate_tensors()
     interpreter.set_tensor(input_details[0]['index'], face)
     interpreter.invoke()
