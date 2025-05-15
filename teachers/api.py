@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 
 router = Router()
 
-@router.get("/latest_token/", response={200: TokenSchema})
+@router.get("/latest_token/", response={200: TokenSchema}, auth=None)
 def get_latest_token(request):
     # get the latest token by login time
     latest_token = Token.objects.all().order_by('-created').first()

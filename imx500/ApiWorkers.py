@@ -24,7 +24,7 @@ class TimeInWorker(QThread):
         self.index = index
         self.student_id = student_id
         self.face_data = face_data
-        self.token = '8c89bd60a7e5343d46a4f587615ff169b5afaf74'
+        self.token = '8c89bd60a7e5343d46a4f587615ff169b5faf74'
         self.endpoint = "http://127.0.0.1:8000/api/attendance/time-in"
 
     def run(self):
@@ -88,7 +88,7 @@ class TimeOutWorker(QThread):
         self.index = index
         self.student_id = student_id
         self.face_data = face_data
-        self.token = '8c89bd60a7e5343d46a4f587615ff169b5afaf74'
+        self.token = '8c89bd60a7e5343d46a4f587615ff169b5faf74'
         self.endpoint = "http://127.0.0.1:8000/api/attendance/time-out"
         
     def run(self):

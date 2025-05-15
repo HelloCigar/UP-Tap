@@ -26,11 +26,16 @@ sleep 1  # let frontend spin up
 
 # 3) Python script in window #3
 lxterminal -e bash -c "
-  cd $DJANGO_DIR &&
+  cd $SCRIPT_DIR && 
   python $SCRIPT_NAME
 " &
 
 sleep 1  # small pause
 
-# 4) Open browser to your front‑end
+# 4) ngrok tunnel for frontend in window #4
+lxterminal -e bash -c "
+  ngrok http 3000
+" &
+
+# 5) Open browser to your frontend
 xdg-open http://localhost:3000
