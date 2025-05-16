@@ -276,7 +276,7 @@ class MainWindow(QWidget):
                 )
             else:
                 face_signals.show_message.emit(
-                    f"Face not verified: {message}"
+                    f"Error: {message}"
                 )
 
     def handle_rfid(self):
