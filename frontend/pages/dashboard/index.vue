@@ -84,6 +84,7 @@ function handleDaysUpdate(newDays: string[]) {
   console.log(newDays);
 }
 
+const toast = useToast()
 
 async function saveSubject () {
   if (selectedSubject.value) {
@@ -94,12 +95,37 @@ async function saveSubject () {
         subject_id: selectedSubject.value.subject_id
       }
     }
-  )
+  ).then(() => {
+    deleted.value = !deleted.value
+    toast.add({
+      title: 'Subject updated successfully',
+      description: 'Subject has been updated successfully',
+      color: 'green',
+    })
+  }).catch((error) => {
+    toast.add({
+      title: 'Error updating subject',
+      description: "Time schedule conflict, please try again",
+      color: 'red',
+    })
+  })
   } else {
-    console.log('New subject:', newSubject.value);
     await $fetch('/api/subjects', {
       method: 'POST',
       body: newSubject.value,
+    }).then(() => {
+      deleted.value = !deleted.value
+      toast.add({
+        title: 'Subject created successfully',
+        description: 'Subject has been created successfully',
+        color: 'green',
+      })
+    }).catch((error) => {
+      toast.add({
+        title: 'Error creating subject',
+        description: "Time schedule conflict, please try again",
+        color: 'red',
+      })
     })
   }
   closeModal()
@@ -356,6 +382,7 @@ if (eventSource.value) {
             Cancel
           </UButton>
           <UButton
+            :disabled="!selectedSubject && !newSubject.subject_name"
             @click="saveSubject"
           >
             {{ selectedSubject ? 'Save Changes' : 'Save' }}

@@ -30,11 +30,11 @@ const DAYS = [
   },
   {
     key: "Saturday",
-    label: "Sun"
+    label: "Sat"
   }
 ];
 
-const selected = ref(props.currentDays || [DAYS[0].key])
+const selected = ref(props.currentDays || []);
 
 const emit = defineEmits(['updateDays']);
 

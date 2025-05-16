@@ -22,8 +22,8 @@ class SubjectCRUDSchema(Schema):
     subject_id: int = None
     subject_name: str
     schedule: List[str]
-    start_time: str
-    end_time: str
+    start_time: str = "07:00"
+    end_time: str = "08:00"
 
 class TimeSlot(Schema):
     start: time

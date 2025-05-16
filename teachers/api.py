@@ -79,11 +79,20 @@ def get_available_time_slots(request):
         for day, slots in slots_by_day.items()
     ]
 
-
+from ninja.errors import HttpError
 @router.post("/subjects")
 def create_subject(request, payload: SubjectCRUDSchema):
-    start_time = datetime.datetime.strptime(payload.start_time, "%H:%M").time()
-    end_time = datetime.datetime.strptime(payload.end_time, "%H:%M").time()
+    start_time = datetime.datetime.strptime("07:00" if payload.start_time == "" else payload.start_time, "%H:%M").time()
+    end_time = datetime.datetime.strptime("08:00" if payload.end_time == "" else payload.end_time, "%H:%M").time()
+
+    # 1 check if start and end time are in conflict with existing schedules
+    for day in payload.schedule:
+        qs = ClassSchedule.objects.all().filter(day_of_week=day)
+        for sched in qs:
+            if sched.start_time <= start_time < sched.end_time or sched.start_time < end_time <= sched.end_time:
+                raise HttpError(400, "Time schedule conflict, please try again")
+
+    
 
     # 2) create the subject
     subj = Subjects.objects.create(
@@ -91,19 +100,14 @@ def create_subject(request, payload: SubjectCRUDSchema):
         teacher=request.user,
     )
 
-    # 3) parse times
-    start = datetime.time.fromisoformat(payload.start_time)
-    end   = datetime.time.fromisoformat(payload.end_time)
-
-    # 4) create one ClassSchedule per selected day
+    # 3) create the schedules
     for day in payload.schedule:
         ClassSchedule.objects.create(
             subject_id=subj,
             day_of_week=day,
             start_time=start_time,
             end_time=end_time,
-        )
-
+    )
 
     return {"subject_id": subj.subject_id}
 
@@ -126,6 +130,17 @@ def get_subject(request, subject_id: int):
 
 @router.put("/subjects/{subject_id}")
 def update_subject(request, subject_id: int, payload: SubjectCRUDSchema):
+    start_time = datetime.datetime.strptime("07:00" if payload.start_time == "" else payload.start_time, "%H:%M").time()
+    end_time = datetime.datetime.strptime("08:00" if payload.end_time == "" else payload.end_time, "%H:%M").time()
+    
+    for day in payload.schedule:
+        #check if start and end time are in conflict with existing schedules
+        # but exclude the current subject
+        qs = ClassSchedule.objects.all().exclude(subject_id=subject_id).filter(day_of_week=day)
+        for sched in qs:
+            if sched.start_time <= start_time < sched.end_time or sched.start_time < end_time <= sched.end_time:
+                raise HttpError(400, "Time schedule conflict, please try again")
+            
     subject = get_object_or_404(Subjects, subject_id=subject_id, teacher=request.user)
     subject.subject_name = payload.subject_name
     subject.save()
