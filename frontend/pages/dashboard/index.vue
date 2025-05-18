@@ -208,8 +208,13 @@ if (eventSource.value) {
   eventSource.value.addEventListener("time_out", function(event) {
     live_time_event.value = !live_time_event.value
   })
-
 }
+
+watch(error, (newError) => {
+  if (newError) {
+    console.error('EventSource error:', newError)
+  }
+})
 
 </script> 
 <template>
@@ -225,9 +230,12 @@ if (eventSource.value) {
     }">
     <template #header>
       <div class="flex justify-between items-center w-full">
-        <div class="">
-          <h1 class="text-xl font-semibold text-gray-900 dark:text-white">UP Tap Dashboard</h1>
-        </div>
+        <div class="flex items-center space-x-2">
+        <NuxtImg src="/logo.png" width="50" height="50" />
+        <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Dashboard
+        </h1>
+    </div>
       </div>
     </template>
 

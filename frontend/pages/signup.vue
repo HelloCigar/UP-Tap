@@ -23,9 +23,10 @@ const state = reactive({
 })
 
 const emailSent = ref(false)
-
+const loading = ref(false)
 async function onSubmit (event: FormSubmitEvent<Schema>) {
   error.value = false
+  loading.value = true
   // Do something with event.data
   const data = await $fetch("/api/signup", {
     method: "POST",
@@ -41,6 +42,8 @@ async function onSubmit (event: FormSubmitEvent<Schema>) {
     error.value = data?.error
     errorMsg.value = data?.message
   }
+
+  loading.value = false
 }
 
 const error = ref<boolean>()
@@ -52,10 +55,10 @@ const errorMsg = ref<string>()
         <UModal v-model="isOpen" prevent-close>
           <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }" v-if="!emailSent">
               <template #header>
-                <p class="text-center text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                  UP Tap
-                </p>
-                <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <div class="flex justify-center">
+                  <NuxtImg src="/logo.png" width="150" height="150" />
+                </div>
+                <p class="text-center text-sm text-gray-500 dark:text-gray-400">
                   Signup to our system
                 </p>
               </template>
@@ -79,7 +82,7 @@ const errorMsg = ref<string>()
                       </UFormGroup>
 
                       <div class="flex justify-center">
-                          <UButton type="submit">
+                          <UButton type="submit" :loading="loading">
                               Signup
                           </UButton>
                       </div>
