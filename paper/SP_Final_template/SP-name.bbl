@@ -1,0 +1,299 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Ancheta%
+, Daniel%
+\BCBL {}\ \BBA {} Ahmad%
+}{%
+Ancheta%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2021}}%
+}]{%
+EJES3887}
+\APACinsertmetastar {%
+EJES3887}%
+\begin{APACrefauthors}%
+Ancheta, R\BPBI F.%
+, Daniel, D.%
+\BCBL {}\ \BBA {} Ahmad, R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {EFFECT OF CLASS ATTENDANCE ON ACADEMIC PERFORMANCE}
+  {Effect of class attendance on academic performance}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{European Journal of Education Studies}{8}{9}{}.
+\newblock
+\begin{APACrefURL} \url{https://oapub.org/edu/index.php/ejes/article/view/3887}
+  \end{APACrefURL}
+\newblock
+\begin{APACrefDOI} \doi{10.46827/ejes.v8i9.3887} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cawthra%
+\ \protect \BOthers {.}}{%
+Cawthra%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+cawthra2020data}
+\APACinsertmetastar {%
+cawthra2020data}%
+\begin{APACrefauthors}%
+Cawthra, J.%
+, Ekstrom, M.%
+, Lusty, L.%
+, Sexton, J.%
+, Sweetnam, J.%
+, Townsend, A.%
+\BCBL {}\ \BBA {} Corporation, T\BPBI M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{December}{}.
+\newblock
+\APACrefbtitle {Data Integrity: Detecting and Responding to Ransomware and
+  Other Destructive Events.} {Data integrity: Detecting and responding to
+  ransomware and other destructive events.}
+\newblock
+\APAChowpublished
+  {\url{https://www.nccoe.nist.gov/publication/1800-26/VolA/index.html}}.
+\newblock
+\APACrefnote{Retrieved December 4, 2024}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Chen%
+, Liu%
+, Gao%
+\BCBL {}\ \BBA {} Han%
+}{%
+Chen%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+chen2018mobilefacenets}
+\APACinsertmetastar {%
+chen2018mobilefacenets}%
+\begin{APACrefauthors}%
+Chen, S.%
+, Liu, Y.%
+, Gao, X.%
+\BCBL {}\ \BBA {} Han, Z.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+\APACrefbtitle {MobileFaceNets: Efficient CNNs for Accurate Real-Time Face
+  Verification on Mobile Devices.} {Mobilefacenets: Efficient cnns for accurate
+  real-time face verification on mobile devices.}
+\newblock
+\begin{APACrefURL} \url{https://arxiv.org/abs/1804.07573} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Dewa%
+\ \BBA {} Nyanga%
+}{%
+Dewa%
+\ \BBA {} Nyanga%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+dewa2020development}
+\APACinsertmetastar {%
+dewa2020development}%
+\begin{APACrefauthors}%
+Dewa, M.%
+\BCBT {}\ \BBA {} Nyanga, L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Development of an Online Attendance Register System
+  (OARS) using barcode technology: Going green in class} {Development of an
+  online attendance register system (oars) using barcode technology: Going
+  green in class}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{SAIIE31 Proceedings, 5th--7th, Virtual Event}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Fruhlinger%
+}{%
+Fruhlinger%
+}{%
+{\protect \APACyear {2024}}%
+}]{%
+fruhlinger2024cia}
+\APACinsertmetastar {%
+fruhlinger2024cia}%
+\begin{APACrefauthors}%
+Fruhlinger, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{07}{}.
+\newblock
+{\BBOQ}\APACrefatitle {What is the CIA triad? A principled framework for
+  defining infosec policies} {What is the cia triad? a principled framework for
+  defining infosec policies}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{CSO}{}{}{}.
+\newblock
+\begin{APACrefURL}
+  \url{https://www.csoonline.com/article/568917/the-cia-triad-definition-components-and-examples.html}
+  \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Romero%
+\ \BBA {} Lee%
+}{%
+Romero%
+\ \BBA {} Lee%
+}{%
+{\protect \APACyear {2007}}%
+}]{%
+romero2007national}
+\APACinsertmetastar {%
+romero2007national}%
+\begin{APACrefauthors}%
+Romero, M.%
+\BCBT {}\ \BBA {} Lee, Y\BHBI S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007}{October}{}.
+\newblock
+\APACrefbtitle {A National Portrait of Chronic Absenteeism in the Early
+  Grades.} {A national portrait of chronic absenteeism in the early grades.}
+\newblock
+\begin{APACrefURL}
+  \url{https://www.attendanceworks.org/wp-content/uploads/2017/09/A-National-Portrait-of-Chronic-Absenteeism-in-the-Early-Grades-Oct-2007.pdf}
+  \end{APACrefURL}
+\newblock
+\APACrefnote{Accessed: 2025-01-28}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Shoewu%
+, Makanjuola%
+\BCBL {}\ \BBA {} Olatinwo%
+}{%
+Shoewu%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+shoewu:2014}
+\APACinsertmetastar {%
+shoewu:2014}%
+\begin{APACrefauthors}%
+Shoewu, E\BPBI D\BPBI O.%
+, Makanjuola, N.%
+\BCBL {}\ \BBA {} Olatinwo, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{01}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Biometric-based Attendance System: LASU Epe Campus as
+  Case Study} {Biometric-based attendance system: Lasu epe campus as case
+  study}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{}{}{}{8-14}.
+\newblock
+\begin{APACrefDOI} \doi{10.12691/ajcrr-2-1-2} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Sony%
+}{%
+Sony%
+}{%
+{\protect \APACyear {2023}}%
+}]{%
+sony_imx500}
+\APACinsertmetastar {%
+sony_imx500}%
+\begin{APACrefauthors}%
+Sony.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {iMX500 Key Specifications} {imx500 key
+  specifications}{\BBCQ}\ [\bibcomputersoftwaremanual].
+\newblock
+\begin{APACrefURL}
+  \url{https://developer.sony.com/imx500/imx500-key-specifications}
+  \end{APACrefURL}
+\newblock
+\APACrefnote{Accessed: 2025-01-28}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ultralytics%
+}{%
+Ultralytics%
+}{%
+{\protect \APACyear {2024}}%
+}]{%
+ultralytics_imx500}
+\APACinsertmetastar {%
+ultralytics_imx500}%
+\begin{APACrefauthors}%
+Ultralytics.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+\APACrefbtitle {SONY IMX500 Export for Ultralytics YOLOv8.} {Sony imx500 export
+  for ultralytics yolov8.}
+\newblock
+\begin{APACrefURL} \url{https://docs.ultralytics.com/integrations/sony-imx500/}
+  \end{APACrefURL}
+\newblock
+\APACrefnote{Accessed: 2025-01-31}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Zhi%
+, Ibrahim%
+\BCBL {}\ \BBA {} Aris%
+}{%
+Zhi%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+Zhi:2014}
+\APACinsertmetastar {%
+Zhi:2014}%
+\begin{APACrefauthors}%
+Zhi, T\BPBI J.%
+, Ibrahim, Z.%
+\BCBL {}\ \BBA {} Aris, H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Effective and efficient attendance tracking system using
+  secret code} {Effective and efficient attendance tracking system using secret
+  code}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 6th International Conference on
+  Information Technology and Multimedia} {Proceedings of the 6th international
+  conference on information technology and multimedia}\ (\BPG~108-112).
+\newblock
+\begin{APACrefDOI} \doi{10.1109/ICIMU.2014.7066613} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
