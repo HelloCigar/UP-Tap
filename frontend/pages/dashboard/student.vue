@@ -13,6 +13,9 @@ const columns = [{
   key: 'first_name',
   label: 'First Name',
   sortable: true
+},{
+  key: 'middle_initial',
+  label: 'Middle Initial',
 }, {
   key: 'last_name',
   label: 'Last Name',
@@ -21,8 +24,21 @@ const columns = [{
   key: 'email',
   label: 'Email',
   sortable: true
+},{
+  key: 'alt_email',
+  label: 'Alternate Email',
+  sortable: true
 }, {
-  key: 'actions'
+  key: 'course',
+  label: 'Course',
+  sortable: true
+},{
+  key: 'gender',
+  label: 'Gender',
+  sortable: true
+},{
+  key: 'actions',
+  label: 'Actions',
   }
 ]
 
@@ -114,20 +130,10 @@ import { StudentDeleteModal, StudentEdit } from '#components'
 const modal = useModal()
 const items = (row: Student) => [
   [{
-    label: 'Edit',
+    label: 'Edit Information',
     icon: 'i-heroicons-pencil-square-20-solid',
     click: () => {
-      console.log(row.student_id)
-      modal.open(StudentEdit, { 
-        student_id: row.student_id,
-        first_name: row.first_name,
-        last_name: row.last_name,
-        email: row.email, 
-        onSuccess: () => {
-           refreshAfterRegister.value = !refreshAfterRegister.value 
-           onDelete.value = !onDelete.value
-          } 
-        })
+      navigateTo('/public/register/' + row.student_id)
     }
   }], [{
     label: 'Delete',
@@ -165,7 +171,13 @@ const items = (row: Student) => [
         <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
           Students
         </h2>
-        <StudentRegister @register-done="registerDone" />
+        <UButton
+          icon="i-heroicons-plus"
+          color="primary"
+          size="sm"
+          @click="navigateTo('/public/register')">
+          Add Student
+        </UButton>
       </div>
     </template>
 

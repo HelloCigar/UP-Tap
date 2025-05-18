@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.db.utils import IntegrityError
 from .schemas import *
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 router = Router()
 
@@ -82,7 +83,10 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
             Q(first_name__icontains=q) |
             Q(last_name__icontains=q) |
             Q(email__icontains=q) |
-            Q(student_id__icontains=q)
+            Q(student_id__icontains=q) |
+            Q(course__icontains=q) |
+            Q(alt_email__icontains=q) |
+            Q(enrollments__subject_id__subject_name__icontains=q)
         )
     # filter by subjects, format is string of [1, 2, 3]
     if subjects != '[]':
@@ -98,6 +102,12 @@ def get_all_students(request, q: str = '', sort: str = 'student_id', order: str 
             students = students.order_by(f'-{sort}')
 
     return students
+
+
+@router.get("/{student_id}", response=StudentSchema)
+def get_student(request, student_id: int):
+    return get_object_or_404(Student, student_id=student_id)
+
 
 
 @router.put("/{student_id}")

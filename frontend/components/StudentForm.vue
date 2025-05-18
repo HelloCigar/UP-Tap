@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { number, object, string, type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
-
+const route = useRoute()
 const { isMobile } = useMobile()
 const toast = useToast()
 
@@ -46,19 +46,36 @@ const gender = [{
 
 type Schema = InferType<typeof schema>
 
+
 const state = reactive({
-  student_id: undefined,
-  first_name: undefined,
-  middle_initial: undefined,
-  last_name: undefined,
-  email: undefined,
-  alt_email: undefined,
-  gender: undefined,
-  course: undefined,
+  student_id: undefined as number | undefined,
+  first_name: undefined as string | undefined,
+  middle_initial: undefined as string | undefined,
+  last_name: undefined as string | undefined,
+  email: undefined as string | undefined,
+  alt_email: undefined as string | undefined,
+  gender: undefined as string | undefined,
+  course: undefined as string | undefined,
   face_data: null as File | null,
   facePreviewUrl: null as string | null,
   faceBase64: null as string | null,
 })
+console.log(route.params.id)
+if (route.params.id) {
+    const {data: student} = await useFetch<Student>(`/api/students/detail/${route.params.id}`, {method: 'GET'})
+  if (student.value) {
+    state.student_id = student.value.student_id
+    state.first_name = student.value.first_name
+    state.middle_initial = student.value.middle_initial
+    state.last_name = student.value.last_name
+    state.email = student.value.email
+    state.alt_email = student.value.alt_email
+    state.gender = student.value.gender
+    state.course = student.value.course
+    state.facePreviewUrl = student.value.face_data
+    state.face_data =  new File([], student.value.face_data)
+  }
+}
 
 const { data: subjects } = await useFetch('/api/subjects', {method: 'GET'})
 const selected = ref([])
@@ -273,8 +290,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 </div>
                 
             <template #footer>
-                <div class="flex justify-end">
-                    <UButton type="submit" variant="solid" size="sm" icon="i-heroicons-check-circle-20-solid" :loading="submitState">
+                <div class="flex"
+                    :class="{
+                        'justify-between': route.params.id,
+                        'justify-end': !route.params.id,
+                    }">
+                    <UButton type="button" variant="outline" size="sm" icon="i-heroicons-x-circle-20-solid" @click="$router.back()" v-if="route.params.id">
+                        Back
+                    </UButton>
+                    <UButton type="submit" variant="solid" size="sm" icon="i-heroicons-check-circle-20-solid" :loading="submitState" :disabled="selected.length === 0">
+                        {{ route.params.id ? 'Update' : 'Register' }}
                         Submit
                     </UButton>
                 </div>

@@ -4,23 +4,65 @@ definePageMeta({
   middleware: 'auth'
 })
 import Camera from 'simple-vue-camera';
+import * as faceapi from 'face-api.js';
+
+let modelsLoaded = false;
+async function ensureModels() {
+  if (modelsLoaded) return;
+  const MODEL_URL = '/models'; // adjust if needed
+  await Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+  ]);
+  modelsLoaded = true;
+}
+
+onBeforeMount(async () => {
+  await ensureModels();
+});
+
 // Get a reference of the component
 const camera = ref<InstanceType<typeof Camera>>();
 
-const snapshot = async () => {
+  const snapshot = async (): Promise<string | null> => {
+  // 1. Take a snapshot from the camera
   const blob = await camera.value?.snapshot();
+  console.log(blob);
+  if (!blob) return null;
 
-  if (blob) {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        resolve(base64String);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
+  // 3. Turn blob into an HTMLImageElement
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.src = reader.result as string;
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+
+  // 4. Detect the face with TinyFaceDetector
+  const detection = await faceapi
+    .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions());
+
+  if (!detection) {
+    // No face found
+    console.warn('No face detected in snapshot.');
+    return null;
   }
+
+  // 5. Crop to the face bounding box
+  const { x, y, width, height } = detection.box;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+
+  // 6. Export the cropped face as Base64
+  const dataUrl = canvas.toDataURL('image/jpeg');
+  return dataUrl // returns only the Base64 payload
 };
 
   
@@ -86,42 +128,12 @@ watch(rfidNumber, async (newVal: string) => {
         })
         rfidNumber.value = ''
         rfidRef.value.$refs.input.focus()
-
-        // openModal(time_in)
-        // // 2 second countdown
-        // setTimeout(() => {
-        //     closeModal()
-        // }, 2000);
-        // setTimeout(() => {
-        //     rfidRef.value.$refs.input.focus()
-        // }, 2300)
     }
   }
 });
 
-
-// import { Welcome } from '#components'
-
-// const modal = useModal()
 const rfidRef = ref()
 const toast = useToast()
-
-// function openModal(props: TimeInOutResponse) {
-
-//   modal.open(Welcome, {
-//     time_in: props.time_in,
-//     success: props.success,
-//     message: props.message,
-//     time_out: props.time_out,
-//     is_present: props.is_present,
-//     student_name: props.student_name,
-//   });
-// }
-
-// function closeModal () {
-//   rfidNumber.value = ''
-//   modal.close()
-// }
 
 </script> 
 <template>

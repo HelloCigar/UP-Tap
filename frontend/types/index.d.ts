@@ -13,8 +13,13 @@ declare global {
     interface Student {
         student_id: number
         first_name: string
+        middle_initial: string
         last_name: string
         email: string
+        alt_email?: string
+        gender: string
+        course: string
+        face_data: string
     }
 
     interface StudentQueryResponse {
