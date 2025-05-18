@@ -184,6 +184,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     state.facePreviewUrl = null
     state.faceBase64 = null
     selected.value = []
+    if (route.params.id) {
+        // Redirect to the student list page
+        navigateTo('/dashboard/student')
+    }
   }).catch((err) => {
     toast.add({
         title: 'Error',
