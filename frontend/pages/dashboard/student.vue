@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-
+import { StudentDeleteModal, BatchRFID } from '#components'
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth'
@@ -49,8 +49,13 @@ const onDelete = ref(false)
 const actions = [
   [{
     key: 'completed',
-    label: 'Completed',
-    icon: 'i-heroicons-check'
+    label: 'Batch Add/Update RFIDs',
+    icon: 'i-heroicons-check',
+    click: () => {
+      modal.open(BatchRFID, {
+        students: selectedRows.value
+      })
+    }
   }], [{
     key: 'uncompleted',
     label: 'In Progress',
@@ -59,17 +64,6 @@ const actions = [
 ]
 
 const {data: subjects} = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
-
-// Filters
-const todoStatus = [{
-  key: 'uncompleted',
-  label: 'In Progress',
-  value: false
-}, {
-  key: 'completed',
-  label: 'Completed',
-  value: true
-}]
 
 const search = ref('')
 const selectedSubjects = ref<number[]>([
@@ -115,6 +109,7 @@ const { data: students, status } = await useAsyncData<StudentQueryResponse>('stu
 
 // Selected Rows
 const selectedRows = ref<Student[]>([])
+const selectedRowsIds = computed(() => selectedRows.value.map((row) => row.student_id))
 
 function select (row: Student) {
   const index = selectedRows.value.findIndex((item) => item.student_id === row.student_id)
@@ -126,7 +121,6 @@ function select (row: Student) {
 }
 
 
-import { StudentDeleteModal, StudentEdit } from '#components'
 const modal = useModal()
 const items = (row: Student) => [
   [{
@@ -202,7 +196,7 @@ const items = (row: Student) => [
       </div>
 
       <div class="flex gap-1.5 items-center">
-        <UDropdown v-if="selectedRows.length > 1" :items="actions" :ui="{ width: 'w-36' }">
+        <UDropdown v-if="selectedRows.length > 0" :items="actions">
           <UButton
             icon="i-heroicons-chevron-down"
             trailing

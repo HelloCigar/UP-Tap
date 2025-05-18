@@ -8,6 +8,7 @@ from django.db.utils import IntegrityError
 from .schemas import *
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from ninja.errors import HttpError
 
 router = Router()
 
@@ -56,6 +57,28 @@ def register_student(request, data: StudentIn):
             SubjectEnrollment.objects.create(student_id=student, subject_id=subj)
     
     return student
+
+@router.post("/rfid/", response=RFIDPayload)
+def upsert_rfid(request, payload: RFIDPayload):
+    """
+    Create or update a UPRFID record for the given student.
+    """
+    if UPRFID.objects.filter(rfid_num=payload.rfid_num).exists():
+        raise HttpError(
+            400,
+            f"RFID {payload.rfid_num} already exists for another student.",
+        )
+    # 1️⃣ Ensure the student exists (404 if not)
+    student = get_object_or_404(Student, student_id=payload.student_id)
+
+    # 2️⃣ Create or update the RFID entry
+    obj, created = UPRFID.objects.update_or_create(
+        student=student,
+        defaults={"rfid_num": payload.rfid_num},
+    )
+
+    # 3️⃣ Return what was stored
+    return obj
 
 @router.get("/all", response=List[StudentListSchema])
 @paginate

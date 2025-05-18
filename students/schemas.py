@@ -43,3 +43,8 @@ class StudentOut(Schema):
     course: str
     gender: str
     face_data: Optional[str]
+
+
+class RFIDPayload(Schema):
+    student_id: int
+    rfid_num: int
