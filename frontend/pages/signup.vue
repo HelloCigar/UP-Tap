@@ -90,6 +90,7 @@ const errorMsg = ref<string>()
               </div>
 
               <template #footer>
+                <div>
                 <div class="h-8 flex flex-row justify-center gap-x-1">
                   <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Already have an account?
@@ -99,6 +100,13 @@ const errorMsg = ref<string>()
                     Login
                   </p>
                 </ULink>
+              </div>
+              <UDivider label="OR" />
+              <ULink to="/public/register">
+                <p class="text-center mt-4 text-sm text-primary underline dark:text-gray-400">
+                  If you're a student, go here instead
+                </p>
+              </ULink>
               </div>
             </template>
           </UCard>

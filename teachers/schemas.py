@@ -32,7 +32,6 @@ class TimeSlot(Schema):
 class AvailableTimeSlotSchema(Schema):
     day_of_week: str
     free_slots: List[TimeSlot]
-
     
 class TokenSchema(Schema):
     token: str

@@ -6,12 +6,12 @@ from ninja.pagination import paginate
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from .schemas import *
-from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 router = Router()
 
-@router.post("/register", auth=None)
-def register_student(request, data: StudentSchema, subjects: str):
+@router.post("/register", auth=None, response={200: StudentOut})
+def register_student(request, data: StudentIn):
     """
     Register a new student.
 
@@ -21,19 +21,40 @@ def register_student(request, data: StudentSchema, subjects: str):
     Returns:
         dict: A dictionary with the student_id of the newly created student
     """
-    try:       
-        student = Student.objects.create(**data.dict())
-    except IntegrityError:
-        return {"error": "Student already exists!"}
+    student, created = Student.objects.update_or_create(
+        student_id=data.student_id,
+        defaults={
+            "first_name": data.first_name or "",
+            "middle_initial": data.middle_initial or "",
+            "last_name": data.last_name or "",
+            "email": data.email,
+            "alt_email": data.alt_email,
+            "course": data.course or "",
+            "gender": data.gender or "",
+            "face_data": data.face_data,
+        }
+    )
+
+    desired = set(data.subject_ids)
+    existing_qs = SubjectEnrollment.objects.filter(student_id=student)
+    existing = set(existing_qs.values_list("subject_id", flat=True))
     
-    # add enrollment to connect subjects to students
-    subjects = subjects[1:-1].split(',')
-    for subject in subjects:
-        subject = Subjects.objects.get(subject_id=subject)
-        SubjectEnrollment.objects.create(student_id=student, subject_id=subject)
+    to_add    = desired - existing
+    to_remove = existing - desired
 
+    with transaction.atomic():
+        # 3. Delete enrollments that are no longer desired
+        if to_remove:
+            SubjectEnrollment.objects.filter(
+                student_id=student, subject_id__in=to_remove
+            ).delete()
 
-    return {"success": "Student information saved to the database!"}
+        # 4. Create missing enrollments
+        for subj_id in to_add:
+            subj = Subjects.objects.get(pk=subj_id)
+            SubjectEnrollment.objects.create(student_id=student, subject_id=subj)
+    
+    return student
 
 @router.get("/all", response=List[StudentListSchema])
 @paginate

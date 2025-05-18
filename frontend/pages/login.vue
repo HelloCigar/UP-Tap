@@ -1,6 +1,4 @@
 <script setup lang="ts">
-
-
 import { object, string, type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
 const isOpen = ref(true)
@@ -80,13 +78,21 @@ const errorMsg = ref<string>()
             </div>
 
             <template #footer>
-            <div class="h-8 flex flex-row justify-center gap-x-1">
-              <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
-                First time here?
-              </p>
-              <ULink to="/signup">
-                <p class="text-center mt-1 text-sm text-primary dark:text-gray-400">
-                  Signup
+              <div>
+                <div class="h-8 flex flex-row justify-center gap-x-1">
+                  <p class="text-center mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    First time here?
+                  </p>
+                  <ULink to="/signup">
+                    <p class="text-center mt-1 text-sm text-primary dark:text-gray-400">
+                      Signup
+                    </p>
+                  </ULink>
+                </div>
+              <UDivider label="OR" />
+              <ULink to="/public/register">
+                <p class="text-center mt-4 text-sm text-primary underline dark:text-gray-400">
+                  If you're a student, go here instead
                 </p>
               </ULink>
             </div>
