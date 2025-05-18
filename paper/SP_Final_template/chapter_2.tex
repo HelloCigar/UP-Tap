@@ -1,0 +1,130 @@
+%   Filename    : chapter_2.tex
+\chapter{Review of Related Literature}
+\label{sec:relatedlit}
+
+\section{Importance of Attendance Tracking}
+
+Attendance has become increasingly important in every organization, institution, and workplace to ensure accountability, productivity, and engagement. For example, in schools, it ensures that students are present, participating, and fulfilling their responsibilities. Taking students' attendance is important for monitoring their performance in class. Good attendance is usually linked to good class performance, and vice versa \cite{Zhi:2014}. Additionally, \cite{romero2007national}  suggest that attendance is important to reduce the cases of absenteeism in terms of academic performance as mostly, attendance is now part of the grades, motivating the students to attend classes.
+
+
+\section{Attendance Tracking Methods}
+
+There are various methods to track classroom attendance, from traditional manual approaches, such as roll call or pen-and-paper methods, to modern technology-based systems, including biometric like fingerprint or facial recognition. The advantages and disadvantages of these systems will be discussed in the following subsections using the Confidentiality, Integrity, and Availability (CIA) Triad.
+
+The CIA Triad is a commonly used information security model that helps organizations develop secure systems \cite{fruhlinger2024cia}.  Confidentiality refers to the protection of information from unauthorized access to ensure that only authorized users can access or modify data. Integrity ensures that data remains complete, trustworthy, and unaltered by unauthorized users, whether accidentally or maliciously. Availability ensures that authorized users can access the data when needed. These three principles are often used to identify vulnerabilities in a system.
+
+\subsection{Traditional Attendance Tracking Methods}
+
+The traditional method of taking attendance is through a manual roll call. According to Uniyal (2022), using manual attendance is cost-effective, simple to use, and remains functional during power interruptions. However, despite these advantages, manual attendance has several flaws. For instance, the roll call method is time-consuming as it can waste 5 to 15 minutes of class time which could otherwise be spent on actual learning (Mahato \& Suman, 2013, p. 5875). Additionally, there is a problem in integrity when ledger sheets are used as it is easy for students to fake another student’s attendance by forging their name and signature or erasing an already marked attendance. Furthermore, according to \cite{dewa2020development},  traditional attendance tracking method which is the ledger sheets are not friendly to our environment as there are some cases where excessive use of paper occurs but mostly their study highlighted that switching to another attendance system, especially to digital can reduce paper consumption while achieving more efficient way of taking attendance.
+
+CIA Triad Analysis:
+
+\begin{itemize}
+	\item Confidentiality: Traditional attendance tracking methods may offer low confidentiality as attendance can easily be accessed by unauthorized individuals, especially with the pen-and-paper method.
+	\item Integrity: Traditional attendance tracking methods have low integrity as it is easy for students to forge another student's attendance or alter existing records.
+	\item Availability: Traditional attendance tracking methods have high availability as attendance can always be taken during class, regardless of technological failures.
+\end{itemize}
+
+\subsection{Biometric-Based Attendance Systems}
+
+Biometric systems such as fingerprint recognition have addressed some of the shortcomings of manual attendance methods. According to Walia \& Jain (2016), replacing traditional attendance methods with biometric fingerprint systems improves confidentiality and integrity. However, while biometric fingerprint attendance systems have high reliability, they still come with some limitations (Truein, 2024). For example, if a person’s finger is injured or dirty, the system may fail to recognize the fingerprint which can affect the system’s effectiveness. Moreover, the cost of deployment can be high due to the need for specialized hardware and maintenance.
+
+CIA Triad Analysis:
+
+\begin{itemize}
+	\item Confidentiality: Biometric systems provide better confidentiality compared to manual methods as biometric data is unique to each individual and stored securely. However, if the data is compromised, the consequences can be severe because biometric data cannot be changed, unlike passwords.
+	\item Integrity: Biometric systems provide high integrity as it is almost impossible to forge or alter fingerprint data.
+	\item Availability: While biometric systems are generally available, they may face limitations if the finger is injured or dirty or in areas with an unreliable power supply.
+\end{itemize}
+
+Facial recognition technology has emerged as an even more accurate and convenient alternative to fingerprint systems (Truein, 2024). According to Yang \& Han (2020), real-time video processing in facial recognition systems has an accuracy rate of about 82\%, which is higher than other attendance tracking methods. Facial recognition can also help reduce truancy rates by identifying students in real time in order to prevent them from skipping classes.
+
+CIA Triad Analysis:
+
+\begin{itemize}
+	\item Confidentiality: Facial recognition systems, like fingerprint systems, have high confidentiality as biometric data is unique to each individual and stored securely.
+	\item Integrity: The integrity of facial recognition systems is typically high as it is difficult for students to falsify their identity without being detected.
+	\item Availability: Facial recognition systems are generally highly available, particularly in environments with stable lighting conditions.
+\end{itemize}
+
+\section{Chapter Summary}
+
+This chapter discussed various classroom attendance tracking methods and analyzed their advantages and disadvantages using the CIA Triad. Traditional manual systems, while cost-effective, lack both confidentiality and integrity. Fingerprint systems offer better security but may suffer from availability issues when the finger is dirty or injured. Facial recognition systems, with higher accuracy and efficiency, provide significant improvements in terms of data confidentiality and integrity.
+
+A table comparing these systems, based on the CIA Triad, is provided below:
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\textbf{Attendance Tracking Method} & \textbf{Confidentiality} & \textbf{Integrity} & \textbf{Availability} \\ \hline
+		Traditional & Low & Low & High \\ \hline
+		Fingerprint Systems & High & High & Medium \\ \hline
+		Facial Recognition Systems & High & High & High \\ \hline
+	\end{tabular}
+	\caption{Comparison of Attendance Tracking Methods Using the CIA Triad}
+\end{table}
+
+Our proposed system aims to leverage the security advantages of Facial Recognition Systems by adding an extra layer of user authentication that requires students to use their UP RFID which is personal and unique to each student.
+
+\begin{comment}
+	
+	%
+	% IPR acknowledgement: the contents withis this comment are from Ethel Ong's slides on RRL.
+	%
+	Guide on Writing your RRL chapter
+	
+	1. Identify the keywords with respect to your research
+	One keyword = One document section
+	Examples: 2.1 Story Generation Systems
+	2.2 Knowledge Representation
+	
+	2.  Find references using these keywords
+	
+	3.  For each of the references that you find,
+	Check: Is it relevant to your research?
+	Use their references to find more relevant works.
+	
+	4. Identify a set of criteria for comparison.
+	It will serve as a guide to help you focus on what to look for
+	
+	5. Write a summary focusing on -
+	What: A short description of the work
+	How: A summary of the approach it utilized
+	Findings: If applicable, provide the results
+	Why: Relevance to your work
+	
+	6. At the end of each section,  show a Table of Comparison of the related works
+	and your proposed project/system
+	
+	\section{Theme 1 Title}
+	This chapter  contains a review of research papers that:
+	%
+	% IPR acknowledgement: the following list of items are from Ethel Ong's slides RRL.
+	%
+	\begin{itemize}
+		\item Describes work on a research area that is similar or relevant to yours
+		\item Describes work on a domain that is similar or relevant to yours
+		\item Uses an algorithm that may be useful to your work
+		\item Uses a software / tool that may be useful to your work
+	\end{itemize}
+	
+	%\section{Review of Related Software}
+	It also contains a review of software systems that:
+	%
+	% IPR acknowledgement: the following list of items are from Ethel Ong's slides on RRL.
+	%
+	\begin{itemize}
+		\item Belongs to a research area similar to yours
+		\item Addresses a need or domain similar to yours
+		\item Is your predecessor
+	\end{itemize}
+	
+	\section{Theme 2 Title}
+	
+	\section{Chapter Summary}
+	Should include a table of related studies comparing them based on several criteria.
+	
+	Highlight research gaps and the research problem.
+	
+\end{comment}
