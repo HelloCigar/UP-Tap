@@ -46,56 +46,47 @@ Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'wiz_functions' (item size: 4) to 9000 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Database file #1: myreferences.bib
-Warning--I didn't find a database entry for "EJES3887"
-Warning--I didn't find a database entry for "shoewu:2014"
-Warning--I didn't find a database entry for "cawthra2020data"
-Warning--I didn't find a database entry for "Zhi:2014"
-Warning--I didn't find a database entry for "romero2007national"
-Warning--I didn't find a database entry for "fruhlinger2024cia"
-Warning--I didn't find a database entry for "dewa2020development"
-Warning--I didn't find a database entry for "sony_imx500"
-Warning--I didn't find a database entry for "ultralytics_imx500"
-Warning--I didn't find a database entry for "chen2018mobilefacenets"
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
-You've used 0 entries,
+Warning--No journal in shoewu:2014
+You've used 10 entries,
             6951 wiz_defined-function locations,
-            1294 strings with 11006 characters,
-and the built_in function-call counts, 43 in all, are:
-= -- 0
-> -- 0
-< -- 0
-+ -- 0
-- -- 0
-* -- 1
-:= -- 32
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
+            1348 strings with 12974 characters,
+and the built_in function-call counts, 19917 in all, are:
+= -- 2423
+> -- 172
+< -- 975
++ -- 992
+- -- 24
+* -- 1284
+:= -- 3742
+add.period$ -- 43
+call.type$ -- 10
+change.case$ -- 179
 chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 1
-format.name$ -- 0
-if$ -- 1
+cite$ -- 21
+duplicate$ -- 504
+empty$ -- 785
+format.name$ -- 285
+if$ -- 3732
 int.to.chr$ -- 0
-int.to.str$ -- 0
+int.to.str$ -- 30
 missing$ -- 0
-newline$ -- 3
-num.names$ -- 0
-pop$ -- 0
+newline$ -- 271
+num.names$ -- 80
+pop$ -- 537
 preamble$ -- 1
-purify$ -- 0
+purify$ -- 48
 quote$ -- 0
-skip$ -- 1
+skip$ -- 1075
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
-text.length$ -- 0
+substring$ -- 1082
+swap$ -- 275
+text.length$ -- 37
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 0
-warning$ -- 0
-while$ -- 0
+type$ -- 864
+warning$ -- 1
+while$ -- 107
 width$ -- 0
-write$ -- 2
+write$ -- 337
 (There was 1 error message)
