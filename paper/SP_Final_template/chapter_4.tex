@@ -16,16 +16,24 @@ All of the software and services are running in the Raspeberry Pi 5. We have no 
 Students must register their facial ID to enable attendance verification. This registration process only captures one facial image, which will be used to identify the student during attendance tracking. It also takes all relevant info about the student, reflecting the fields given by the generated class list of CRS. It will be handled by Nuxt at endpoint: \url{http://raspberry_ip:3000/public/register. }
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=0.55\textwidth]{figures/chapter4/student_form_pc.png} % Adjust width as needed
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/student_form_pc.png} % Adjust width as needed
 	\caption{Form in desktop client. Face data defaults to file picker. It will still check for faces in the image.}
 	\label{fig:student_form_pc}
 \end{figure}
+\clearpage
 
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=0.55\textwidth]{figures/chapter4/student_form_mobile.jpg} % Adjust width as needed
+	\includegraphics[width=0.5\textwidth]{figures/chapter4/student_form_mobile.jpg} % Adjust width as needed
 	\caption{Form in mobile devices. Face data will use the native camera instead. It will then detect faces from the image provided.}
-	\label{fig:student_form_pc}
+	\label{fig:student_form_mobile}
+\end{figure}
+\clearpage
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.5\textwidth]{figures/chapter4/student_form_mobile_preview.jpg} % Adjust width as needed
+	\caption{Face data preview when face is detected. Otherwise show an alert window for image retake.}
+	\label{fig:student_form_mobile_preview}
 \end{figure}
 \clearpage
 \subsection{Time In Process}
@@ -47,10 +55,20 @@ Time in process includes a check if the student already has time in records. Fir
 \end{figure}
 
 \subsection{Attendance Record Export Process}
-The faculty members are allowed to export their attendance records into a CSV file in order to have better access and record keeping. In addition to that, this feature can be useful for further analysis, for data backup purposes, or if they want to integrate it into another academic system.
-
-\subsection{Reports Module}
-The system includes a Reports Module that allows faculty to generate attendance reports in PDF or CSV file. 
+The faculty members are allowed to export their attendance records into a CSV/PDF file in order to have better access and record keeping. In addition to that, this feature can be useful for further analysis, for data backup purposes, or if they want to integrate it into another academic system. 
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/att_ui.png} % Adjust width as needed
+	\caption{Reports page}
+	\label{fig:att_ui}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/chapter4/att_report.png} % Adjust width as needed
+	\caption{Report PDF}
+	\label{fig:att_report}
+\end{figure}
+\clearpage
 \section{Django Backend}
 \subsection{Models}
 Django Model class maps to SQL tables. For example, a Student table will have the following columns which maps to Student Model class' attributes like in Figure \ref{fig:models}: 
@@ -102,6 +120,40 @@ Figure~\ref{fig:admin} is the Django administration page only accessible to a su
 
 \section{Nuxt Frontend}
 The Nuxt web interface functions as the main UI with out system. It handles faculty onboarding and CSV imports of their class list from the CRS. It also has student management system for the basic CRUD operations for students' information.
+\subsection{Faculty Onboarding}
+The faculty must register using their email and personal details to use the system. We can verify the authenticity of the email by sending them a link that activates the newly created account. After the registration process, they can now log in and use the system.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_signup.png} % Adjust width as needed
+	\caption{Faculty Signup using email, first name, and last name}
+	\label{fig:faculty_signup}
+\end{figure}
+\clearpage
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_signup_info.png} % Adjust width as needed
+	\caption{Notice after new signup}
+	\label{fig:faculty_signup_info}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_signup_email.png} % Adjust width as needed
+	\caption{Email containing the link for activation. Activation must be done on the same device.}
+	\label{fig:faculty_signup_email}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_activation.png} % Adjust width as needed
+	\caption{Activating account on the link provided.}
+	\label{fig:faculty_activation}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_login.png} % Adjust width as needed
+	\caption{We can now login after opening the link.}
+	\label{fig:faculty_login}
+\end{figure}
+\clearpage
 \subsection{Faculty CSV Import Process}
 To make the registration of the students much easier for the faculty, the faculty members can upload a CSV file containing the students' required details. The system parses the CSV file and stores the extracted data in the database. The data uploaded is validated to avoid any duplicate or wrong entries. The backend creates entries in the SubjectEnrollment table to tie each Student to a Subject. See Figure \ref{fig:faculty_import}
 \begin{figure}[h] % 'h' places the figure approximately here in the text
