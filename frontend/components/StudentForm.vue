@@ -304,7 +304,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                     </UButton>
                     <UButton type="submit" variant="solid" size="sm" icon="i-heroicons-check-circle-20-solid" :loading="submitState" :disabled="selected.length === 0">
                         {{ route.params.id ? 'Update' : 'Register' }}
-                        Submit
                     </UButton>
                 </div>
             </template>
