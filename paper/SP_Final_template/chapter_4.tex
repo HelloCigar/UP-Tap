@@ -154,14 +154,77 @@ The faculty must register using their email and personal details to use the syst
 	\label{fig:faculty_login}
 \end{figure}
 \clearpage
+
+\subsection{Subject CRUD Operations}
+Each faculty is able to create subjects on their own, but it should not conflict with the time schedules of other faculty members. The system will warn for such conflicts. The modal for subject creation will provide a view of available time slots not taken by other subjects.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/subject_add.png} % Adjust width as needed
+	\caption{Adding new subjects}
+	\label{fig:subject_add}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/subject_add_success.png} % Adjust width as needed
+	\caption{Success}
+	\label{fig:subject_add_success}
+\end{figure}
+\clearpage
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/subject_availability.png} % Adjust width as needed
+	\caption{Available slots}
+	\label{fig:subject_availability}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/subject_add_error.png} % Adjust width as needed
+	\caption{Error due to time conflict}
+	\label{fig:subject_add_error}
+\end{figure}
 \subsection{Faculty CSV Import Process}
-To make the registration of the students much easier for the faculty, the faculty members can upload a CSV file containing the students' required details. The system parses the CSV file and stores the extracted data in the database. The data uploaded is validated to avoid any duplicate or wrong entries. The backend creates entries in the SubjectEnrollment table to tie each Student to a Subject. See Figure \ref{fig:faculty_import}
+After adding subjects, we can now import class list in CSV format. The faculty members can upload a CSV file containing the students' details. The system parses the CSV file and stores the extracted data in the database. The data uploaded is validated to avoid any duplicate or wrong entries. The backend populates/updates the Student table with the data and creates entries in the SubjectEnrollment table to tie each Student to a Subject. See Figure \ref{fig:faculty_import}
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_import.png} % Adjust width as needed
 	\caption{Faculty Import using CSV}
 	\label{fig:faculty_import}
 \end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_import_csv.png} % Adjust width as needed
+	\caption{CSV sample file}
+	\label{fig:faculty_import_csv}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_import_success.png} % Adjust width as needed
+	\caption{Import success}
+	\label{fig:faculty_import_success}
+\end{figure}
+\clearpage
+\subsection{Students CRUD operations}
+By default, the \url{/students} tab will list all students under the logged in teacher.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/student_list.png} % Adjust width as needed
+	\caption{Students page}
+	\label{fig:student_list}
+\end{figure}
+At this point, we still don't have information about the RFID of the student. We can add them by batch in this page. Connect the RFID scanner and scan the matching ID. The web app will wait for key events and automatically save the RFID of students scanned.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/batch_rfid.png} % Adjust width as needed
+	\caption{Batch Actions}
+	\label{fig:batch_rfid}
+\end{figure}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/batch_rfid_scan.png} % Adjust width as needed
+	\caption{Automatic scanner. The faculty do not need to press anything, as the scanner simulates an Enter press after scanning the RFID number.}
+	\label{fig:batch_rfid_scan}
+\end{figure}
+\clearpage
 \subsection{Web equivalent of the time-in and time-out process}
 It also has a web equivalent of the PyQT5 time-in and time-out processing, albeit much slower. See Figures \ref{fig:faculty_import} and \ref{fig:frontend}.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
