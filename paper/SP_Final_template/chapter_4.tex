@@ -1,24 +1,33 @@
 %   Filename    : chapter_4.tex 
 \chapter{System Architecture and Model Evaluation}
-
 \section{System Architecture}
 Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visualized as shown in Figure \ref{fig:architecture}: 
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=0.8\textwidth]{figures/chapter4/architecture.png} % Adjust width as needed
+	\includegraphics[width=0.55\textwidth]{figures/chapter4/architecture_new.png} % Adjust width as needed
 	\caption{System Architecture}
 	\label{fig:architecture}
 \end{figure}
+All of the software and services are running in the Raspeberry Pi 5. We have no online dependencies except the Hero icons which are MIT licensed and free to use.
 
-Currently, we use the DeepFace library for face recognition as a temporary measure to test our system while our own face recognition model is in the works.
-\section{Process Diagrams}
-
-\subsection{Faculty CSV Import Process}
-To make the registration of the students much easier for the faculty, the faculty members can upload a CSV file containing the students' required details. The system parses the CSV file and stores the extracted data in the database. The data uploaded is validated to avoid any duplicate or wrong entries.
+\section{Process Diagram}
 
 \subsection{Student Registration Process}
-Students must register their facial ID to enable attendance verification. This registration process only captures one facial image, which will be used to identify the student during attendance tracking. 
+Students must register their facial ID to enable attendance verification. This registration process only captures one facial image, which will be used to identify the student during attendance tracking. It also takes all relevant info about the student, reflecting the fields given by the generated class list of CRS. It will be handled by Nuxt at endpoint: \url{http://raspberry_ip:3000/public/register. }
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.55\textwidth]{figures/chapter4/student_form_pc.png} % Adjust width as needed
+	\caption{Form in desktop client. Face data defaults to file picker. It will still check for faces in the image.}
+	\label{fig:student_form_pc}
+\end{figure}
 
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.55\textwidth]{figures/chapter4/student_form_mobile.jpg} % Adjust width as needed
+	\caption{Form in mobile devices. Face data will use the native camera instead. It will then detect faces from the image provided.}
+	\label{fig:student_form_pc}
+\end{figure}
+\clearpage
 \subsection{Time In Process}
 Time in process includes a check if the student already has time in records. First step in this is the student tapping the ID to the RFID sensor and trigger the photo capture to check the face.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
@@ -64,14 +73,13 @@ SQL equivalent would be:
 	CONSTRAINT unique_email UNIQUE (email)
 	);
 \end{verbatim}
-\subsection{Database Tables}
-Our database tables that can be accessed by Django's ORM. This includes the tables for Teachers, Subjects and tables for relationships. See Figure
-\ref{fig:dbtables}
+\subsection{Database Table}
+The database tables are automatically generated using django-extensions module. It reads all the Model classes in our Django project and generates the connections between tables.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=0.8\textwidth]{figures/chapter4/dbtables.png} % Adjust width as needed
-	\caption{Database Tables}
-	\label{fig:dbtables}
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/db_tables.png} % Adjust width as needed
+	\caption{System Architecture}
+	\label{fig:db_tables}
 \end{figure}	
 
 \subsection{REST API by Django Ninja}
@@ -93,14 +101,24 @@ Figure~\ref{fig:admin} is the Django administration page only accessible to a su
 \end{figure}
 
 \section{Nuxt Frontend}
-With the backend handling most of the heavy work, the frontend only needs to capture images from the camera and sending them to the backend to verify student identity. The localhost:3000/dashboard/time-in-out page handles the time in and time out process.
+The Nuxt web interface functions as the main UI with out system. It handles faculty onboarding and CSV imports of their class list from the CRS. It also has student management system for the basic CRUD operations for students' information.
+\subsection{Faculty CSV Import Process}
+To make the registration of the students much easier for the faculty, the faculty members can upload a CSV file containing the students' required details. The system parses the CSV file and stores the extracted data in the database. The data uploaded is validated to avoid any duplicate or wrong entries. The backend creates entries in the SubjectEnrollment table to tie each Student to a Subject. See Figure \ref{fig:faculty_import}
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_import.png} % Adjust width as needed
+	\caption{Faculty Import using CSV}
+	\label{fig:faculty_import}
+\end{figure}
+\subsection{Web equivalent of the time-in and time-out process}
+It also has a web equivalent of the PyQT5 time-in and time-out processing, albeit much slower. See Figures \ref{fig:faculty_import} and \ref{fig:frontend}.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/frontend.png} % Adjust width as needed
 	\caption{Time in and Time out Page}
 	\label{fig:frontend}
 \end{figure}
-The RFID input is automatically highlighted upon opening the page so it will be immediately ready to take in input from the RFID scanner. When the proper number length is inputted, it will immediately start to verify the identity. It will then notify the student for the time in/time out time and status. It will also notify for any errors like spoof image or no face detected. From our testing, the response time is currently at most 2.3 seconds, most of the delay comes from the fake delay we used to allow the student to read the notification after verification.
+
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/success.png} % Adjust width as needed
@@ -112,12 +130,6 @@ The RFID input is automatically highlighted upon opening the page so it will be 
 	\includegraphics[width=0.75\textwidth]{figures/chapter4/backendrecord.png} % Adjust width as needed
 	\caption{Django saving the attendance time instance in 24-hr format}
 	\label{fig:record}
-\end{figure}
-\begin{figure}[h] % 'h' places the figure approximately here in the text
-	\centering
-	\includegraphics[width=0.5\textwidth]{figures/chapter4/delay.png} % Adjust width as needed
-	\caption{Fake Delay}
-	\label{fig:delay}
 \end{figure}
 
 \clearpage
