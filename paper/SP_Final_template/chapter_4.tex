@@ -248,6 +248,32 @@ It also has a web equivalent of the PyQT5 time-in and time-out processing, albei
 \end{figure}
 
 \clearpage
+\section{Raspeberry Pi AI Camera}
+The AI camera is responsible for handling the face detection inference by running the compressed face detection model based on YoloV8n on the onboard Sony IMX500 chip. This takes off the workload of continuous streaming and inference from the Raspberry Pi 5 CPU/GPU and will allow it to scale better and allocate compute resources for other parts of the system such as the face verification and database operations.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/ai_cam.png} % Adjust width as needed
+	\caption{The AI camera has the Sony IMX500 in the same silicon.}
+	\label{fig:ai_cam}
+\end{figure}
+\subsection{Comparison with traditional camera solutions for Raspberry devices}
+The AI camera is not limited to object detection tasks like face detection. It is also capable of doing pose estimation, image classification, and object segmentation all on the same chip as the camera. This is a huge jump in technology compared to the earlier cameras for the Raspberry Pi ecosystem and eliminates the need for AI accelerators that are attached on top of the Raspberry Pi. Figure \ref{fig:ai_cam_comparison} compares the architecture or traditional cameras and the new AI camera. 
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/ai_cam_comparison.png} % Adjust width as needed
+	\caption{New AI camera vs Traditional Camera}
+	\label{fig:ai_cam_comparison}
+\end{figure}
+The camera module feeds that tensor straight into its onboard AI accelerator, which generates output tensors with the inference results and then forwards them to the Raspberry Pi \cite{raspberrypi_ai_camera_2025}. 
+Older cameras may use AI accelerators or only the CPU, with the lather being inefficient for such task. AI accelerators such as from Hailo start at \$70, not counting the camera.
+\subsection{Implementation of the Face Detection}
+Due to its tight integration with the picamera2 library, developing a native application utilizing the AI camera was straightforward. We developed a simple PyQT5 UI that displays the camera stream, waits for an RFID scanner input, and runs the face detection inference on the IMX500 in real time as a background thread. We only allow a single face to be able to time in as to not overwhelm the backend. When a single face is detected, allow the app to take in the RFID number scanned as input and verify the face, cropped from the stream. When more than 1 or no faces are detected, we just disable the RFID input.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/ai_cam_app.png} % Adjust width as needed
+	\caption{The camera app running the face detection model}
+	\label{fig:ai_cam_app}
+\end{figure}
 \section{MobileFacenet in detail}
 The MobileFacenet model for was used face verification. The model takes in a 112x112x3 image and outputs an embedding(a mathematical representation of face). We then use Cosine similarity with a certain threshold to compute if two embeddings are similar, therefore concluding that both identities are the same. The model was converted to a Tensorflowlite model to run faster on the Raspberry Pi 5 hardware. The final size of the model is 863Kb.
 

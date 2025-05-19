@@ -152,6 +152,31 @@ Fruhlinger, J.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+{Raspberry Pi Foundation}%
+}{%
+{Raspberry Pi Foundation}%
+}{%
+{\protect \APACyear {{\protect \bibnodate {}}}}%
+}]{%
+raspberrypi_ai_camera_2025}
+\APACinsertmetastar {%
+raspberrypi_ai_camera_2025}%
+\begin{APACrefauthors}%
+{Raspberry Pi Foundation}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{{\protect \bibnodate {}}}{}{}.
+\newblock
+\APACrefbtitle {AI Camera.} {Ai camera.}
+\newblock
+\APAChowpublished
+  {\url{https://www.raspberrypi.com/documentation/accessories/ai-camera.html}}.
+\newblock
+\APACrefnote{Accessed: 2025-05-19}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 Romero%
 \ \BBA {} Lee%
 }{%

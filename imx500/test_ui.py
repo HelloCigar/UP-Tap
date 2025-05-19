@@ -97,11 +97,15 @@ def draw_detections(request):
 
     face_count = len(detections)
     
-    if face_count == 0:
-        face_signals.status_update.emit("Waiting for face...")
-    else:
-        face_signals.status_update.emit("Ready for RFID input")
+    if face_count == 1:
+        face_signals.status_update.emit("Face detected, please tap your RFID card")
         face_signals.input_toggle.emit(True)
+    elif face_count > 1:
+        face_signals.status_update.emit("Multiple faces detected, only one allowed")
+        face_signals.input_toggle.emit(False)
+    else:
+        face_signals.status_update.emit("Waiting for face...")
+        face_signals.input_toggle.emit(False)
 
     with MappedArray(request, 'main') as m:
         for detection in detections:
