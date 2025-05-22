@@ -282,18 +282,18 @@ Figure \ref{fig:mfn_arch} Shows the general architecture of the model as defined
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.5\textwidth]{figures/chapter4/mfn_arch.png} % Adjust width as needed
-	\caption{MobileFaceNet}
+	\caption{MobileFaceNet Architecture}
 	\label{fig:mfn_arch}
 \end{figure}
 
 \clearpage 
 \subsection{Metrics}
 We tested the accuracy of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds.
-Compared to models of hundreds of MB in size, the performance of the model is good but can be better. An AUC of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
+Compared to models of hundreds of MB in size, the performance of the model is good but can be better. An Area Under the Curve (AUC) of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1\textwidth]{figures/chapter4/roc_curve.png} % Adjust width as needed
-	\caption{ROC AUC}
+	\caption{Receiver Operating Characteristic (ROC) Curve for Face Verification}
 	\label{fig:roc_curve}
 \end{figure}
 
@@ -302,7 +302,7 @@ Next we check the overall accuracy at the chosen threshold. We chose the 0.6 as 
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.75\textwidth]{figures/chapter4/fixed_thresh_matrix.png} % Adjust width as needed
-	\caption{ROC AUC}
+	\caption{Confusion Matrix at a Threshold of 0.60}
 	\label{fig:fixed_thresh}
 \end{figure}
 
