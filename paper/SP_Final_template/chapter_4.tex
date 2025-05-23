@@ -8,7 +8,18 @@ Using the tools mentioned in Section~\ref{sec:devtools}, our system can be visua
 	\caption{System Architecture}
 	\label{fig:architecture}
 \end{figure}
-All of the software and services are running in the Raspeberry Pi 5. We have no online dependencies except the Hero icons which are MIT licensed and free to use.
+
+All software components and services are hosted on a Raspberry Pi 5.
+
+We used Django as the backend server, which interfaces with the PostgreSQL database to perform queries in Python, because most pretrained facial recognition models are implemented in Python. We also used Django Ninja to allow the frontend to access backend data efficiently.
+
+The frontend web interface is built using NuxtJS, which provides a comprehensive set of tools for routing, data fetching, and security. This interface is primarily used by faculty members to view and manage attendance records.
+
+PyQt5 is used for interfacing with the Raspberry Pi AI Camera and the RFID scanner. It captures facial images and scans RFID tags. This component runs in a background thread to avoid interfering with the main web interface thread. PyQt5 initiates RFID scanning only when exactly one face is detected.
+
+Once a face is successfully detected and an RFID tag is scanned, the captured facial image is encoded as a Base64 string and sent to the Django backend along with the RFID data. The backend uses MobileFaceNet to verify the identity by comparing the facial features and RFID information against existing records in the PostgreSQL database. If a match is found, the system logs the attendance.
+
+The system has no online dependencies except for the Heroicons library, which is MIT-licensed and free to use.
 
 \section{Process Diagram}
 
@@ -282,18 +293,18 @@ Figure \ref{fig:mfn_arch} Shows the general architecture of the model as defined
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.5\textwidth]{figures/chapter4/mfn_arch.png} % Adjust width as needed
-	\caption{MobileFaceNet}
+	\caption{MobileFaceNet Architecture}
 	\label{fig:mfn_arch}
 \end{figure}
 
 \clearpage 
 \subsection{Metrics}
 We tested the accuracy of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds.
-Compared to models of hundreds of MB in size, the performance of the model is good but can be better. An AUC of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
+Compared to models of hundreds of MB in size, the performance of the model is good but can be better. An Area Under the Curve (AUC) of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1\textwidth]{figures/chapter4/roc_curve.png} % Adjust width as needed
-	\caption{ROC AUC}
+	\caption{Receiver Operating Characteristic (ROC) Curve for Face Verification}
 	\label{fig:roc_curve}
 \end{figure}
 
@@ -302,7 +313,7 @@ Next we check the overall accuracy at the chosen threshold. We chose the 0.6 as 
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.75\textwidth]{figures/chapter4/fixed_thresh_matrix.png} % Adjust width as needed
-	\caption{ROC AUC}
+	\caption{Confusion Matrix at a Threshold of 0.60}
 	\label{fig:fixed_thresh}
 \end{figure}
 
