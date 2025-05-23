@@ -56,10 +56,6 @@ const actions = [
         students: selectedRows.value
       })
     }
-  }], [{
-    key: 'uncompleted',
-    label: 'In Progress',
-    icon: 'i-heroicons-arrow-path'
   }]
 ]
 
@@ -123,6 +119,15 @@ function select (row: Student) {
 
 const modal = useModal()
 const items = (row: Student) => [
+  [{
+    label: 'Add/Update RFID',
+    icon: 'i-heroicons-check',
+    click: () => {
+      modal.open(BatchRFID, {
+        students: [row]
+      })
+    }
+  }],
   [{
     label: 'Edit Information',
     icon: 'i-heroicons-pencil-square-20-solid',
