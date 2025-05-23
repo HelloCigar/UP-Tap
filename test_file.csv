@@ -1,0 +1,3 @@
+last_name,first_name,middle_initial,student_id,gender,course,email,alt_email
+Garcia,Juan,A,20250001,M,Computer Science,juan.garcia@example.edu,juan.alt@example.com
+Reyes,Maria,B,20250002,F,Information Technology,maria.reyes@example.edu,
