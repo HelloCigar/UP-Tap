@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const toast = useToast()
+const modal = useModal()
 interface Props {
   /** List of student_id values to scan in sequence */
   students: Student[]
@@ -72,8 +73,14 @@ async function onKeydown(e: KeyboardEvent) {
           title: `Error assigning RFID`,
           description: err.data.data.detail,
         })
+      }).finally(() => {
+        // clear buffer for the next scan
+        buffer.value = ''
+        if (currentIndex.value >= studentIds.value.length) {
+          // close the modal if we finished all students
+          modal.close()
+        }
       })
-    buffer.value = ''
   }
 }
 
