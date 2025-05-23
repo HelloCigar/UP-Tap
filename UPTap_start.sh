@@ -32,10 +32,5 @@ lxterminal -e bash -c "
 
 sleep 1  # small pause
 
-# 4) ngrok tunnel for frontend in window #4
-lxterminal -e bash -c "
-  ngrok http 3000
-" &
-
 # 5) Open browser to your frontend
 xdg-open http://localhost:3000
