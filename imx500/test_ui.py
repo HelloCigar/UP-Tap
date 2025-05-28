@@ -249,6 +249,8 @@ class MainWindow(QWidget):
 
         self._pending_calls -= 1
 
+        print(f"Success: {success}, Message: {message}, Name: {student_name}, Time: {time_in}")
+
         # once all have returned…
         if self._pending_calls == 0:
             if self._any_match:
