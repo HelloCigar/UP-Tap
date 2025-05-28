@@ -21,12 +21,11 @@ const currentStudentId = ref<number | null>(null)
 watch(
   () => [studentIds, currentIndex.value],
   () => {
-    if (studentIds.value.length === 0) {
+    if (studentIds.value.length === 0 || currentIndex.value >= studentIds.value.length) {
       currentStudentId.value = null
+      modal.close()
     } else {
-      // wrap around if we overflow
-      const idx = currentIndex.value % studentIds.value.length
-      currentStudentId.value = studentIds.value[idx]
+      currentStudentId.value = studentIds.value[currentIndex.value]
     }
     // clear buffer for the next scan
     buffer.value = ''
@@ -64,6 +63,15 @@ async function onKeydown(e: KeyboardEvent) {
             title: `RFID ${rfid} assigned to student ${props.students[currentIndex.value].first_name} ${props.students[currentIndex.value].last_name}`,
         })
         currentIndex.value += 1
+        if (currentIndex.value >= studentIds.value.length) {
+          toast.add({
+            id: 'batch-complete',
+            color: 'green',
+            icon: 'i-heroicons-check-circle',
+            title: 'RFID batch assignment complete',
+          })
+          modal.close()
+        }
       })
       .catch((err) => {
         toast.add({
@@ -76,10 +84,6 @@ async function onKeydown(e: KeyboardEvent) {
       }).finally(() => {
         // clear buffer for the next scan
         buffer.value = ''
-        if (currentIndex.value >= studentIds.value.length) {
-          // close the modal if we finished all students
-          modal.close()
-        }
       })
   }
 }
