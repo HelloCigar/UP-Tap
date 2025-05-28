@@ -85,9 +85,9 @@ class StudentAttendanceSchema(Schema):
 
     @staticmethod
     def resolve_time_in(obj):
-        return obj.time_in.strftime("%I:%S %p") if obj.time_in else None
+        return obj.time_in.strftime("%I:%M %p") if obj.time_in else None
     
     @staticmethod
     def resolve_time_out(obj):
-        return obj.time_out.strftime("%I:%S %p") if obj.time_out else None
+        return obj.time_out.strftime("%I:%M %p") if obj.time_out else None
 
