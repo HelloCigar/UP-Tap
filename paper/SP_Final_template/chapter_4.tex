@@ -320,7 +320,49 @@ Next we check the overall accuracy at the chosen threshold. We chose the 0.6 as 
 
 
 \section{YoloV8n for Face Detection}
-We used a pretrained YoloV8n model for face detection by Arnab Dhar on Huggingface. The main motivation was because Yolo models were the first to officially support exporting and deploying a model to the Raspberry Pi AI Camera. The Ultralytics team abstracted the process of model quantization and compression using Sony's Model Compression Toolkit into their Python library. Compression and quantization was required as the IMX500 chip has a limited memory for inference at approximately 8mb only. The original pickle file is around 6.0mb which is compressed down to around 3mb per Ultralytics documentation. It can be further finetuned using personal dataset for better accuracy. 
+We utilized a pretrained YOLOv8n face detection model developed by Arnab Dhar and published on Hugging Face. This model was fine-tuned by the original author on a dataset of over 10{,}000 face images, trained for 100 epochs using a batch size of 16 on a single NVIDIA V100 16GB GPU (total training time: approximately 140 minutes).
+
+The model achieved the following performance metrics, as reported by the author:
+
+\begin{itemize}
+	\item \textbf{Precision (IoU $\geq$ 0.5):} 0.772 ($\approx$77.2\%)
+	\item \textbf{Recall (IoU $\geq$ 0.5):} 0.489 ($\approx$48.9\%)
+	\item \textbf{mAP@50:} 0.5598 ($\approx$55.98\%)
+	\item \textbf{mAP@50--95:} 0.2905 ($\approx$29.05\%)
+\end{itemize}
+
+
+These results demonstrate that the model has strong face detection capabilities, with a good balance between precision and recall. Figure~\ref{fig:yolo-metrics} presents the performance curves for all four metrics across training epochs.
+
+The YOLOv8n model was selected due to its compatibility with the Raspberry Pi AI Camera and the Sony IMX500 edge processor. The Ultralytics framework simplifies quantization and compression via Sony’s Model Compression Toolkit. This enables reducing the model size from around 6~MB to approximately 3~MB, allowing it to run within the IMX500’s 8~MB memory constraint with minimal accuracy loss.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/map50.png}
+		\caption{mAP@50}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/map5095.png}
+		\caption{mAP@50--95}
+	\end{subfigure}
+	
+	\vspace{1em}
+	
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/precision.png}
+		\caption{Precision (IoU $\geq$ 0.5)}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/recall.png}
+		\caption{Recall (IoU $\geq$ 0.5)}
+	\end{subfigure}
+	
+	\caption{Performance metrics of the YOLOv8n face detection model across training epochs.}
+	\label{fig:yolo-metrics}
+\end{figure}
 
 
 
