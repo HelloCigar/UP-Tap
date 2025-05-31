@@ -48,7 +48,7 @@ Students must register their facial ID to enable attendance verification.Â ThisÂ
 \end{figure}
 \clearpage
 \subsection{Time In Process}
-Time in process includes a check if the student already has time in records. First step in this is the student tapping the ID to the RFID sensor and trigger the photo capture to check the face.
+Time in process includes a check if the student already has time in records. First step in this is the student tapping the ID to the RFID sensor and trigger the photo capture to check the face. The system knows the student is trying to time in and out based on the student's attendance history in a specific subject and date. If there isn't a time-in record yet, then it is treated the process as a time-in while if there's already a time-in exists in a specific subject and date, then it is treated the process as a time-out. 
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/Timein2.png} % Adjust width as needed
