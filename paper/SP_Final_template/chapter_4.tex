@@ -20,14 +20,63 @@ PyQt5 is used for interfacing with the Raspberry Pi AI Camera and the RFID scann
 Once a face is successfully detected and an RFID tag is scanned, the captured facial image is encoded as a Base64 string and sent to the Django backend along with the RFID data. The backend uses MobileFaceNet to verify the identity by comparing the facial features and RFID information against existing records in the PostgreSQL database. If a match is found, the system logs the attendance.
 
 The system has no online dependencies except for the Heroicons library, which is MIT-licensed and free to use.
+\section{Use Case Discussion}
 
-\section{Process Diagram}
+The use case diagram presented in Figure~\ref{fig:use_case} illustrates the primary interactions between system actors—\textbf{Teacher}, \textbf{Student}, and \textbf{Administrator}—and the core functionalities of the \textbf{UPTap Attendance System}. This diagram serves as a foundational blueprint for understanding the functional scope of the system and the responsibilities assigned to each user role.
 
-\subsection{Student Registration Process}
-Students must register their facial ID to enable attendance verification. This registration process only captures one facial image, which will be used to identify the student during attendance tracking. It also takes all relevant info about the student, reflecting the fields given by the generated class list of CRS. It will be handled by Nuxt at endpoint: \url{http://raspberry_ip:3000/public/register. }
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
-	\includegraphics[width=0.8\textwidth]{figures/chapter4/student_form_pc.png} % Adjust width as needed
+	\includegraphics[width=1\textwidth]{figures/chapter4/use_case_diagram.png} % Adjust width as needed
+	\caption{Use cases of the system. Generated using PlantUML.}
+	\label{fig:use_case}
+\end{figure}
+\clearpage
+
+\subsection*{Actors and Their Roles}
+
+\begin{itemize}
+	\item \textbf{Teacher}: The teacher has the most extensive set of interactions within the system. After logging in, the teacher initiates an attendance session, enabling students to time in or out during the allotted class period. Teachers can also add the subjects they handle, within the constraints of available time slots. Furthermore, they are able to generate or view attendance reports, allowing them to monitor class participation and maintain academic records.
+	
+	\item \textbf{Student}: The student's role is streamlined to support an efficient and automated attendance mechanism. Their primary interaction with the system is through the \textit{Time-in/Time-out} function, triggered via RFID. This design minimizes manual input, reduces errors, and promotes non-disruptive logging of attendance.
+	
+	\item \textbf{Administrator}: The administrator is responsible for configuring the system’s database records. This includes managing user accounts, setting up academic structures, and maintaining scheduling data. Although administrators do not participate directly in the attendance workflow, they provide critical backend support to ensure data consistency and system integrity.
+\end{itemize}
+
+\subsection*{Use Case Interactions}
+
+Each use case has been designed to reflect real-world workflows:
+
+\begin{itemize}
+	\item \textbf{Login}: Ensures secure and role-based access to the system for teachers.
+	\item \textbf{Start Attendance Session}: Enables teachers to activate the session during which students may time in. This supports token-based validation to prevent unauthorized entries.
+	\item \textbf{Add Subjects}: Allows teachers to register the subjects they handle, with respect to available scheduling windows.
+	\item \textbf{Generate/View Attendance Report}: Provides teachers access to attendance data for monitoring and reporting purposes.
+	\item \textbf{Time-in/Time-out}: Represents the students’ main interaction, capturing presence data in a non-intrusive, automated manner.
+	\item \textbf{Configure DB Records}: Reserved for administrators to manage database records, ensuring the structural integrity of the system.
+\end{itemize}
+
+\section{Process Diagrams }
+\subsection{Overview of Process Flow}
+
+Figure~ presents the process flow of the UPTap Attendance System, illustrating how the system handles student time-in and time-out operations within a teacher-controlled attendance session. The diagram demonstrates the coordinated interaction between teachers, students, and the system throughout the attendance lifecycle.
+
+\subsubsection*{Teacher Actions}
+
+The process begins with the teacher logging into the system and undergoing authentication. Once authenticated, the teacher gains access to the dashboard and initiates an attendance session. This session serves as the valid window during which students are permitted to record their attendance.
+
+While the session is active, the teacher may optionally monitor attendance progress. Upon concluding the class, the teacher ends the session, which triggers the system to finalize and lock the attendance records. These finalized logs are then available for viewing or exporting as reports.
+
+\subsubsection*{Student Actions and System Behavior}
+
+While an attendance session is active, students are prompted to perform either a time-in or time-out action. Before processing, the system verifies the existence of an active session. If confirmed, the student selects their desired action.
+
+Both time-in and time-out procedures follow the same verification mechanism—using facial recognition or RFID scanning. Once verified, the system records the attendance action along with a timestamp. If a student attempts to interact with the system when no session is active, they are notified accordingly.
+
+\subsection{Student Registration Process}
+Students must register their facial ID to enable attendance verification. This registration process only captures one facial image, which will be used to identify the student during attendance tracking. It also takes all relevant info about the student, reflecting the fields given by the generated class list of CRS. It will be handled by Nuxt at endpoint: \url{http://raspberry_ip:3000/public/register}. Figures \ref{fig:student_form_pc} to \ref{fig:student_form_mobile_preview} detail the process.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/student_form_pc.png} % Adjust width as needed
 	\caption{Form in desktop client. Face data defaults to file picker. It will still check for faces in the image. Course input lists all courses offered in UP Visayas.}
 	\label{fig:student_form_pc}
 \end{figure}
@@ -48,16 +97,17 @@ Students must register their facial ID to enable attendance verification. This�
 \end{figure}
 \clearpage
 \subsection{Time In Process}
-Time in process includes a check if the student already has time in records. First step in this is the student tapping the ID to the RFID sensor and trigger the photo capture to check the face. The system knows the student is trying to time in and out based on the student's attendance history in a specific subject and date. If there isn't a time-in record yet, then it is treated the process as a time-in while if there's already a time-in exists in a specific subject and date, then it is treated the process as a time-out. 
+Time in process includes a check if the student already has time in records. First step in this is the student tapping the ID to the RFID sensor and trigger the photo capture to check the face. The system also checks if the time-in request happened within the subject time slot and session which the student is enrolled to. If we satisfy these conditions, we log the attendance information to the database, and the backend server sends a server side event to update the frontend records in real time.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/Timein2.png} % Adjust width as needed
-	\caption{Time in}
+	\caption{Time In process. Checks if there's already a time in record.}
 	\label{fig:timein}
 \end{figure}
 
 \clearpage
 \subsection{Time Out Process}
+The time out process is the same as time-in process, we just update the time-out column of the attendance information table.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/timeout1.png} % Adjust width as needed
@@ -66,7 +116,7 @@ Time in process includes a check if the student already has time in records. Fir
 \end{figure}
 
 \subsection{Attendance Record Export Process}
-The faculty members are allowed to export their attendance records into a CSV/PDF file in order to have better access and record keeping. In addition to that, this feature can be useful for further analysis, for data backup purposes, or if they want to integrate it into another academic system. 
+The faculty members are allowed to export their attendance records into a CSV/PDF file in order to have better access and record keeping. In addition to that, this feature can be useful for further analysis, for data backup purposes, or if they want to integrate it into another academic system. Figure \ref{fig:att_ui} show the UI for the attendance records, with a button on the left for export options. Figure \ref{fig:att_report} shows the generated report PDF.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/att_ui.png} % Adjust width as needed
@@ -299,8 +349,8 @@ Figure \ref{fig:mfn_arch} Shows the general architecture of the model as defined
 
 \clearpage 
 \subsection{Metrics}
-We tested the accuracy of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds.
-Compared to models of hundreds of MB in size, the performance of the model is good but can be better. An Area Under the Curve (AUC) of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
+We tested the discriminative ability of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds.
+Compared to models of hundreds of MB in size, the performance of the model is good but can be better. Figure \ref{fig:roc_curve} shows the ROC AUC of the model of 0.77. An Area Under the Curve (AUC) of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1\textwidth]{figures/chapter4/roc_curve.png} % Adjust width as needed
@@ -309,7 +359,7 @@ Compared to models of hundreds of MB in size, the performance of the model is go
 \end{figure}
 
 \clearpage
-Next we check the overall accuracy at the chosen threshold. We chose the 0.6 as threshold for a good balance of security and reliability. The threshold posted an average accuracy score of 68.6\% on all ten folds. While not impressive, note that the model we test here is a TensorFlow Lite version which was compressed for faster inference on RPI 5.
+Next, we evaluate the model's overall accuracy using the chosen threshold. As shown in Figure \ref{fig:fixed_thresh}, the confusion matrix corresponds to a fixed threshold of 0.6. This threshold was selected to strike a practical balance between security (minimizing false positives) and reliability (maintaining acceptable true positive rates). At this setting, the model achieved an average accuracy of 68.6\% across ten cross-validation folds. While this accuracy may not appear high, it is important to note that the evaluated model is a TensorFlow Lite version, optimized and compressed for real-time inference on a Raspberry Pi 5. This compression trades off some performance for significantly improved inference speed on edge devices.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.75\textwidth]{figures/chapter4/fixed_thresh_matrix.png} % Adjust width as needed
@@ -318,7 +368,17 @@ Next we check the overall accuracy at the chosen threshold. We chose the 0.6 as 
 \end{figure}
 
 
+\section{Mediapipe Face Mesh for a simple face alignment}
+To account for the slight misalignment of our camera setup, we implemented a face alignment step next to cropping the facial region. Specifically, we used eye landmarks provided by MediaPipe Face Mesh to estimate the tilt of the face relative to the horizontal axis. The coordinates of the left and right eyes were extracted and used to compute the angle of rotation based on the arctangent of the vertical and horizontal distance between them. The image was then rotated around the midpoint between the eyes using this angle to horizontally align the face. 
+This alignment ensures that the cropped facial region remains consistent across samples, improving the robustness of our face verification. After alignment, we calculated the bounding box based on the full set of detected landmarks and cropped the aligned image accordingly. To maintain validity, all bounding box coordinates were clamped to stay within the image boundaries. This preprocessing step proved particularly important for deployment on our Raspberry Pi 5 system, where small variations in camera placement or head orientation could significantly impact performance. Figure \ref{fig:mp_face_mesh} shows the code snippet of our utility function implementing MediaPipe Face Mesh for face alignment. 
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/mp_face_mesh.png} % Adjust width as needed
+	\caption{}
+	\label{fig:mp_face_mesh}
+\end{figure}
 
+\clearpage
 \section{YoloV8n for Face Detection}
 We utilized a pretrained YOLOv8n face detection model developed by Arnab Dhar and published on Hugging Face. This model was fine-tuned by the original author on a dataset of over 10{,}000 face images, trained for 100 epochs using a batch size of 16 on a single NVIDIA V100 16GB GPU (total training time: approximately 140 minutes).
 
