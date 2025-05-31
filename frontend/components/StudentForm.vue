@@ -199,6 +199,49 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     submitState.value = false
   })
 }
+
+const courses = [
+  // Undergraduate Degrees
+  "BA (Communication & Media Studies)",
+  "BA (Community Development)",
+  "BA (History)",
+  "BA (Sociology)",
+  "BA in Communication and Media Studies",
+  "BA in Literature",
+  "BA in Political Science",
+  "BA in Psychology",
+  "BS (Biology)",
+  "BS Accountancy (4.5 yrs)",
+  "BS Applied Mathematics",
+  "BS Business Administration (Marketing)",
+  "BS Chemical Engineering",
+  "BS Chemistry",
+  "BS Computer Science",
+  "BS Economics",
+  "BS Fisheries",
+  "BS Food Technology",
+  "BS Management",
+  "BS Public Health",
+  "BS Statistics",
+
+  // Graduate Degrees
+  "PhD in Fisheries (PhD-Fish)",
+  "MS in Fisheries (MSF)",
+  "MS in Post-Harvest Fisheries (MS PhF)",
+  "MS in Ocean Sciences (MSOS)",
+  "MS in Food Science (MSFS)",
+  "MS in Biology (MSBio)",
+  "MS in Sustainability (MScS)",
+  "Master of Education (MEd)",
+  "Master of Chemistry (MChem)",
+  "Master of Marine Affairs (MMA)",
+  "Professional Masters in Tropical Marine Ecosystems Management (PM-TMEM)",
+  "Master of Management (MM)",
+
+  // Diploma Programs
+  "Diploma in Urban and Regional Planning (DURP)"
+];
+
 </script>
 
 <template>
@@ -240,7 +283,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                                 option-attribute="name" />
                         </UFormGroup>
                         <UFormGroup label="Course" name="course" required>
-                            <UInput placeholder="BS in Computer Science" icon="i-heroicons-building-library-solid" v-model="state.course"/>
+                            <USelectMenu
+                                v-model="state.course"
+                                searchable
+                                searchable-placeholder="Search a course"
+                                placeholder="Choose your course"
+                                :options="courses"
+                            />
                         </UFormGroup>
                     </div>
                     <div class="space-y-2">

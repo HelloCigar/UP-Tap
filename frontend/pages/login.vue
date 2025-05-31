@@ -26,11 +26,15 @@ async function onSubmit (event: FormSubmitEvent<Schema>) {
     body: event.data
   })
   if (data && "auth_token" in data) {
+
     loading.value = false
+
     const { fetch } = useUserSession();
     await fetch();
     // go to dashboard
-    await navigateTo('/dashboard')
+    const nav = await navigateTo('/dashboard')
+    console.log(nav)
+
   }
   else {
     loading.value = false
