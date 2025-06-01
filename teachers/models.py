@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
@@ -44,10 +45,21 @@ class Teacher(AbstractUser):
         return f'{self.first_name} {self.last_name} - {self.email}'
     
 
+class Semesters(models.TextChoices):
+    FIRST = '1', 'First Semester'
+    SECOND = '2', 'Second Semester'
+    MIDYEAR = '3', 'Mid Year Semester'
+
 class Subjects(models.Model):
     subject_id = models.AutoField(primary_key=True)
     subject_name = models.CharField(max_length=100)
+    section = models.CharField(max_length=50, blank=True, null=True)  # e.g., 'A', 'B', etc.
+    semester = models.CharField(max_length=20, choices=Semesters.choices, default=Semesters.FIRST)
+    academic_year = models.CharField(max_length=20, default=f"{datetime.now().year}-{datetime.now().year + 1}")  # e.g., '2023-2024'
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='subjects')
+
+    class Meta:
+        unique_together = ('subject_name', 'semester', 'academic_year')
 
     def __str__(self):
         return f'{self.subject_id} - {self.subject_name}'
