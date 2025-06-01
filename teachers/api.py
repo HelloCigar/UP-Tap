@@ -4,7 +4,7 @@ from ninja import Router
 from ninja.errors import HttpError
 from typing import List
 from teachers.util_funcs import get_daily_available_slots
-from .models import Subjects
+from .models import Subjects, ClassSchedule, Section, AcademicPeriod, get_default_academic_period
 from .schemas import *
 from students.models import Student, SubjectEnrollment
 from django.shortcuts import get_object_or_404
@@ -12,7 +12,7 @@ import datetime
 from ninja import File
 from ninja.files import UploadedFile
 from rest_framework.authtoken.models import Token
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 
 router = Router()
@@ -23,57 +23,70 @@ def get_latest_token(request):
     latest_token = Token.objects.all().order_by('-created').first()
     return {"token": latest_token.key}
 
-@router.get("/subjects", response=List[SubjectCRUDSchema])
+@router.get("/subjects", response=List[SubjectListSchema])
 def get_subjects(request):
     result = []
     teacher = request.user
 
     subjects = Subjects.objects.all()
-
-    if teacher.is_superuser == False:
-        subjects = Subjects.objects.filter(teacher=teacher)
+    if not teacher.is_superuser:
+        subjects = subjects.filter(teacher=teacher)
 
     for subj in subjects:
         qs = subj.classschedule_set.all()
         days = [s.day_of_week for s in qs]
-        # assume all entries share the same times
-        if qs:
-            st = qs[0].start_time.strftime("%H:%M")
-            et = qs[0].end_time.strftime("%H:%M")
+        # use defaults or actual times
+        st = qs[0].start_time.strftime("%H:%M") if qs else "07:00"
+        et = qs[0].end_time.strftime("%H:%M") if qs else "08:00"
+        print(get_default_academic_period(), subj.period.pk)
+
+        if subj.period.pk == get_default_academic_period():
+            result.append({
+                "subject_id": subj.subject_id,
+                "subject_name": subj.subject_name,
+                "schedule": days,
+                "start_time": st,
+                "end_time": et,
+                "section": [{"name": subj.section.name}] if subj.section else [],
+                "period": [{
+                    "semester": subj.period.semester,
+                    "academic_year": subj.period.academic_year
+                }]
+            })
         else:
-            st = et = ""
-        result.append({
-            "subject_id": subj.subject_id,
-            "subject_name": subj.subject_name,
-            "schedule": days,
-            "start_time": st,
-            "end_time": et,
-            "section" : subj.section,
-            "semester": subj.semester,
-            "academic_year": subj.academic_year,
-        })
+            continue
+
     return result
 
-@router.get("/subjects/noauth", response=List[SubjectCRUDSchema], auth=None)
+@router.get("/subjects/noauth", response=List[SubjectListSchema], auth=None)
 def get_subjects_noauth(request):
-    result =[]
+    result = []
     subjects = Subjects.objects.all()
+
     for subj in subjects:
         qs = subj.classschedule_set.all()
         days = [s.day_of_week for s in qs]
-        # assume all entries share the same times
-        if qs:
-            st = qs[0].start_time.strftime("%H:%M")
-            et = qs[0].end_time.strftime("%H:%M")
+        # use defaults or actual times
+        st = qs[0].start_time.strftime("%H:%M") if qs else "07:00"
+        et = qs[0].end_time.strftime("%H:%M") if qs else "08:00"
+        print(get_default_academic_period(), subj.period.pk)
+
+        if subj.period.pk == get_default_academic_period():
+            result.append({
+                "subject_id": subj.subject_id,
+                "subject_name": subj.subject_name,
+                "schedule": days,
+                "start_time": st,
+                "end_time": et,
+                "section": [{"name": subj.section.name}] if subj.section else [],
+                "period": [{
+                    "semester": subj.period.semester,
+                    "academic_year": subj.period.academic_year
+                }]
+            })
         else:
-            st = et = ""
-        result.append({
-            "subject_id": subj.subject_id,
-            "subject_name": subj.subject_name,
-            "schedule": days,
-            "start_time": st,
-            "end_time": et,
-        })
+            continue
+
     return result
 
 @router.get("/subjects/availabletimeslots")
@@ -162,14 +175,15 @@ def create_subject(request, payload: SubjectCRUDSchema):
             if sched.start_time <= start_time < sched.end_time or sched.start_time < end_time <= sched.end_time:
                 raise HttpError(400, "Time schedule conflict, please try again")
 
-    
-
     # 2) create the subject
-    subj = Subjects.objects.create(
-        subject_name=payload.subject_name,
-        teacher=request.user,
-        section=payload.section,
-    )
+    try:
+        subj = Subjects.objects.create(
+            subject_name=payload.subject_name,
+            section=Section.objects.get_or_create(name=payload.section)[0],
+            teacher=request.user,
+        )
+    except IntegrityError:
+        raise HttpError(400, "Subject with the same section")
 
     # 3) create the schedules
     for day in payload.schedule:
@@ -215,14 +229,15 @@ def update_subject(request, subject_id: int, payload: SubjectCRUDSchema):
             if sched.start_time <= start_time < sched.end_time or sched.start_time < end_time <= sched.end_time:
                 raise HttpError(400, "Time schedule conflict, please try again")
             
+    
     subject = get_object_or_404(Subjects, subject_id=subject_id, teacher=request.user)
     subject.subject_name = payload.subject_name
-    subject.section = payload.section
+    subject.section = Section.objects.get_or_create(name=payload.section)[0]
     subject.save()
 
     subj = get_object_or_404(Subjects, pk=subject_id)
     subj.subject_name = payload.subject_name
-    subj.section = payload.section
+    subj.section = Section.objects.get_or_create(name=payload.section)[0]
     subj.save()
 
     # clear out old schedules

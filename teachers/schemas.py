@@ -18,6 +18,13 @@ class SubjectDetailSchema(Schema):
     subject_name: str
     time_and_schedule: List[SubjectTimeAndSchedule] = None
 
+class SectionSchema(Schema):
+    name: str
+
+class AcademicPeriodSchema(Schema):
+    semester: str
+    academic_year: str
+
 class SubjectCRUDSchema(Schema):
     subject_id: int = None
     subject_name: str
@@ -27,6 +34,15 @@ class SubjectCRUDSchema(Schema):
     section: Optional[str] = None
     semester: Optional[str] = None
     academic_year: Optional[str] = None
+
+class SubjectListSchema(Schema):
+    subject_id: int
+    subject_name: str
+    schedule: List[str]
+    start_time: str = "07:00"
+    end_time: str = "08:00"   
+    section: List[SectionSchema] = None
+    period: List[AcademicPeriodSchema] = None
 
 class TimeSlot(Schema):
     start: time

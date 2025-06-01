@@ -50,6 +50,7 @@ const statusOptions = [{
 const search = ref('')
 const selectedStatus = ref<boolean[]>([])
 const selectedSubjects = ref<number[]>([])
+const selectedSections = ref<string[]>([])
 import { subDays } from 'date-fns'
 const startDate = ref<Date>(subDays(new Date(), 7))
 const endDate = ref<Date>(new Date())
@@ -66,6 +67,7 @@ function resetFilters() {
   selectedStatus.value = []
   selectedSubjects.value = []
   datePicker.value.resetSelected()
+  selectedSections.value = []
 }
 
 // Data
@@ -74,17 +76,40 @@ const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[
   query: {
     q: search.value,
     start_date: startDate.value.toLocaleDateString('en-CA'),
-    end_date: endDate.value.toLocaleDateString('en-CA')
+    end_date: endDate.value.toLocaleDateString('en-CA'),
   },
   body:{
     is_present: selectedStatus.value.length > 0 ? selectedStatus.value : undefined,
     subject_ids: selectedSubjects.value.length > 0 ? selectedSubjects.value : undefined,
+    sections: selectedSections.value.length > 0 ? selectedSections.value : undefined,
   },
 }), {
   watch: [search, selectedStatus, selectedSubjects, startDate, endDate],
 })
 
 const { data: subjects } = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
+
+const subjectSectionsMap = computed(() => {
+  if (!subjects.value || ('success' in subjects.value && subjects.value.success === false)) return new Map()
+
+  const map = new Map<number, Set<string>>()
+
+  subjects.value.forEach((subject) => {
+    const id = subject.subject_id
+    const section = subject.section ?? ''
+    if (!map.has(id)) {
+      map.set(id, new Set())
+    }
+    if (section) {
+      map.get(id)?.add(section)
+    }
+  })
+
+  return new Map(
+    Array.from(map.entries()).map(([id, sections]) => [id, Array.from(sections)])
+  )
+})
+
 
 const calculateStats = computed(() => {
 
@@ -189,7 +214,21 @@ const items = [
         <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
         <div class="flex items-center gap-3">
           <USelectMenu v-model="selectedStatus" :options="statusOptions" placeholder="Status" multiple value-attribute="value" class="w-40" />
-          <USelectMenu v-model="selectedSubjects" :options="subjects" placeholder="Subject" multiple value-attribute="subject_id" option-attribute="subject_name" class="w-40"/>
+          <USelectMenu 
+            v-if="subjects" 
+            v-model="selectedSubjects" 
+            :options="subjects" 
+            placeholder="Subject" 
+            multiple 
+            value-attribute="subject_id" 
+            option-attribute="subject_name" 
+            class="w-40">
+
+            <template #option="{ option: subject }">
+              <span class="truncate">{{ subject.subject_name }} -  Section {{ subject.section[0].name }}</span>
+          </template>
+          </USelectMenu>
+          <!-- <USelectMenu v-if="subjectSectionsMap" v-model="selectedSections" :disabled="selectedSubjects.length !== 1" :options="subjectSectionsMap.get(selectedSubjects[0])" placeholder="Section" multiple class="w-40"/> -->
           <DateRangePicker @selectedRange="handleDateRangeChange" ref="datePicker" />
         </div>
       </div>

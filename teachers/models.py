@@ -66,27 +66,51 @@ def get_default_academic_year():
     else:
         return f"{now.year - 1}-{now.year}"
 
-class Subjects(models.Model):
-    subject_id = models.AutoField(primary_key=True)
-    subject_name = models.CharField(max_length=100)
-    section = models.CharField(max_length=50, blank=True, null=True)
+def get_default_academic_period():
+    semester = get_default_semester()
+    academic_year = get_default_academic_year()
+    period, _ = AcademicPeriod.objects.get_or_create(
+        semester=semester,
+        academic_year=academic_year
+    )
+    return period.pk
+
+class Section(models.Model):
+    name = models.CharField(max_length=50, unique=True, default='1')
+
+    def __str__(self):
+        return self.name
+
+
+class AcademicPeriod(models.Model):
     semester = models.CharField(
         max_length=20,
         choices=Semesters.choices,
-        default=get_default_semester
+        default=get_default_semester,
     )
     academic_year = models.CharField(
         max_length=20,
         default=get_default_academic_year
     )
+
+    class Meta:
+        unique_together = ('semester', 'academic_year')
+
+    def __str__(self):
+        return f'{self.semester} {self.academic_year}'
+
+class Subjects(models.Model):
+    subject_id = models.AutoField(primary_key=True)
+    subject_name = models.CharField(max_length=100)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='sections', null=True, blank=True)
+    period = models.ForeignKey(AcademicPeriod, on_delete=models.CASCADE, related_name='academic_periods', null=True, blank=True, default=get_default_academic_period)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='subjects')
 
     class Meta:
-        unique_together = ('subject_name', 'semester', 'academic_year')
+        unique_together = ('subject_name', 'section' , 'period')
 
     def __str__(self):
         return f'{self.subject_id} - {self.subject_name}'
-
 
 class ClassSchedule(models.Model):
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
