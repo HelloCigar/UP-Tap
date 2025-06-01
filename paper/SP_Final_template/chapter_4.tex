@@ -57,20 +57,20 @@ Each use case has been designed to reflect real-world workflows:
 
 \section{Process Diagrams }
 \subsection{Overview of Process Flow}
+The UPTap process flow diagram in Figure \ref{fig:flow} models the core interactions between the primary stakeholders in the attendance management system: teachers, students, and administrators. Each stakeholder's flow is represented as an independent, concurrent process, reflecting the real-world scenario where user roles interact with the system asynchronously.
 
-Figure~ presents the process flow of the UPTap Attendance System, illustrating how the system handles student time-in and time-out operations within a teacher-controlled attendance session. The diagram demonstrates the coordinated interaction between teachers, students, and the system throughout the attendance lifecycle.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/flow.png} % Adjust width as needed
+	\caption{The system process flow diagram. Generated using PlantUML.}
+	\label{fig:flow}
+\end{figure}
 
-\subsubsection*{Teacher Actions}
+The Teacher Flow begins with authentication, followed by the initiation of subject-specific attendance sessions. Once sessions are active, teachers gain access to attendance logs and are provided with options to export records in either CSV or PDF format. This supports record-keeping, analytics, and institutional reporting. The design prioritizes simplicity for educators, automating session handling and emphasizing ease of use in exporting data.
 
-The process begins with the teacher logging into the system and undergoing authentication. Once authenticated, the teacher gains access to the dashboard and initiates an attendance session. This session serves as the valid window during which students are permitted to record their attendance.
+The Student Flow is optimized for minimal interaction. Upon tapping an RFID card, the system first checks for an active session. If found, it evaluates the student's current attendance status. Based on whether the student has already timed in, the system either logs a time-out or a new time-in event. A success message confirms the action. If no session is active, an error message informs the student.
 
-While the session is active, the teacher may optionally monitor attendance progress. Upon concluding the class, the teacher ends the session, which triggers the system to finalize and lock the attendance records. These finalized logs are then available for viewing or exporting as reports.
-
-\subsubsection*{Student Actions and System Behavior}
-
-While an attendance session is active, students are prompted to perform either a time-in or time-out action. Before processing, the system verifies the existence of an active session. If confirmed, the student selects their desired action.
-
-Both time-in and time-out procedures follow the same verification mechanism—using facial recognition or RFID scanning. Once verified, the system records the attendance action along with a timestamp. If a student attempts to interact with the system when no session is active, they are notified accordingly.
+The Admin Flow provides backend support and oversight. Administrators can log into the system to debug operational issues, modify attendance records directly in the database, and audit system logs. This functionality is critical for maintaining data integrity and handling edge cases, such as hardware malfunctions or incorrectly recorded attendance events. The admin role operates independently of regular user flows and is not intended for daily operation but rather for exception handling and system maintenance.
 
 \subsection{Student Registration Process}
 Students must register their facial ID to enable attendance verification. This registration process only captures one facial image, which will be used to identify the student during attendance tracking. It also takes all relevant info about the student, reflecting the fields given by the generated class list of CRS. It will be handled by Nuxt at endpoint: \url{http://raspberry_ip:3000/public/register}. Figures \ref{fig:student_form_pc} to \ref{fig:student_form_mobile_preview} detail the process.
