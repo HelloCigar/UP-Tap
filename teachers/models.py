@@ -50,12 +50,35 @@ class Semesters(models.TextChoices):
     SECOND = '2', 'Second Semester'
     MIDYEAR = '3', 'Mid Year Semester'
 
+def get_default_semester():
+    month = datetime.now().month
+    if 7 <= month <= 12:
+        return Semesters.FIRST
+    elif 1 <= month <= 6:
+        return Semesters.SECOND
+    else:
+        return Semesters.MIDYEAR
+
+def get_default_academic_year():
+    now = datetime.now()
+    if now.month >= 7:
+        return f"{now.year}-{now.year + 1}"
+    else:
+        return f"{now.year - 1}-{now.year}"
+
 class Subjects(models.Model):
     subject_id = models.AutoField(primary_key=True)
     subject_name = models.CharField(max_length=100)
-    section = models.CharField(max_length=50, blank=True, null=True)  # e.g., 'A', 'B', etc.
-    semester = models.CharField(max_length=20, choices=Semesters.choices, default=Semesters.FIRST)
-    academic_year = models.CharField(max_length=20, default=f"{datetime.now().year}-{datetime.now().year + 1}")  # e.g., '2023-2024'
+    section = models.CharField(max_length=50, blank=True, null=True)
+    semester = models.CharField(
+        max_length=20,
+        choices=Semesters.choices,
+        default=get_default_semester
+    )
+    academic_year = models.CharField(
+        max_length=20,
+        default=get_default_academic_year
+    )
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='subjects')
 
     class Meta:

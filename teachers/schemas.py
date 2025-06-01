@@ -24,6 +24,9 @@ class SubjectCRUDSchema(Schema):
     schedule: List[str]
     start_time: str = "07:00"
     end_time: str = "08:00"
+    section: Optional[str] = None
+    semester: Optional[str] = None
+    academic_year: Optional[str] = None
 
 class TimeSlot(Schema):
     start: time

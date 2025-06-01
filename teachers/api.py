@@ -48,6 +48,9 @@ def get_subjects(request):
             "schedule": days,
             "start_time": st,
             "end_time": et,
+            "section" : subj.section,
+            "semester": subj.semester,
+            "academic_year": subj.academic_year,
         })
     return result
 
@@ -165,6 +168,7 @@ def create_subject(request, payload: SubjectCRUDSchema):
     subj = Subjects.objects.create(
         subject_name=payload.subject_name,
         teacher=request.user,
+        section=payload.section,
     )
 
     # 3) create the schedules
@@ -189,6 +193,9 @@ def get_subject(request, subject_id: int):
     return {
         "subject_id": subj.subject_id,
         "subject_name": subj.subject_name,
+        "section": subj.section,
+        "semester": subj.semester,
+        "academic_year": subj.academic_year,
         "schedule": days,
         "start_time": st,
         "end_time": et,
@@ -210,10 +217,12 @@ def update_subject(request, subject_id: int, payload: SubjectCRUDSchema):
             
     subject = get_object_or_404(Subjects, subject_id=subject_id, teacher=request.user)
     subject.subject_name = payload.subject_name
+    subject.section = payload.section
     subject.save()
 
     subj = get_object_or_404(Subjects, pk=subject_id)
     subj.subject_name = payload.subject_name
+    subj.section = payload.section
     subj.save()
 
     # clear out old schedules

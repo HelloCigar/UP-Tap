@@ -23,6 +23,7 @@ const openAddModal = () => {
   newSubject.value = {
     subject_id: 0,
     subject_name: '',
+    section: '',
     schedule: [],
     start_time: '',
     end_time: '',
@@ -308,6 +309,7 @@ watch(error, (newError) => {
               class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
               <div>
                 <h3 class="font-medium text-gray-900 dark:text-white">{{ subject.subject_name }}</h3>
+                <h3 class="font-medium text-gray-900 dark:text-white">Section {{ subject.section }}</h3>
                 <p class="font-thin text-gray-900 dark:text-white">{{ subject.start_time }} to {{ subject.end_time }}</p>
               </div>
               <div class="flex gap-2">
@@ -361,6 +363,13 @@ watch(error, (newError) => {
               v-model="selectedSubject.subject_name"
               type="text"
               placeholder="CMSC..." 
+              class="mb-2"
+            />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Section</label>
+            <UInput
+              v-model="selectedSubject.section"
+              type="text"
+              placeholder="Section..." 
             />
             </div>
             <div v-else>
@@ -368,6 +377,13 @@ watch(error, (newError) => {
               v-model="newSubject.subject_name"
               type="text"
               placeholder="CMSC..." 
+              class="mb-2"
+            />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Section</label>
+            <UInput
+              v-model="newSubject.section"
+              type="text"
+              placeholder="Section..." 
             />
             </div>
           </div>

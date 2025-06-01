@@ -5,6 +5,7 @@ declare global {
     interface Subjects {
         subject_id: number
         subject_name: string
+        section: string
         schedule: string[]
         start_time: string,
         end_time: string,
