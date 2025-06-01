@@ -46,9 +46,9 @@ class Teacher(AbstractUser):
     
 
 class Semesters(models.TextChoices):
-    FIRST = '1', 'First Semester'
-    SECOND = '2', 'Second Semester'
-    MIDYEAR = '3', 'Mid Year Semester'
+    FIRST = 'first', 'First Semester'
+    SECOND = 'second', 'Second Semester'
+    MIDYEAR = 'midyear', 'Mid Year Semester'
 
 def get_default_semester():
     month = datetime.now().month
