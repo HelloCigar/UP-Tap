@@ -50,6 +50,9 @@ const statusOptions = [{
 const search = ref('')
 const selectedStatus = ref<boolean[]>([])
 const selectedSubjects = ref<number[]>([])
+const selectedSections = ref<string[]>([])
+const selectedAcademicYear = ref<string>()
+const selectedSemester = ref<string>()
 import { subDays } from 'date-fns'
 const startDate = ref<Date>(subDays(new Date(), 7))
 const endDate = ref<Date>(new Date())
@@ -66,6 +69,9 @@ function resetFilters() {
   selectedStatus.value = []
   selectedSubjects.value = []
   datePicker.value.resetSelected()
+  selectedSections.value = []
+  selectedAcademicYear.value = undefined
+  selectedSemester.value = undefined
 }
 
 // Data
@@ -74,17 +80,42 @@ const { data: attendanceRecords, status } = await useAsyncData<AttendanceRecord[
   query: {
     q: search.value,
     start_date: startDate.value.toLocaleDateString('en-CA'),
-    end_date: endDate.value.toLocaleDateString('en-CA')
+    end_date: endDate.value.toLocaleDateString('en-CA'),
+    academic_year: selectedAcademicYear.value,
+    semester: selectedSemester.value,
   },
   body:{
     is_present: selectedStatus.value.length > 0 ? selectedStatus.value : undefined,
     subject_ids: selectedSubjects.value.length > 0 ? selectedSubjects.value : undefined,
+    sections: selectedSections.value.length > 0 ? selectedSections.value : undefined,
   },
 }), {
-  watch: [search, selectedStatus, selectedSubjects, startDate, endDate],
+  watch: [search, selectedStatus, selectedSubjects, startDate, endDate, selectedAcademicYear, selectedSemester],
 })
 
 const { data: subjects } = await useFetch<Subjects[]>('/api/teachers/subjects', { method: 'GET' } )
+
+const subjectSectionsMap = computed(() => {
+  if (!subjects.value || ('success' in subjects.value && subjects.value.success === false)) return new Map()
+
+  const map = new Map<number, Set<string>>()
+
+  subjects.value.forEach((subject) => {
+    const id = subject.subject_id
+    const section = subject.section ?? ''
+    if (!map.has(id)) {
+      map.set(id, new Set())
+    }
+    if (section) {
+      map.get(id)?.add(section)
+    }
+  })
+
+  return new Map(
+    Array.from(map.entries()).map(([id, sections]) => [id, Array.from(sections)])
+  )
+})
+
 
 const calculateStats = computed(() => {
 
@@ -142,8 +173,24 @@ const items = [
     disabled: disableDownload.value
   }]]
 
+function generateAcademicYears(count: number = 50): string[] {
+  const currentYear = new Date().getFullYear();
+  const years: string[] = [];
 
+  for (let i = 0; i < count; i++) {
+    const startYear = currentYear - i - 1;
+    const endYear = currentYear - i;
+    years.push(`${startYear}-${endYear}`);
+  }
 
+  return years;
+}
+
+const semesterOptions = [
+  { label: '1st Semester', value: 'first' },
+  { label: '2nd Semester', value: 'second' },
+  { label: 'Mid-Year', value: 'midyear' }
+]
 </script>
 
 
@@ -189,8 +236,33 @@ const items = [
         <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
         <div class="flex items-center gap-3">
           <USelectMenu v-model="selectedStatus" :options="statusOptions" placeholder="Status" multiple value-attribute="value" class="w-40" />
-          <USelectMenu v-model="selectedSubjects" :options="subjects" placeholder="Subject" multiple value-attribute="subject_id" option-attribute="subject_name" class="w-40"/>
+          <USelectMenu 
+            v-if="subjects" 
+            v-model="selectedSubjects" 
+            :options="subjects" 
+            placeholder="Subject" 
+            multiple 
+            value-attribute="subject_id" 
+            option-attribute="subject_name" 
+            class="w-40">
+
+            <template #option="{ option: subject }">
+              <span class="truncate">{{ subject.subject_name }} -  Section {{ subject.section[0].name }}</span>
+          </template>
+          </USelectMenu>
+          <!-- <USelectMenu v-if="subjectSectionsMap" v-model="selectedSections" :disabled="selectedSubjects.length !== 1" :options="subjectSectionsMap.get(selectedSubjects[0])" placeholder="Section" multiple class="w-40"/> -->
+           <USelectMenu v-model="selectedAcademicYear" :options="generateAcademicYears(50)" placeholder="Academic Year" class="w-40" />
+           <USelectMenu v-model="selectedSemester" :options="semesterOptions" placeholder="Semester"  value-attribute="value" class="w-40" />
           <DateRangePicker @selectedRange="handleDateRangeChange" ref="datePicker" />
+          <UButton
+              icon="i-heroicons-funnel"
+              color="gray"
+              size="sm"
+              label="Reset Filters"
+              :disabled="search === '' && selectedStatus.length === 0 && selectedSubjects.length === 0 && startDate === subDays(new Date(), 7) && endDate === new Date()"
+              @click="resetFilters"
+            >
+        </UButton>
         </div>
       </div>
 
@@ -215,17 +287,6 @@ const items = [
             Columns
           </UButton>
         </USelectMenu>
-
-        <UButton
-          icon="i-heroicons-funnel"
-          color="gray"
-          size="xs"
-          
-          :disabled="search === '' && selectedStatus.length === 0 && selectedSubjects.length === 0 && startDate === subDays(new Date(), 7) && endDate === new Date()"
-          @click="resetFilters"
-        >
-          Reset
-        </UButton>
         <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
           <UButton color="white" size="xs" label="Download/Export" trailing-icon="i-heroicons-arrow-right-circle-16-solid" :disabled="disableDownload"/>
         </UDropdown>

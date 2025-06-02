@@ -2,9 +2,30 @@ export { };
 
 declare global {
 
+    interface Section {
+        name: string;
+        }
+
+        interface AcademicPeriod {
+        semester: string;
+        academic_year: string;
+        }
+
+        interface SubjectOut {
+        subject_id: number;
+        subject_name: string;
+        schedule: string[];
+        start_time: string;
+        end_time: string;
+        section: Section[];          // an array of sections per subject
+        period: AcademicPeriod[];    // an array with typically one period object
+        }
+
+
     interface Subjects {
         subject_id: number
         subject_name: string
+        section: string
         schedule: string[]
         start_time: string,
         end_time: string,

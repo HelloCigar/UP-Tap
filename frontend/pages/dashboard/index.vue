@@ -6,12 +6,13 @@ definePageMeta({
 
 // UI State
 const showSubjectModal = ref(false)
-const selectedSubject = ref<Subjects>()
+const selectedSubject = ref<SubjectOut>()
+const selectedSection = ref<string>()
 const recordType = ref('time_in')
 const newSubject = ref<Subjects>()
 const deleted = ref(false)
 
-const { data: subjects } = await useFetch<Subjects[]>(() => '/api/teachers/subjects', 
+const { data: subjects } = await useFetch<SubjectOut[]>(() => '/api/teachers/subjects', 
   { 
     method: 'GET',
     watch: [newSubject, deleted, newSubject]
@@ -23,6 +24,7 @@ const openAddModal = () => {
   newSubject.value = {
     subject_id: 0,
     subject_name: '',
+    section: '',
     schedule: [],
     start_time: '',
     end_time: '',
@@ -31,9 +33,10 @@ const openAddModal = () => {
   showSubjectModal.value = true
 }
 
-const openEditModal = (subject: Subjects) => {
+const openEditModal = (subject: SubjectOut, section?: string) => {
   console.log('Edit subject:', subject)
   selectedSubject.value = subject
+  selectedSection.value = section
   showSubjectModal.value = true
 }
 
@@ -90,7 +93,14 @@ async function saveSubject () {
   if (selectedSubject.value) {
     await $fetch('/api/subjects', {
       method: 'PUT',
-      body: selectedSubject.value,
+      body: {
+        subject_id: selectedSubject.value.subject_id,
+        subject_name: selectedSubject.value.subject_name,
+        section: selectedSection.value,
+        schedule: selectedSubject.value.schedule,
+        start_time: selectedSubject.value.start_time,
+        end_time: selectedSubject.value.end_time
+      },
       query: {
         subject_id: selectedSubject.value.subject_id
       }
@@ -105,7 +115,7 @@ async function saveSubject () {
   }).catch((error) => {
     toast.add({
       title: 'Error updating subject',
-      description: "Time schedule conflict, please try again",
+      description: error.data.data.detail || "Time schedule conflict, please try again",
       color: 'red',
     })
   })
@@ -121,9 +131,10 @@ async function saveSubject () {
         color: 'green',
       })
     }).catch((error) => {
+      console.error('Error creating subject:', error)
       toast.add({
         title: 'Error creating subject',
-        description: "Time schedule conflict, please try again",
+        description: error.data.data.detail || "Time schedule conflict, please try again",
         color: 'red',
       })
     })
@@ -133,7 +144,7 @@ async function saveSubject () {
 
 const modal = useModal()
 import { AvailablePage, SubjectDeleteModal } from '#components'
-async function deleteSubject (subject: Subjects) {
+async function deleteSubject (subject: SubjectOut) {
   modal.open(
     SubjectDeleteModal, {
       subject_id: subject.subject_id,
@@ -302,34 +313,50 @@ watch(error, (newError) => {
           </div>
 
           <div class="overflow-scroll h-64 flex-1 space-y-4">
-            <div v-if="subjects && subjects.length > 0"
-              v-for="subject in subjects" 
-              :key="subject.subject_id" 
-              class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-              <div>
-                <h3 class="font-medium text-gray-900 dark:text-white">{{ subject.subject_name }}</h3>
-                <p class="font-thin text-gray-900 dark:text-white">{{ subject.start_time }} to {{ subject.end_time }}</p>
-              </div>
-              <div class="flex gap-2">
-                <button
-                  @click="openEditModal(subject)"
-                  class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
-                <button
-                  @click="deleteSubject(subject)"
-                  class="p-2 text-red-500 hover:text-red-700"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-                <CSVImporter :subject_id="subject.subject_id" :subject_name="subject.subject_name" />
-              </div>
-            </div>
+            <div v-if="subjects && subjects.length > 0">
+            <template v-for="subject in subjects" :key="subject.subject_id">
+              <!-- Only show subject if current period exists -->
+              <template v-if="subject.period.length > 0">
+                <template v-for="section in subject.section" :key="section.name">
+                  <div class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                    <div>
+                      <h3 class="font-medium text-gray-900 dark:text-white">
+                        {{ subject.subject_name }}
+                      </h3>
+                      <h3 class="font-medium text-gray-900 dark:text-white">
+                        Section: {{ section.name }}
+                      </h3>
+                      <p class="font-thin text-gray-900 dark:text-white">
+                        {{ subject.start_time }} to {{ subject.end_time }}
+                      </p>
+                    </div>
+
+                    <div class="flex gap-2">
+                      <button
+                        @click="openEditModal(subject, section.name)"
+                        class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      <button
+                        @click="deleteSubject(subject)"
+                        class="p-2 text-red-500 hover:text-red-700"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                      <CSVImporter :subject_id="subject.subject_id" :subject_name="subject.subject_name" />
+                    </div>
+                  </div>
+                </template>
+              </template>
+            </template>
+          </div>
             <div v-else class="text-center">
               <p class="text-gray-900 dark:text-white">No subjects found.</p>
             </div>
@@ -342,7 +369,7 @@ watch(error, (newError) => {
             Subject Time Table
           </h2>
         </template>
-        <SubjectTimeTable :subjects="subjects"/>
+        <SubjectTimeTable v-if="subjects && subjects.length > 0" :subjects="subjects"/>
       </UCard>
     </div>
     <UModal v-model="showSubjectModal">
@@ -361,6 +388,13 @@ watch(error, (newError) => {
               v-model="selectedSubject.subject_name"
               type="text"
               placeholder="CMSC..." 
+              class="mb-2"
+            />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Section</label>
+            <UInput
+              v-model="selectedSection"
+              type="text"
+              placeholder="Section..." 
             />
             </div>
             <div v-else>
@@ -368,6 +402,13 @@ watch(error, (newError) => {
               v-model="newSubject.subject_name"
               type="text"
               placeholder="CMSC..." 
+              class="mb-2"
+            />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Section</label>
+            <UInput
+              v-model="newSubject.section"
+              type="text"
+              placeholder="Section..." 
             />
             </div>
           </div>

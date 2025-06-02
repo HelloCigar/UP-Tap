@@ -46,24 +46,71 @@ class Teacher(AbstractUser):
     
 
 class Semesters(models.TextChoices):
-    FIRST = '1', 'First Semester'
-    SECOND = '2', 'Second Semester'
-    MIDYEAR = '3', 'Mid Year Semester'
+    FIRST = 'first', 'First Semester'
+    SECOND = 'second', 'Second Semester'
+    MIDYEAR = 'midyear', 'Mid Year Semester'
+
+def get_default_semester():
+    month = datetime.now().month
+    if 7 <= month <= 12:
+        return Semesters.FIRST
+    elif 1 <= month <= 6:
+        return Semesters.SECOND
+    else:
+        return Semesters.MIDYEAR
+
+def get_default_academic_year():
+    now = datetime.now()
+    if now.month >= 7:
+        return f"{now.year}-{now.year + 1}"
+    else:
+        return f"{now.year - 1}-{now.year}"
+
+def get_default_academic_period():
+    semester = get_default_semester()
+    academic_year = get_default_academic_year()
+    period, _ = AcademicPeriod.objects.get_or_create(
+        semester=semester,
+        academic_year=academic_year
+    )
+    return period.pk
+
+class Section(models.Model):
+    name = models.CharField(max_length=50, unique=True, default='1')
+
+    def __str__(self):
+        return self.name
+
+
+class AcademicPeriod(models.Model):
+    semester = models.CharField(
+        max_length=20,
+        choices=Semesters.choices,
+        default=get_default_semester,
+    )
+    academic_year = models.CharField(
+        max_length=20,
+        default=get_default_academic_year
+    )
+
+    class Meta:
+        unique_together = ('semester', 'academic_year')
+
+    def __str__(self):
+        return f'{self.semester} {self.academic_year}'
 
 class Subjects(models.Model):
     subject_id = models.AutoField(primary_key=True)
     subject_name = models.CharField(max_length=100)
-    section = models.CharField(max_length=50, blank=True, null=True)  # e.g., 'A', 'B', etc.
-    semester = models.CharField(max_length=20, choices=Semesters.choices, default=Semesters.FIRST)
-    academic_year = models.CharField(max_length=20, default=f"{datetime.now().year}-{datetime.now().year + 1}")  # e.g., '2023-2024'
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='sections', null=True, blank=True)
+    period = models.ForeignKey(AcademicPeriod, on_delete=models.CASCADE, related_name='academic_periods', null=True, blank=True, default=get_default_academic_period)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='subjects')
 
     class Meta:
-        unique_together = ('subject_name', 'semester', 'academic_year')
+        unique_together = ('subject_name', 'section' , 'period')
 
     def __str__(self):
         return f'{self.subject_id} - {self.subject_name}'
-
 
 class ClassSchedule(models.Model):
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)

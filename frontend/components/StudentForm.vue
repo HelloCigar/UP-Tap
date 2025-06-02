@@ -78,6 +78,7 @@ if (route.params.id) {
 }
 
 const { data: subjects } = await useFetch('/api/subjects', {method: 'GET'})
+console.log(subjects.value)
 const selected = ref([])
 
 const cameraInput = ref()
@@ -338,7 +339,12 @@ const courses = [
                         </UFormGroup>
                     </div>
                     <UFormGroup label="Subject Enrollment" name="subjects" required>
-                        <USelectMenu v-if="subjects" v-model="selected" :options="subjects" multiple placeholder="Select the subjects you are enrolled in." value-attribute="subject_id" option-attribute="subject_name"/>
+                        <USelectMenu v-if="subjects" v-model="selected" :options="subjects" multiple placeholder="Select the subjects you are enrolled in." 
+                        value-attribute="subject_id" option-attribute="subject_name">
+                        <template #option="{ option: subject }">
+                            <span class="truncate">{{ subject.subject_name }} - Section {{ subject.section[0].name }}</span>
+                        </template>
+                    </USelectMenu>
                     </UFormGroup>
                 </div>
                 

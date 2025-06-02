@@ -2,7 +2,7 @@
 import { TimeTable, type TimeTableItem, type TimeTableLocation } from 'vue3-timetable';
 
 const props = defineProps<{
-  subjects: Subjects[]
+  subjects: SubjectOut[]
 }>()
 
 function getItems() {

@@ -90,6 +90,8 @@ def get_all_student_attendance(request,
         end_date: str = None, 
         q: str = None,
         filter: FilterSchema = None,
+        academic_year: Optional[str] = None,
+        semester: Optional[str] = None
     ):
 
     attendance_records = StudentAttendaceInfo.objects.all()
@@ -121,12 +123,27 @@ def get_all_student_attendance(request,
             attendance_records = attendance_records.filter(sheet_id__session_date__lte=end_date)
         except Exception as e:
             return 206, {"success": False, "message": str(e)}
+        
+    
+    if academic_year:
+        try:
+            attendance_records = attendance_records.filter(sheet_id__subject_id__period__academic_year=academic_year)
+        except Exception as e:
+            return 206, {"success": False, "message": str(e)}
+    
+    if semester:
+        try:
+            attendance_records = attendance_records.filter(sheet_id__subject_id__period__semester=semester)
+        except Exception as e:
+            return 206, {"success": False, "message": str(e)}
     
     if q:
         attendance_records = attendance_records.filter(
             Q(student_id__first_name__icontains=q) |
             Q(student_id__last_name__icontains=q) |
-            Q(sheet_id__subject_id__subject_name__icontains=q)
+            Q(sheet_id__subject_id__subject_name__icontains=q) |
+            # Q(sheet_id__subject_id__period__semester__icontains=q) |
+            # Q(sheet_id__subject_id__period__academic_year__icontains=q)
         )
 
     attendance_records = attendance_records.select_related('student_id', 'sheet_id__subject_id').order_by(
