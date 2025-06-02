@@ -182,7 +182,7 @@ Figure~\ref{fig:admin} is the Django administration page only accessible to a su
 \section{Nuxt Frontend}
 The Nuxt web interface functions as the main UI with out system. It handles faculty onboarding and CSV imports of their class list from the CRS. It also has student management system for the basic CRUD operations for students' information.
 \subsection{Faculty Onboarding}
-The faculty must register using their email and personal details to use the system. We can verify the authenticity of the email by sending them a link that activates the newly created account. After the registration process, they can now log in and use the system.
+The faculty must register using their email and personal details (see Figure 4.15). After signup, a verification link is sent via email (see Figures 4.16 and 4.17), which must be accessed on the same device to activate the account (see Figure 4.18). Once activated, the faculty can log in and begin using the system (see Figure 4.19).
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_signup.png} % Adjust width as needed
@@ -217,7 +217,7 @@ The faculty must register using their email and personal details to use the syst
 \clearpage
 
 \subsection{Subject CRUD Operations}
-Subject creation is handled exclusively by the faculty members only with verified accounts. Each faculty is able to create subjects on their own, but it should not conflict with the time schedules of other faculty members. The system will warn for such conflicts. The modal for subject creation will provide a view of available time slots not taken by other subjects.
+Subject creation is handled exclusively by faculty members with verified accounts (see Figure 4.20). Each faculty member can create subjects, but scheduling conflicts with other faculty are not allowed. The system displays a success notice upon successful creation (see Figure 4.21), shows available time slots to guide scheduling (see Figure 4.22), and issues a warning if a conflict occurs (see Figure 4.23).
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.8\textwidth]{figures/chapter4/subject_add.png} % Adjust width as needed
@@ -244,7 +244,7 @@ Subject creation is handled exclusively by the faculty members only with verifie
 	\label{fig:subject_add_error}
 \end{figure}
 \subsection{Faculty CSV Import Process}
-After adding subjects, we can now import class list in CSV format. The faculty members can upload a CSV file containing the students' details. The system parses the CSV file and stores the extracted data in the database. The data uploaded is validated to avoid any duplicate or wrong entries. The backend populates/updates the Student table with the data and creates entries in the SubjectEnrollment table to tie each Student to a Subject. See Figure \ref{fig:faculty_import}
+After adding subjects, faculty members can import their class list in CSV format (see Figure 4.24). They upload a CSV file containing student details, which the system parses and stores in the database. The uploaded data is validated to prevent duplicates or errors. A sample CSV structure is shown for reference (see Figure 4.25). Once the data is successfully processed, a confirmation is displayed (see Figure 4.26).
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.8\textwidth]{figures/chapter4/faculty_import.png} % Adjust width as needed
@@ -265,14 +265,14 @@ After adding subjects, we can now import class list in CSV format. The faculty m
 \end{figure}
 \clearpage
 \subsection{Students CRUD operations}
-By default, the \url{/students} tab will list all students under the logged in teacher.
+By default, the \url{/students} tab will list all students under the logged in teacher. (see Figure 4.27)
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1\textwidth]{figures/chapter4/student_list.png} % Adjust width as needed
 	\caption{Students page}
 	\label{fig:student_list}
 \end{figure}
-At this point, we still don't have information about the RFID of the student. We can add them by batch in this page. Connect the RFID scanner and scan the matching ID. The web app will wait for key events and automatically save the RFID of students scanned.
+At this point, RFID information for students may still be missing. Faculty can add RFID data in batches on this page (see Figure 4.28). By connecting the RFID scanner, the web app listens for key events and automatically saves the scanned RFID data for each matching student (see Figure 4.29).
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1\textwidth]{figures/chapter4/batch_rfid.png} % Adjust width as needed
@@ -287,7 +287,7 @@ At this point, we still don't have information about the RFID of the student. We
 \end{figure}
 \clearpage
 \subsection{Web equivalent of the time-in and time-out process}
-It also has a web equivalent of the PyQT5 time-in and time-out processing, albeit much slower. See Figures \ref{fig:faculty_import} and \ref{fig:frontend}.
+It also has a web equivalent of the PyQT5 time-in and time-out processing, albeit much slower (see Figure 4.30). Successful time-ins are displayed with confirmation messages (see Figure 4.31), and the system logs the attendance using a 24-hour time format in the backend (see Figure 4.32).
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/chapter4/frontend.png} % Adjust width as needed
@@ -310,7 +310,7 @@ It also has a web equivalent of the PyQT5 time-in and time-out processing, albei
 
 \clearpage
 \section{Raspeberry Pi AI Camera}
-The AI camera is responsible for handling the face detection inference by running the compressed face detection model based on YoloV8n on the onboard Sony IMX500 chip. This takes off the workload of continuous streaming and inference from the Raspberry Pi 5 CPU/GPU and will allow it to scale better and allocate compute resources for other parts of the system such as the face verification and database operations.
+The AI camera is responsible for handling the face detection inference by running the compressed face detection model based on YoloV8n on the onboard Sony IMX500 chip (See Figure 4.33). This takes off the workload of continuous streaming and inference from the Raspberry Pi 5 CPU/GPU and will allow it to scale better and allocate compute resources for other parts of the system such as the face verification and database operations.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
 	\includegraphics[width=0.75\textwidth]{figures/chapter4/ai_cam.png} % Adjust width as needed

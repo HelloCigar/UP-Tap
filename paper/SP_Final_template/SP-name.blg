@@ -1,6 +1,6 @@
 This is BibTeX, Version 0.99d
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
-The top-level auxiliary file: UPTap.aux
+The top-level auxiliary file: SP-name.aux
 Reallocating 'name_of_file' (item size: 1) to 8 items.
 The style file: apacite.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
@@ -32,6 +32,10 @@ Illegal, another \bibstyle command---line 3 of file chapter_6.aux
  :          {apacite}
 I'm skipping whatever remains of this command
 Reallocating 'name_of_file' (item size: 1) to 13 items.
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+A level-1 auxiliary file: appendix_A.aux
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+A level-1 auxiliary file: appendix_B.aux
 Reallocating 'glb_str_end' (item size: 4) to 20 items.
 Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
 Reallocating 'global_strs' (item size: 1) to 4000000 items.
@@ -47,7 +51,7 @@ Warning--No journal in shoewu:2014
 Warning--`others' not consistent with 6th ed. of the APA Manual
 You've used 28 entries,
             6951 wiz_defined-function locations,
-            1470 strings with 16233 characters,
+            1472 strings with 16265 characters,
 and the built_in function-call counts, 53934 in all, are:
 = -- 6646
 > -- 465
