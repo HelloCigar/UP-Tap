@@ -31,8 +31,78 @@ Face recognition pipeline can be simplified into 2 steps:
 	\item Face verification: The task of comparing 2 faces and checking if they are of the same identity. The model we chose for this is MobileFaceNet which is a face recognition model optimized for mobile and embedded devices like the Raspberry Pi \cite{chen2018mobilefacenets}.
 \end{enumerate}
 
-\subsection{Face recognition model fine tuning}
-The pretrained MobileFaceNet we chose is under the Apache 2.0 license. The model size is about 800kb by user Jason Wong on Kaggle which was trained on MS1M-ArcFace with 85k unique identities and 5.7 million images.
+\subsection{YoloV8n for Face Detection}
+
+We selected the YOLOv8n model for face detection due to its compatibility with the Raspberry Pi AI Camera and its efficiency for edge inference. This model was fine-tuned on a dataset of over 10,000 face images and trained for 100 epochs using a batch size of 16 on a single NVIDIA V100 16GB GPU. It achieved the following metrics:
+
+\begin{itemize}
+	\item \textbf{Precision (IoU $\geq$ 0.5):} 77.2\%
+	\item \textbf{Recall (IoU $\geq$ 0.5):} 48.9\%
+	\item \textbf{mAP@50:} 55.98\%
+	\item \textbf{mAP@50--95:} 29.05\%
+\end{itemize}
+
+These results demonstrate that the model has strong face detection capabilities, with a good balance between precision and recall. Figure~\ref{fig:yolo-metrics} presents the performance curves for all four metrics across training epochs.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/map50.png}
+		\caption{mAP@50}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/map5095.png}
+		\caption{mAP@50--95}
+	\end{subfigure}
+	
+	\vspace{1em}
+	
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/precision.png}
+		\caption{Precision (IoU $\geq$ 0.5)}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\includegraphics[width=\textwidth]{figures/chapter4/recall.png}
+		\caption{Recall (IoU $\geq$ 0.5)}
+	\end{subfigure}
+	
+	\caption{Performance metrics of the YOLOv8n face detection model across training epochs.}
+	\label{fig:yolo-metrics}
+\end{figure}
+
+The YOLOv8n model was selected primarily for its support by the Ultralytics framework, which enables easy conversion and compression using Sony's Model Compression Toolkit. The model was compressed from its original 6MB size to around 3MB, fitting within the 8MB memory constraint of the Sony IMX500 chip. This allowed real-time face detection to be performed directly on the camera hardware, offloading the computation from the Raspberry Pi 5 CPU and improving overall system responsiveness.
+
+\subsection{MobileFaceNet for Face Verification}
+
+For the face verification task, we utilized the pretrained MobileFaceNet model due to its small size (863KB) and optimization for real-time inference on mobile and embedded devices. The model outputs a feature embedding for each 112$\times$112 facial image. Verification is performed using cosine similarity between embeddings.
+
+We tested the discriminative ability of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds:
+
+\begin{itemize}
+	\item \textbf{AUC (Area Under ROC Curve):} 0.77
+	\item \textbf{Accuracy (at threshold 0.60):} 68.6\%
+\end{itemize}
+
+While the model sacrifices some performance for speed due to compression to TensorFlow Lite format, its accuracy and verification speed remain suitable for our use case. This trade-off was necessary for reliable inference on the Raspberry Pi 5 hardware within the system’s real-time constraints.
+
+Compared to models of hundreds of MB in size, the performance of the model is good but can be better. Figure \ref{fig:roc_curve} shows the ROC AUC of the model of 0.77. An Area Under the Curve (AUC) of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=1\textwidth]{figures/chapter4/roc_curve.png} % Adjust width as needed
+	\caption{Receiver Operating Characteristic (ROC) Curve for Face Verification}
+	\label{fig:roc_curve}
+\end{figure}
+
+\clearpage
+Next, we evaluate the model's overall accuracy using the chosen threshold. As shown in Figure \ref{fig:fixed_thresh}, the confusion matrix corresponds to a fixed threshold of 0.6. This threshold was selected to strike a practical balance between security (minimizing false positives) and reliability (maintaining acceptable true positive rates). At this setting, the model achieved an average accuracy of 68.6\% across ten cross-validation folds. While this accuracy may not appear high, it is important to note that the evaluated model is a TensorFlow Lite version, optimized and compressed for real-time inference on a Raspberry Pi 5. This compression trades off some performance for significantly improved inference speed on edge devices.
+\begin{figure}[h] % 'h' places the figure approximately here in the text
+	\centering
+	\includegraphics[width=0.75\textwidth]{figures/chapter4/fixed_thresh_matrix.png} % Adjust width as needed
+	\caption{Confusion Matrix at a Threshold of 0.60}
+	\label{fig:fixed_thresh}
+\end{figure}
 
 \section{Hardware Development Tools}
 Our current prototype uses hardware components that are commonly used in the industry to build an integrated system. All of the tools are readily available. These include but are not limited to:
