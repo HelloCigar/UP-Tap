@@ -327,7 +327,7 @@ The AI camera is not limited to object detection tasks like face detection. It i
 \end{figure}
 The camera module feeds that tensor straight into its onboard AI accelerator, which generates output tensors with the inference results and then forwards them to the Raspberry Pi \cite{raspberrypi_ai_camera_2025}. 
 Older cameras may use AI accelerators or only the CPU, with the lather being inefficient for such task. AI accelerators such as from Hailo start at \$70, not counting the camera.
-\subsection{Implementation of the Face Detection}
+\section{Implementation of the Face Detection}
 Due to its tight integration with the picamera2 library, developing a native application utilizing the AI camera was straightforward. We developed a simple PyQT5 UI that displays the camera stream, waits for an RFID scanner input, and runs the face detection inference on the IMX500 in real time as a background thread (See Figure  \ref{fig:ai_cam_app}). We only allow a single face to be able to time in as to not overwhelm the backend. When a single face is detected, allow the app to take in the RFID number scanned as input and verify the face, cropped from the stream. When more than 1 or no faces are detected, we just disable the RFID input.
 \begin{figure}[h] % 'h' places the figure approximately here in the text
 	\centering
@@ -335,38 +335,8 @@ Due to its tight integration with the picamera2 library, developing a native app
 	\caption{The camera app running the face detection model}
 	\label{fig:ai_cam_app}
 \end{figure}
-\section{MobileFacenet in detail}
-The MobileFacenet model for was used face verification. The model takes in a 112x112x3 image and outputs an embedding(a mathematical representation of face). We then use Cosine similarity with a certain threshold to compute if two embeddings are similar, therefore concluding that both identities are the same. The model was converted to a Tensorflowlite model to run faster on the Raspberry Pi 5 hardware. The final size of the model is 863Kb.
 
-\subsection{Model Architecture}
-Figure \ref{fig:mfn_arch} Shows the general architecture of the model as defined in the MobileFacenet paper \cite{chen2018mobilefacenets}.
-\begin{figure}[h] % 'h' places the figure approximately here in the text
-	\centering
-	\includegraphics[width=0.5\textwidth]{figures/chapter4/mfn_arch.png} % Adjust width as needed
-	\caption{MobileFaceNet Architecture}
-	\label{fig:mfn_arch}
-\end{figure}
-
-\clearpage 
-\subsection{Metrics}
-We tested the discriminative ability of the model using the Labeled Faces in the Wild (LFW) Dataset via sklearn. The dataset includes 13,233 images of 5,749 people. The sklearn package provides a 300 pairs of same + 300 pairs of different people per fold. We tested the model in 10 folds.
-Compared to models of hundreds of MB in size, the performance of the model is good but can be better. Figure \ref{fig:roc_curve} shows the ROC AUC of the model of 0.77. An Area Under the Curve (AUC) of 0.77 means that if we pick one genuine (same‐person) pair and one impostor (different‐person) pair at random, there’s a 77\% chance the model will score the genuine pair higher.
-\begin{figure}[h] % 'h' places the figure approximately here in the text
-	\centering
-	\includegraphics[width=1\textwidth]{figures/chapter4/roc_curve.png} % Adjust width as needed
-	\caption{Receiver Operating Characteristic (ROC) Curve for Face Verification}
-	\label{fig:roc_curve}
-\end{figure}
-
-\clearpage
-Next, we evaluate the model's overall accuracy using the chosen threshold. As shown in Figure \ref{fig:fixed_thresh}, the confusion matrix corresponds to a fixed threshold of 0.6. This threshold was selected to strike a practical balance between security (minimizing false positives) and reliability (maintaining acceptable true positive rates). At this setting, the model achieved an average accuracy of 68.6\% across ten cross-validation folds. While this accuracy may not appear high, it is important to note that the evaluated model is a TensorFlow Lite version, optimized and compressed for real-time inference on a Raspberry Pi 5. This compression trades off some performance for significantly improved inference speed on edge devices.
-\begin{figure}[h] % 'h' places the figure approximately here in the text
-	\centering
-	\includegraphics[width=0.75\textwidth]{figures/chapter4/fixed_thresh_matrix.png} % Adjust width as needed
-	\caption{Confusion Matrix at a Threshold of 0.60}
-	\label{fig:fixed_thresh}
-\end{figure}
-
+The MobileFacenet model for was used face verification. The model takes in a 112x112x3 image and outputs an embedding(a mathematical representation of face). We then use Cosine similarity with a certain threshold to compute if two embeddings are similar, therefore concluding that both identities are the same. The model was converted to a Tensorflowlite model to run faster on the Raspberry Pi 5 hardware. The final size of the model is 863Kb. 
 
 \section{Mediapipe Face Mesh for a simple face alignment}
 To account for the slight misalignment of our camera setup, we implemented a face alignment step next to cropping the facial region. Specifically, we used eye landmarks provided by MediaPipe Face Mesh to estimate the tilt of the face relative to the horizontal axis. The coordinates of the left and right eyes were extracted and used to compute the angle of rotation based on the arctangent of the vertical and horizontal distance between them. The image was then rotated around the midpoint between the eyes using this angle to horizontally align the face. 
@@ -377,54 +347,6 @@ This alignment ensures that the cropped facial region remains consistent across 
 	\caption{}
 	\label{fig:mp_face_mesh}
 \end{figure}
-
-\clearpage
-\section{YoloV8n for Face Detection}
-We utilized a pretrained YOLOv8n face detection model developed by Arnab Dhar and published on Hugging Face. This model was fine-tuned by the original author on a dataset of over 10{,}000 face images, trained for 100 epochs using a batch size of 16 on a single NVIDIA V100 16GB GPU (total training time: approximately 140 minutes).
-
-The model achieved the following performance metrics, as reported by the author:
-
-\begin{itemize}
-	\item \textbf{Precision (IoU $\geq$ 0.5):} 0.772 ($\approx$77.2\%)
-	\item \textbf{Recall (IoU $\geq$ 0.5):} 0.489 ($\approx$48.9\%)
-	\item \textbf{mAP@50:} 0.5598 ($\approx$55.98\%)
-	\item \textbf{mAP@50--95:} 0.2905 ($\approx$29.05\%)
-\end{itemize}
-
-
-These results demonstrate that the model has strong face detection capabilities, with a good balance between precision and recall. Figure~\ref{fig:yolo-metrics} presents the performance curves for all four metrics across training epochs.
-
-The YOLOv8n model was selected due to its compatibility with the Raspberry Pi AI Camera and the Sony IMX500 edge processor. The Ultralytics framework simplifies quantization and compression via Sony’s Model Compression Toolkit. This enables reducing the model size from around 6~MB to approximately 3~MB, allowing it to run within the IMX500’s 8~MB memory constraint with minimal accuracy loss.
-
-\begin{figure}[H]
-	\centering
-	\begin{subfigure}[b]{0.48\textwidth}
-		\includegraphics[width=\textwidth]{figures/chapter4/map50.png}
-		\caption{mAP@50}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.48\textwidth}
-		\includegraphics[width=\textwidth]{figures/chapter4/map5095.png}
-		\caption{mAP@50--95}
-	\end{subfigure}
-	
-	\vspace{1em}
-	
-	\begin{subfigure}[b]{0.48\textwidth}
-		\includegraphics[width=\textwidth]{figures/chapter4/precision.png}
-		\caption{Precision (IoU $\geq$ 0.5)}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.48\textwidth}
-		\includegraphics[width=\textwidth]{figures/chapter4/recall.png}
-		\caption{Recall (IoU $\geq$ 0.5)}
-	\end{subfigure}
-	
-	\caption{Performance metrics of the YOLOv8n face detection model across training epochs.}
-	\label{fig:yolo-metrics}
-\end{figure}
-
-
 
 
 
